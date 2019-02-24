@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <pg_home>Inicio - Acctos</pg_home>
+    <lg_pg_home>Início</lg_pg_home>
+    <lg_pg_library>Biblioteca</lg_pg_library>
+    <lg_pg_students>Alunos</lg_pg_students>
+    <lg_pg_calendar>Calendario</lg_pg_calendar>
+    <lg_pg_bulletins>Boletins</lg_pg_bulletins>
+    <lg_pg_activities>Provas-e-Atividades</lg_pg_activities>
+    <lg_pg_jobs>Trabalhos</lg_pg_jobs>
+    <lg_pg_events>Eventos</lg_pg_events>
+    <lg_pg_workload>Carga-Horaria</lg_pg_workload>
+    <lg_pg_attendence>Lista-de-presenca</lg_pg_attendence>
+    <lg_pg_matter>Disciplinas</lg_pg_matter>
+    <lg_subpg_details>Detalhes</lg_subpg_details>
+    <lg_subpg_lib_bookcase>Estante</lg_subpg_lib_bookcase>
+    <lg_subpg_lib_newbook>Novo-Livro</lg_subpg_lib_newbook>
+    <lg_subpg_lib_newitem>Novo-Item</lg_subpg_lib_newitem>
+    <lg_subpg_lib_newmultibook>Multi-Livros</lg_subpg_lib_newmultibook>
+    <lg_subpg_lib_withdraw>Empréstimos &amp; Doações</lg_subpg_lib_withdraw>
+    <lg_subpg_editbook>Editar-Livro</lg_subpg_editbook>
+    <lg_subpg_delbook>Livro-Removido</lg_subpg_delbook>
+    <__index>Página Inicial</__index>
+    <__library>Biblioteca</__library>
+    <__login>Acesso</__login>
+    <__su>Administração</__su>
+    <__uv>Painel do Aluno</__uv>
+    <__lock>Protetor de Tela</__lock>
+    <__tools>Sistema</__tools>
+    <__guard>Guardião</__guard>
+    <__library_collection>Biblioteca - Acervo</__library_collection>
+    <__library_new_items>Biblioteca - Novo Item</__library_new_items>
+    <title_home_page>Inicio</title_home_page>
+    <title_profile_page>Perfil de Usuário</title_profile_page>
+    <title_library_page>Biblioteca</title_library_page>
+    <title_bulletin_page>Boletins</title_bulletin_page>
+    <title_calendar_page>Calendário</title_calendar_page>
+    <title_activities_page>Provas &amp; Atividades</title_activities_page>
+    <title_jobs_page>Trabalhos</title_jobs_page>
+    <title_events_page>Eventos</title_events_page>
+    <title_workload_page>Cargas Horárias</title_workload_page>
+    <title_forum_page>Forum</title_forum_page>
+    <title_profile_page>Perfil de usuário</title_profile_page>
+    <title_mastersettings_page>Configurações Globais</title_mastersettings_page>
+    <title_students_page>Colegial</title_students_page>
+    <title_attendence_page>Listas de Presença</title_attendence_page>
+    <title_system_page>Sistema</title_system_page>
+    <title_system_access>Acesso ao Sistema </title_system_access>
+    <title_system_recover>Recuperação de Senha</title_system_recover>
+    <title_usergroup_page>Grupo de Usuários</title_usergroup_page>
+    <title_credentials_page>Credenciais</title_credentials_page>
+    <title_users_page>Usuários</title_users_page>
+</system>

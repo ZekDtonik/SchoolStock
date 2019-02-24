@@ -1,0 +1,371 @@
+<?php
+/**
+ * Created by AlbaFox Solutions.
+ *    Author: Kevin Marques
+ *    Date: 25/09/2017 - 01:14
+ *      File: Class.Access.module
+ *        Acctos
+ */
+
+
+namespace Modules;
+
+
+use Exceptions\EngineException;
+use Interfaces\ThrowableAll;
+use Modules\Template\Template;
+use PDO;
+
+class Access
+{
+    private $sql;
+    const __ACUSERS = __USERS;
+    const __ACINTIME = __INTIME;
+    const __ACSETS = __SETTINGS;
+
+    public function setLoginField($value = true) {
+        if($value == false){
+            unset($_SESSION['loginField']);
+        }
+        else{
+            $_SESSION['loginField'] = $value;
+        }
+
+    }
+    public function getLoginField() { return isset($_SESSION['loginField']) ? $_SESSION['loginField'] : null ; }
+    public function getSql() { return $this->sql; }
+    public function getSession($value = null) {
+        if(!empty($_SESSION['user_session'])){
+            if(empty($value)){
+                return $_SESSION['user_session'];
+            }
+            else{
+                return $_SESSION[$value];
+            }
+        }
+        else{
+            return null;
+        }
+    }
+    public function setSession($key,$value) {
+        $_SESSION['user_session'] = true;
+        $_SESSION[$key] = $value;
+    }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+
+    public function guiLogin(){
+        $jsonData = [];
+        $jsonData['url'] = _system.DS."authenticate";
+        $jsonData['method'] = 'POST';
+        $parser =[];
+        $parser['datasend'] = ' data-send="'.base64_encode(json_encode($jsonData)).'"';
+        $parser['www'] = WWW_PATH;
+
+        //Define uma sessão de localização para a area de login
+        $this->setLoginField(true);
+        $Template = new Template(APP_ROOT.DS."Templates/View/login.tpl",$parser,true);
+        echo $Template->showTemplate();
+    }
+    public function guiRecover(){
+        #Cria um accessToken para o sistema de recuperação
+        System::setAccessToken();
+        #Continua com o processo de interface e template
+        $jsonData = [];
+        $jsonData['url'] = _system.DS."recover".DS.System::getAccessToken();
+        $jsonData['method'] = 'POST';
+        $parser =[];
+        $parser['datasend'] = ' data-send="'.base64_encode(json_encode($jsonData)).'"';
+        $parser['www'] = WWW_PATH;
+        $Template = new Template(APP_ROOT.DS."Templates/View/recover.tpl",$parser,true);
+        echo $Template->showTemplate();
+    }
+    public function guiNewPassword(){
+        //Caso não exista cookie de aplicação de nova senha, impede o acesso
+        if(!isset($_COOKIE['new_password'])){
+            header("Location: ".WWW_PATH."recover/");
+            return false;
+        }
+        //Checa pelo token inserido a partir do sistema tipado em RECOVERY
+        $checkHash = $this->getSql()->query("SELECT * FROM ".__SYSTEM." WHERE type='RECOVERY'");
+        $hashAssoc = $checkHash->fetchAll(PDO::FETCH_ASSOC);
+        $resultGet = false;
+
+        foreach ($hashAssoc as $tokens) {
+            $data = json_decode($tokens['data'],true);
+            $hash = isset($data['hash']) ? $data['hash'] : 'undefined';
+            $cookie = isset($_COOKIE['new_password']) ? $_COOKIE['new_password'] : null;
+            if($hash === $cookie){
+                $resultGet = true;
+                break;
+            }
+        }
+        if(!$resultGet){
+            header("Location: ".WWW_PATH."recover/");
+            return false;
+        }
+        #Caso contrario, prossegue com a interface
+        $jsonData = [];
+        $jsonData['url'] = _system.DS."recover/save".DS.System::getAccessToken();
+        $jsonData['method'] = 'POST';
+        $parser =[];
+        $parser['datasend'] = ' data-send="'.base64_encode(json_encode($jsonData)).'"';
+        $parser['www'] = WWW_PATH;
+        $Template = new Template(APP_ROOT.DS."Templates/View/newPassword.tpl",$parser,true);
+        echo $Template->showTemplate();
+    }
+
+    /**
+     * @param null $accessToken
+     * @throws EngineException
+     */
+    public function recoverPassword($accessToken = null){
+        if($accessToken != System::getAccessToken()){
+            System::message("error",_tr('system_recovery'),_tr('invalid_access_token'));
+        }
+        else{
+            if(empty($_POST['email'])){
+                System::message("error",_tr('system_recovery'),_tr('registered_email_needed_to_be_filled'));
+            }
+            else if(Auth::isEmail($_POST['email']) == false){
+                System::message("error",_tr('system_recovery'),_tr('invalid_email'));
+            }
+            else{
+                $sqlQuery = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE email=:email");
+                $sqlQuery->bindValue(":email",$_POST['email'],PDO::PARAM_STR);
+                $sqlQuery->execute();
+
+                $ftQuery = $sqlQuery->fetch(PDO::FETCH_ASSOC);
+
+                if($sqlQuery->rowCount() == 0){
+                    System::message("error",_tr('system_recovery'),_tr('email_not_found'));
+                }
+                else if($ftQuery['status'] == 2 || $ftQuery['status'] == 3){
+                    System::message("error",_tr('system_recovery'),_tr('admin_blocked_impossible_to_proceed_with_recovery'));
+                }
+                else{
+                    $time = time() + 3600;
+                    $token = System::createToken(5,true);
+                    $hash = md5("AlbaFox_".$token);
+                    $authid = $ftQuery['authid'];
+                    //SystemAttach
+                    System::systemAttach('recovery',[
+                        "time" => $time,
+                        "token" => $token,
+                        "hash" => $hash,
+                        "authid" => $authid
+                    ]);
+                    //$mail = new Mail();
+                    $mail =true;
+                    if($mail == true){
+                        //Cria um Cookie de permissão de acesso da página newPassword, diminuindo algum possivel flood ou spam
+                        setcookie("new_password",$hash,$time,"/");
+                        System::message("success",_tr('system_recovery'),_tr('email_successfully_send_you_will_be_redirected'),System::goTo(WWW_PATH."recover/newPassword/",5));
+                    }
+                    else{
+                        System::message("error",_tr('system_recovery'),_tr('mail_cannot_be_sent'));
+                    }
+                }
+            }
+        }
+    }
+    public function saveNewPassword($accessToken = null){
+        if($accessToken != System::getAccessToken()){
+            System::message("error",_tr('system_recovery'),_tr('invalid_access_token'));
+        }
+        else{
+            //Primeiro recupera o cookie, para checar a autenticidade dos dados internos futuramente
+            $cookie = isset($_COOKIE['new_password']) ? $_COOKIE['new_password'] : null;
+            if(empty($_POST['code']) || empty($_POST['password']) || empty($_POST['repeatPassword'])){
+                System::message('error',_tr('system_recovery'),_tr('all_fields_need_to_be_filled'));
+            }
+            else if($_POST['password'] != $_POST['repeatPassword']){
+                System::message('error',_tr('system_recovery'),_tr('passwords_not_match'));
+            }
+            else if(System::passPattern($_POST['password']) == false){
+                System::message('error',_tr('system_recovery'),sprintf(_tr('invalid_password_pattern_need_to_be'),System::passPattern(null,1)));
+            }
+            else if($cookie == null){
+                System::message('error',_tr('system_recovery'),_tr('token_expired'));
+            }
+            else{
+                //Checa pelo token inserido a partir do sistema tipado em RECOVERY
+                $getTokensRecovey = $this->getSql()->query("SELECT * FROM ".__SYSTEM." WHERE type='RECOVERY'");
+                $TokensRecovered = $getTokensRecovey->fetchAll(PDO::FETCH_ASSOC);
+                #
+                $resultGet = null;
+                $ssid = null;
+                foreach ($TokensRecovered as $tokens) {
+                    $data = json_decode($tokens['data'],true);
+                    if($data['token'] == $_POST['code']){
+                        $ssid = $tokens['ssid'];
+                        $resultGet = $data;
+                        break;
+                    }
+                }
+                if(empty($resultGet)){
+                    System::message('error',_tr('system_recovery'),_tr('invalid_token'));
+                }
+                else if($resultGet['time'] < time()){
+                    System::message('error',_tr('system_recovery'),_tr('token_expired'));
+                }
+                else{
+
+                    $authid = $resultGet['authid'];
+                    $passwd = md5($_POST['password']);
+                    #Atualiza a nova senha do usuário
+                    $this->getSql()->beginTransaction();
+                    $upadatePasswordQuery = $this->getSql()->prepare("UPDATE ".__USERS." SET password=:passwd WHERE authid=:authiid");
+                    $upadatePasswordQuery->bindValue(":authid",$authid);
+                    $upadatePasswordQuery->bindValue(":passwd",$passwd);
+                    $upadatePasswordQuery->execute();
+
+                    if($upadatePasswordQuery){
+                        $detach = System::systemDetach($ssid);
+                        if($detach){
+                            $this->getSql()->commit();
+                            System::message('error',_tr('system_recovery'),_tr('successfully_password_save'),System::goTo(WWW_PATH,5));
+                        }
+                        else{
+                            $this->getSql()->rollBack();
+                            System::message('error',_tr('system_recovery'),_tr('impossible_to_save_password'));
+                        }
+
+                    }
+                }
+            }
+
+        }
+    }
+    public function checkLoginStatus($onlycheck =false){
+        //Se a sessão não existir ou o tempo estiver expirado
+        if(empty($this->getSession()) || $this->getSession('time') < time()){
+            return false;
+        }
+        else{
+            if(!$onlycheck){
+                //Caso exista sessão e ainda esteja válida, atualiza a sessão
+                $this->setSession('time',time() + (60 * _EXPIRE_LOGIN_TIME));
+            }
+            return true;
+        }
+    }
+    public function authenticate(){
+        try{
+            if(empty($_POST['login']) || empty($_POST['password'])){
+               System::message('error',_tr('login'),_tr('fields_cannot_be_empty'));
+            }
+            else{
+                $login = preg_replace("/[^a-z0-9_]/i",'',$_POST['login']);$password = md5($_POST['password']);
+                $authInit = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE login=? AND password=?");
+                $authInit->bindValue(1,$login,PDO::PARAM_STR);
+                $authInit->bindValue(2,$password,PDO::PARAM_STR);
+                $authInit->execute();
+
+               if($authInit->rowCount() == 0){
+                   System::message('error',_tr('login'),_tr('incorrect_user_or_password'));
+               }
+               else{
+                   $FetchData = $authInit->fetch(PDO::FETCH_ASSOC);
+                   if($FetchData['status'] == 1 || $FetchData['status'] == 4){
+                       $this->makeSession($FetchData);
+                   }
+                   else if($FetchData['status'] == 2){
+                       System::message('warning',_tr('login'),_tr('admin_blocked'));
+                   }
+                   else if($FetchData['status'] == 3){
+                       System::message('warning',_tr('login'),_tr('user_inactive'));
+                   }
+               }
+            }
+        }
+        catch (ThrowableAll $exception){
+           System::message('fatal',_tr('errors_locale/internal_error'),$exception->getMessage());
+        }
+    }
+
+    /**
+     * @function makeSession - Cria a sessão para o usuário
+     */
+    private function makeSession($QueryFetch){
+        $expirevalue = 60 * _EXPIRE_LOGIN_TIME;
+        $this->setLoginField(false);
+        System::setAccessToken();
+        $fullname = $QueryFetch['name'].' '.$QueryFetch['lastname'];
+        $authid = $QueryFetch['authid'];
+        $login = $QueryFetch['login'];
+        $timeExpire = time() + $expirevalue;
+        $this->setSession('fullname',$fullname);
+        $this->setSession('login',$login);
+        $this->setSession('authid',$authid);
+        setcookie('authid',$authid,time()+ $expirevalue);
+        $this->setSession('time',$timeExpire);
+        System::message('success',_tr("login"),_tr('logged_successfully'),System::goTo(WWW_PATH,2),false,'$.system.checkSession()');
+        return true;
+    }
+    public function logout(){
+        if(_level2 == System::getAccessToken()){
+            unset($_SESSION['user_session']);
+            $redir = [];
+            $redir['url'] = WWW_PATH;
+            $redir['time'] = 2;
+            System::message('success',_tr('logout'),_tr('logout_successfully'),$redir);
+        }
+        else{
+            System::message('warning',_tr('token_access'),_tr('bad_access_token').' '.System::getAccessToken().' '._level2);
+        }
+
+    }
+
+    /**
+     * @return string
+     * @throws EngineException
+     */
+    public  function getUserCredential(){
+        try{
+            $getUserData = $this->getSql()->prepare("SELECT * FROM see_permissions WHERE authid=?");
+            $getUserData->bindValue(1,$this->getSession('authid'));
+            $getUserData->execute();
+
+            $fetchData = $getUserData->fetch(PDO::FETCH_ASSOC);
+            
+            if($fetchData['status'] == 4){
+                return strtoupper(_tr('super_user'));
+            }
+            else if(!empty($fetchData['usergroupname'])){
+                return strtoupper($fetchData['usergroupname']);
+            }
+            else{
+                return strtoupper(_tr('no_credited'));
+            }
+        }
+        catch (\ErrorException $e){
+            throw new EngineException($e->getMessage());
+        }
+
+    }
+    public function session(){
+        $sessionStatus = $this->checkLoginStatus(true);
+        $result =[];
+        //Se não estiver na area de login
+        if(null === $this->getLoginField()){
+            //Caso exista sessão
+            if($sessionStatus){
+                //retorna ao verificador TRUE
+                $result['result'] = true;
+            }
+            //CASO NAO EXISTA SESSÃO ATIVA E NAO ESTEJA NA AREA DE LOGIN
+            else{
+                //Envia a mensagem e retona false com o caminho para o redirecionamento
+                $result['return'] = false;
+                $result['redirect'] = WWW_PATH;
+                $result['information'] = System::message('info',_tr('session_expired'),_tr('session_expire_make_login_again'),null,true);
+            }
+        }
+        else{
+            $result['result'] = true;
+        }
+        echo json_encode($result);
+    }
+}

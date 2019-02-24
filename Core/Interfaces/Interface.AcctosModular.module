@@ -1,0 +1,44 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 13/04/2018 - 17:53
+ * Acctos : Interface.AcctosModular.module
+ */
+
+namespace Interfaces;
+
+
+interface AcctosModular
+{
+    /**
+     * @inheritdoc a sequencia de listagem dos GETS de endereçamento do browser
+     * é seguida do menor para o maior Ex: $_GET[0] -> $_GET[1]...
+     *
+     * Mediador de acesso das páginas - Atribui o modulo baseado no
+     * recebimento do get browser (@param $_GET[AcSU])
+     * --> O Get está definido em $this->gets[]
+     * <> Não é possivel alterar a extensao do arquivo
+     * @param $Title - Define o titulo da página
+     * @param $actionInterface - Define a interface de ação da barra inferior.
+     * @inheritdoc Os parametros são aplicados por referencia para ser utilizado na página principal
+     * os valores aplicados vem dos modulos, os modulos implementam a classe abstrata @class Component
+     * essa classe tem dois métodos: @method $this->getTitle(); @method $this->getInterface(),
+     * esses métodos setam os valores para o titulo e a interface no módulos especifico
+     *
+     */
+    function pageMediator(&$Title, &$actionInterface);
+    /**
+     * @inheritdoc a sequencia de listagem dos GETS de endereçamento do browser
+     * é seguida do menor para o maior Ex: $_GET[0] -> $_GET[1]...
+     *
+     * Mediador de acesso das requisições internas - Atribui o requisitador do modulo baseado no
+     * recebimento do get do browser
+     * --> O Get está definido em $this->gets[]
+     * <> Não é possivel alterar a extensao do arquivo
+     *
+     * @method $this->requestMediator(...$requests) é semelhante ao pageMediator, contudo, trabalha com requisições
+     * assincronas do ajax ao invés dos módulos de interface end-point.
+     */
+    function requestMediator(...$requests);
+}

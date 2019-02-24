@@ -1,0 +1,90 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 08/07/2018 - 19:49
+ * Grh : AddCredential.moduleodule
+ */
+
+namespace Modules\Application\UserGroup\Manager;
+
+
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Add
+{
+    private $sql;
+    private $accessToken;
+
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+
+
+    }
+    public function init(){
+        if(empty($_POST['name']) || empty($_POST['description']) || (!isset($_POST['perms']) && !isset($_POST['system']))){
+            System::message('error',_tr('user_group'),_tr('all_user_group_fields_need_to_be_filled'));
+        }
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr('user_group'),_tr('access_token_receive_is_wrong').$this->getAccessToken());
+        }
+        else{
+            //Cria uma verificação de grupo de usuário para verificar duplicidade de nome
+            $getData = $this->getSql()->query("SELECT * FROM see_usergroups");
+            $fetch = $getData->fetchAll(\PDO::FETCH_ASSOC);
+            //Variables
+            $checkname = strtolower(trim(Auth::removeSpecialCharacters($_POST['name'])));
+            $alreadyNameExist = false;
+            foreach ($fetch as $eachName) {
+                $eaToCheck = strtolower(trim(Auth::removeSpecialCharacters($eachName['name'])));
+                if($checkname == $eaToCheck){
+                    $alreadyNameExist = true;
+                    break;
+                }
+            }
+            //Sub verificações
+            if(Auth::isAddress($_POST['name']) == false){
+                System::message('error',_tr('user_group'),_tr('invalid_group_name'));
+            }
+            else if($alreadyNameExist){
+                System::message('error',_tr('user_group'),_tr('user_group_name_already_exist'));
+            }
+            else{
+                $guid = uniqid(time());
+                $jsonData = null;
+                $timezone = new \DateTimeZone('America/Sao_Paulo');
+                $registerDate = new \DateTime('now',$timezone);
+                $dateToSave = $registerDate->format('Y-m-d');
+                $active = !isset($_POST['active']) ? 0 : 1;
+                if(isset($_POST['system'])){
+                    $jsonData = json_encode($_POST['system']);
+                }
+                else {
+                    $jsonData = json_encode($_POST['perms']);
+                }
+                //----
+                $addGroup = $this->getSql()->prepare("INSERT INTO ".__USERGROUP." (registerDate, guid,name,description,perms,active) 
+                VALUES (:regdate, :guid, :name, :description,:perms,:active)");
+                $addGroup->bindValue(":regdate",$dateToSave);
+                $addGroup->bindValue(":guid",$guid);
+                $addGroup->bindValue(":name",$_POST['name']);
+                $addGroup->bindValue(":description",$_POST['description']);
+                $addGroup->bindValue(":perms",$jsonData);
+                $addGroup->bindValue(":active",$active);
+                $result = $addGroup->execute();
+
+                if ($result){
+                    System::message("success",_tr('user_group'),_tr('successfully_user_group_added'));
+                }
+                else{
+                    System::message("error",_tr('user_group'),_tr('error_on_add_user_group'));
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,90 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 07/07/2018 - 11:38
+ * Grh : Credentialstials.module
+ */
+
+namespace Modules\Application\UserGroup\GraphicInterface;
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\Pagination;
+use Modules\System;
+use Modules\Template\Template;
+use Modules\Upshot;
+
+class Home
+{
+    private $sql;
+    private $moduleName;
+
+    private function getModuleName() { return $this->moduleName; }
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    public function getSql() { return $this->sql; }
+
+    public function __construct($ModuleName) {
+        try {
+            $this->sql = CNN::getSql();
+            $this->setModuleName($ModuleName);
+            $JsonParser = [];
+            $DataParser = [];
+            $DataParser['link_new_group'] = WWW_PATH . $ModuleName . "/new/";
+            $DataParser['data_table'] = '';
+            //
+            $DataParser['composition'] = $this->fetchContent("SELECT * FROM see_usergroups");
+            //Template principal da página
+            $Template = new Template(APP_ROOT . DS . "Core/Modules/UserGroup/Gui/Views/basic.tpl", $DataParser, true);
+            echo $Template->showTemplate();
+            
+            
+        } catch (ThrowableAll $exception) {
+            Upshot::showData("Excessão", null, $exception->getMessage(), '', null, true);
+        }
+    }
+    private function fetchContent($querytoFetch) {
+        $getUserGroups = $this->getSql()->query($querytoFetch);
+        if ($getUserGroups->rowCount() > 0) {
+            //Paginação de Conteúdo
+            $pagination = new Pagination();
+            $pagination->setPage(_level1);
+            $pagination->setLimit(6);
+            $pagination->setContent($getUserGroups->fetchAll(\PDO::FETCH_ASSOC));
+            $pagination->setLink(WWW_PATH . $this->getModuleName());
+            //Variavel de cabeçalho de tabela
+            $tableHeadData = [];
+            $tableHeadData['data_table'] = '';
+            //Recupera o template de TR para inserção na tabela
+            foreach ($pagination->getContent() as $tableLine) {
+                $active = $tableLine['active'] == 1 ? _tr('actived') : _tr('inactive');
+                $preLink = WWW_PATH . $this->getModuleName() . DS;
+                //Data Parser de tratamento
+                $lineTable = [];
+                $lineTable['active'] = $active;
+                $lineTable['name'] = $tableLine['name'];
+                $lineTable['register_date'] = $tableLine['registerDate'];
+                $lineTable['description'] = $tableLine['description'];
+                $lineTable['link_edit'] = $preLink . 'edit' . DS . $tableLine['guid'];
+                $dataPrompt = [];
+                $dataPrompt['url'] = _system . DS . $this->getModuleName() . DS . 'get' . DS . $tableLine['guid'] . DS . System::getAccessToken();
+                $lineTable['data_prompt'] = base64_encode(json_encode($dataPrompt));
+                $tempTr = new Template(APP_ROOT . DS . MODULES_PATH . DS . $this->getModuleName() . DS . "Gui/Views/Controller/tableListUserGroup.tpl", $lineTable, true);
+                $tableHeadData['data_table'] .= $tempTr->showTemplate();
+
+            }
+            $tableHeadData['pagination'] = $pagination->getInterface(['controlArrow'=>true]);
+            //Template de cabeçalho e estrutura de tabela
+            $TableHeader = new Template(APP_ROOT . DS . MODULES_PATH . DS . $this->getModuleName() . DS . "Gui/Views/Controller/tableUserGroup.tpl", $tableHeadData, true);
+            //Composição de Template principal da página
+            return $TableHeader->showTemplate();
+        } else {
+            $tableMessage = [];
+            $tableMessage['title'] = _tr('no_user_group_registered');
+            $tableMessage['msg'] = _tr('none_one_user_group_is_register_on_your_system_please_add_one');
+            $tableMessage['icon'] = 'ais-info';
+            $TableNothing = new Template(APP_ROOT . DS . MODULES_PATH . DS . $this->getModuleName() . DS . "Gui/Views/Controller/tableNoContent.tpl", $tableMessage, true);
+            return $TableNothing->showTemplate();
+        }
+    }
+}

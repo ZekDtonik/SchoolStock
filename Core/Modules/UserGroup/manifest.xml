@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <module>UserGroup</module>
+    <module_name_translate>user_group</module_name_translate>
+    <module_description_translate>user_group_and_permission_manager</module_description_translate>
+    <version>1.0.0</version>
+    <author>Kevin Marques</author>
+    <permission>
+        <minimal_required>1.2.4.0</minimal_required>
+        <show_manager>true</show_manager>
+    </permission>
+    <develop_comment>Gestor de permissões e grupo de usuários</develop_comment>
+    <hashsum>cf8f3d38cbeb0bf47e460349c1575826</hashsum>
+</manifest>

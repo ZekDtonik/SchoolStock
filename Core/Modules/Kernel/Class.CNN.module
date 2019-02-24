@@ -1,0 +1,103 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Kevin
+ *    Date: 15/03/2016 - 22:33
+ *
+ */
+
+namespace Modules;
+
+use PDO;
+use PDOException;
+
+class CNN
+{
+
+    /*  Tipo de Banco de Dados  */
+    private static $Assembly;
+    private static $typeDB;
+
+    /*  Construtor declarado    */
+    private function __construct()
+    {
+        /*  construtor vindo do PDO */
+        //parent::__construct($dsn, $user, $pwd);
+    }
+
+    public static function getSql()
+    {
+
+        /**
+         * Declara o tipo de banco de dados utilizado
+         *
+         * @const string _TYPEDB_ dsfinido na area de defines.php,
+         * que tambem e redirecionado como variavel comum no init.php
+         *
+         * @return mixed self::$Assembly
+         */
+        self::$typeDB = _TYPEDB_;
+
+        try {
+
+            switch (self::$typeDB) {
+                case "SqLite":
+
+                    $dsn = "sqlite:" . _DBSQLNAME_;
+                    self::$Assembly = new PDO($dsn);
+
+                break;
+                case "PostGre":
+
+                    $dsn = "pgsql:" .
+                        "host=" . _APPHOST .
+                        ";port=" . _APPPORT .
+                        ";dbname=" . _APPDBASE .
+                        ";charset=utf8";
+
+                    self::$Assembly = new PDO($dsn, _APPUSER, _APPPWD);
+
+                break;
+                default:
+
+                    $dsn = "mysql:" .
+                        "host=" . _APPHOST .
+                        ";port=" . _APPPORT .
+                        ";dbname=" . _APPDBASE .
+                        ";charset=utf8";
+                    #mysql: host=localhost;port=3306;dbname=grh
+                    self::$Assembly = new PDO($dsn, _APPUSER, _APPPWD);
+            }
+            self::$Assembly->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $a) {
+            echo "Acctos Server<br>";
+            //dados tratados para melhor aparencia e compreenção do usuario
+            if ($a->getCode() == 1049) {
+                echo "Oops... Banco de Dados não encontrado..";
+                echo "<br/> Dica: Verifique se o nome do banco de dados estão correto..";
+                echo "<br/> Código: 1049.";
+                die();
+            } elseif ($a->getCode() == 1045) {
+                echo "Oops... Acesso negado.";
+                echo "<br/> Dica: Verifique se o nome de login e senha foram digitados corretamente!";
+                echo "<br/> Código: 1045.";
+                die();
+            } elseif ($a->getCode() == 2002) {
+                echo "Oops... O Hospedador nao foi reconhecido ou encontrado...";
+                echo "<br/> Dica: Verifique se o nome do Servidor, número de IP ou a Porta de conexao foram digitados corretamente..";
+                echo "<br/> Código: 2002.";
+                die();
+            } elseif ($a->getCode() == 2003) {
+                echo "Oops... Não foi possivel conectar  ao servidor...";
+                echo "<br/> Dica: Verifique se o nome do Servidor, número de IP ou a Porta de conexao foram digitados corretamente..";
+                echo "<br/> Código: 2003.";
+                die();
+            }
+        }
+        return self::$Assembly;
+    }
+    public static function close(){
+        self::$Assembly = null;
+    }
+
+}

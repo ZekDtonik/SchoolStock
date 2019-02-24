@@ -1,0 +1,70 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 14/07/2018 - 19:04
+ * Grh : DelGroup.module
+ */
+
+namespace Modules\Application\Users\Manager;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+
+class Del
+{
+    private $accessToken;
+    private $idToRemove;
+    private $sql;
+    private $moduleName;
+
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    private function getModuleName() { return $this->moduleName; }
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    public function setIdToRemove($guidToRemove) { $this->idToRemove = $guidToRemove; }
+    private function getIdToRemove() { return $this->idToRemove; }
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql(): \PDO { return $this->sql; }
+    public function __construct() {
+        $this->sql= CNN::getSql();
+    }
+    public function remove(){
+        try{
+            if(null == $this->getIdToRemove()){
+                System::message('error',_tr('remove_user'),_tr('authid_not_found'));
+            }
+            else if(System::getAccessToken() != $this->getAccessToken()){
+                System::message('error',_tr('remove_user'),_tr('access_token_receive_is_wrong'));
+            }
+            else{
+                !defined("_AUTHID") ? define("_AUTHID",$_SESSION['authid']) : null;
+                $getCover = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+                $getCover->bindValue(1,$this->getIdToRemove());
+                $getCover->execute();
+                if($getCover->rowCount() == 0){
+                    System::message('error',_tr('remove_user'),_tr('authid_not_registered'));
+                }
+                else if($this->getIdToRemove() == _AUTHID){
+                    System::message('error',_tr('remove_user'),_tr('you_cannot_remove_yourself'));
+                }
+                else{
+                    $remove = $this->getSql()->prepare("DELETE FROM ".__USERS." WHERE authid=?");
+                    $remove->bindValue(1,$this->getIdToRemove());
+                    $remove->execute();
+
+                    if($remove){
+                        System::message('success','remove_user',_tr('user_successfully_removed'),System::goTo(WWW_PATH.$this->getModuleName(),1));
+                    }
+                    else{
+                        System::message('warning','remove_user',_tr('impossible_to_remove_user'));
+                    }
+                }
+            }
+        }
+        catch (ThrowableAll $e){
+            System::message('error',_tr('internal_error'),$e->getMessage());
+        }
+    }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <module>Users</module>
+    <module_name_translate>users</module_name_translate>
+    <module_description_translate>user_manager</module_description_translate>
+    <version>1.0.0</version>
+    <author>Kevin Marques</author>
+    <permission>
+        <minimal_required>1.2.4.0</minimal_required>
+        <show_manager>true</show_manager>
+    </permission>
+    <hashsum>c5359a32bd931542e32a711e7fe4a544</hashsum>
+</manifest>

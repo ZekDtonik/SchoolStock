@@ -1,0 +1,164 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kevin
+ * Date: 18/07/18
+ * Time: 19:45
+ */
+
+namespace Modules;
+
+/** @Class Pagination - Sistema de paginação orientado
+ * a vetores
+ * @param int
+ */
+class Pagination
+{
+    private $page;
+    private $limit;
+    private $content;
+    private $numberOfPages;
+    private $async;
+    private $link;
+    private $place;
+    private $maxLinks;
+
+    private function getPage(){
+        if(!empty($this->page)){
+            if($this->page <= 0 || !is_numeric($this->page)){
+                return 1;
+            }
+            else if($this->page > $this->getNumberOfPages()){
+                return $this->getNumberOfPages();
+            }
+            else{
+                return $this->page;
+            }
+        }
+        else{
+            return 1;
+        }
+
+    }
+    public function setPage($page): void{$this->page = $page;}
+    private function getMaxLinks() { return $this->maxLinks; }
+    public function setMaxLinks($maxLinks) { $this->maxLinks = $maxLinks; }
+    private function getLimit(){return $this->limit;}
+    public function setLimit($limit): void{$this->limit = $limit;}
+    public function setContent($content): void{$this->content = $content;}
+    private function getSizeContent(){return sizeof($this->content);}
+    private function getNumberOfPages(){return $this->numberOfPages;}
+    private function getLink(){return $this->link;}
+    private function getPlace(){return $this->place;}
+    private function setNumberOfPages($numberOfPages): void{$this->numberOfPages = $numberOfPages;}
+    public function setDefinitions($flags =[]){
+        if(isset($flags['content'])){
+            $this->setContent($flags['content']);
+        }
+        if(isset($flags['link'])){
+            $this->setLink($flags['link']);
+        }
+        if(isset($flags['page'])){
+            $this->setPage($flags['page']);
+        }
+        if(isset($flags['limit'])){
+            $this->setLimit($flags['limit']);
+        }
+
+    }
+    public function setLink($link): void
+    {
+        $this->link = $link;
+    }
+    public function setAsyncDefs($url,$resultPlace){
+        $this->link = $url;
+        $this->place = $resultPlace;
+
+    }
+    private function getAsync(){return $this->async;}
+    public function setAsync($at = false){$this->async = $at;}
+    public function __construct($content = null, $page  = null, $limit = null){
+        $this->setContent($content);
+        $this->setPage($page);
+        $this->setLimit($limit);
+        //Default FLAGS
+        $this->setLimit(5);
+    }
+    public function getContent(){
+        $this->setNumberOfPages(ceil($this->getSizeContent() / $this->getLimit()) < 0 ? 0 : ceil($this->getSizeContent() / $this->getLimit()));
+        $arrayBase = [];
+        $start = ($this->getPage() * $this->limit) - $this->getLimit();
+        $end = $this->getPage() * $this->getLimit();
+        $endFor = $end > $this->getSizeContent() ? $this->getSizeContent() : $end;
+        for($i = $start; $i < $endFor; $i++){
+            $arrayBase[] = $this->content[$i];
+        }
+        return $arrayBase;
+    }
+
+    /** @function getInterface - Apresenta e confiura a área de páginação
+     * @param array $options - Configurações de apresentação, valores possiveis abaixo
+     * @option boolean $controlArrow default: false
+     * @option string $position default: relative
+     *
+     * @return string
+     */
+    public function getInterface($options = []){
+        !isset($options['controlArrow']) ? $options['controlArrow'] = false : null;
+        !isset($options['position']) ? $options['position'] = 'relative' : null;
+
+        $asyncProperties = [];
+        $asyncProperties['url'] = $this->getLink();
+        $asyncProperties['method'] = 'GET';
+        $asyncProperties['result'] = $this->getPlace();
+        $this->setMaxLinks(5);
+        if($this->getAsync())
+            $base = 'data-get="'.base64_encode(json_encode($asyncProperties)).'"';
+        else
+            $base =null;
+        //Aplica e gerencia os botoes
+        $start = $this->getPage() +3 < $this->getMaxLinks() ? 1 : $this->getPage() - 3;
+        //$end = ($this->getPage() +  2 <= $this->getMaxLinks() ? $this->getMaxLinks() + 1 : $this->getPage() +  2);
+        $end = $this->getPage() + 1 <= $this->getMaxLinks() ? $this->getMaxLinks() : $this->getMaxLinks() + $start -1 ;
+        //Botoes em HTML
+        $htmlButtons = '';
+
+        for ($i =$start; $i <= $end; $i++){
+            if($i > 0 && $i <= $this->getNumberOfPages()){
+                if($i == $this->getPage()){
+                    $classOfButtonActive = 'class="current-page"';
+                    $link = '#';
+                }
+                else{
+                    $classOfButtonActive = '';
+                    $link = $this->getLink().DS.$i;
+                }
+                if($this->getAsync()){
+                    $htmlButtons .= "<li id='".$i."' ".$classOfButtonActive.">".$i."</li>";
+                }
+                else{
+                    $htmlButtons .= "<a href='".$link."' ><li id='".$i."' ".$classOfButtonActive." >".$i."</li></a>";
+                }
+            }
+        }
+        //Verifica Opção de setas
+        if($options['controlArrow']){
+            $arrowLeft = $this->getAsync() ? "<li class='ais ais-arrowLeft'> </li>" : "<a href='".$this->getLink().DS.($this->getPage() - 1)."'><li class='ais ais-arrowLeft'> </li></a>";
+            $arrowRight = $this->getAsync() ? "<li class='ais ais-arrowLeft'> </li>" : "<a href='".$this->getLink().DS.($this->getPage() + 1)."'><li class='ais ais-arrowRight'> </li></a>";
+        }
+        else{
+            $arrowLeft ='';
+            $arrowRight ='';
+        }
+        //Estrutura Constante de apresentação
+        $htmlStructure = "<div class='pagination ".$options['position']."'> 
+            <ul> 
+                ".$arrowLeft."
+                ".$htmlButtons."
+                ".$arrowRight."
+            </ul>
+        </div>";
+
+        return $htmlStructure;
+    }
+}

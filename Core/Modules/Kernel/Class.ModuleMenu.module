@@ -1,0 +1,60 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 11/05/2018 - 02:40
+ * Acctos : Class.ModuleMenu.module
+ */
+
+namespace Modules\Kernel;
+
+
+class ModuleMenu
+{
+    private $interface;
+    private $definedButton = [];
+    private $mainGet;
+
+    private function getInterface() { return $this->interface; }
+
+    public function createButton($title, $icon, $link,$nameGet, $description = '') {
+        $definedButton = array('title'=>$title,'icon'=>$icon,'link'=>$link,'get'=>$nameGet,'description'=>$description);
+        $this->definedButton[] = $definedButton;
+    }
+    public function __construct($mainGet) {
+        $this->mainGet = $mainGet;
+    }
+
+    private function start(){
+        if(sizeof($this->definedButton) == 0){
+            echo _tr("none_button_defined");
+        }
+        else{
+            $Html =
+                "<div id='module-menu'>
+                 <ul>";
+                    for($i = 0; $i < sizeof($this->definedButton);$i++){
+                        if($this->mainGet == $this->definedButton[$i]['get']) $classCSS = 'active'; else $classCSS = ' ';
+                        $description = null!==$this->definedButton[$i]['description'] ?$this->definedButton[$i]['title']:$this->definedButton[$i]['description'];
+                        $Html .=
+                        "<li class='$classCSS'>
+                             <a href='" . $this->definedButton[$i]['link'] . "' 
+                             class='AtitleIcon ".$this->definedButton[$i]['icon']."' title='" . _tr($description) . "'>
+                             " . _tr($this->definedButton[$i]['title']) . " 
+                             </a>
+                        </li>";
+                    }
+            $Html.="</ul>
+            </div>";
+            $this->interface = $Html;
+        }
+
+    }
+    public function show($return = false){
+        $this->start();
+        if($return)
+            return $this->getInterface();
+        else
+            echo $this->getInterface();
+    }
+}

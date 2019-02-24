@@ -1,0 +1,86 @@
+@charset "UTF-8";
+@keyframes drop {
+    0%{
+        -webkit-transform: translateY(-50%);
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+    70%{
+        -webkit-transform: translateY(10%);
+        -moz-transform: translateY(10%);
+        -ms-transform: translateY(10%);
+        -o-transform: translateY(10%);
+        transform: translateY(10%);
+    }
+    100%{
+        -webkit-transform: translateY(0%);
+        -moz-transform: translateY(0%);
+        -ms-transform: translateY(0%);
+        -o-transform: translateY(0%);
+        transform: translateY(0%);
+    }
+}
+@keyframes slide-right {
+    0%{
+        -webkit-transform: translateX(-30%);
+        -moz-transform: translateX(-30%);
+        -ms-transform: translateX(-30%);
+        -o-transform: translateX(-30%);
+        transform: translateX(-30%);
+    }
+    70%{
+        -webkit-transform: translateX(5%);
+        -moz-transform: translateX(5%);
+        -ms-transform: translateX(5%);
+        -o-transform: translateX(5%);
+        transform: translateX(5%);
+    }
+    100%{
+        -webkit-transform: translateX(0%);
+        -moz-transform: translateX(0%);
+        -ms-transform: translateX(0%);
+        -o-transform: translateX(0%);
+        transform: translateX(0%);
+    }
+}
+@keyframes drop-center-fade {
+    1%{
+        -webkit-transform: translate(-50%,-70%);
+        -moz-transform: translate(-50%,-70%);
+        -ms-transform: translate(-50%,-70%);
+        -o-transform: translate(-50%,-70%);
+        transform: translate(-50%,-70%);
+    }
+    100%{
+        -webkit-transform: translate(-50%,-50%);
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+    }
+}
+@keyframes loading {
+    0%{
+        transform: rotateZ(0deg);
+    }
+    100%{
+        transform: rotateZ(360deg);
+    }
+}
+@keyframes btn-ef1 {
+    0%{
+        transform: rotateY(0deg);
+    }
+    15%{
+        transform: rotateY(-50deg);
+    }
+    30%{
+        transform: rotateY(50deg);
+    }
+    45%{
+        transform: rotateY(0deg);
+    }
+    
+}

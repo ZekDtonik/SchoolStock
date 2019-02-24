@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+    <role_manager>Gerência de Cargos</role_manager>
+    <new_role>Novo Cargo</new_role>
+    <active_roles>Cargos Ativos</active_roles>
+    <rid>R-ID</rid>
+    <basic_data>Dados Básicos</basic_data>
+    <register_role>Registrar Cargo</register_role>
+    <no_role_registered>Nenhum Cargo Cadastrado</no_role_registered>
+    <none_one_role_is_register_on_your_system_please_add_one>Nenhum cargo esta cadastrado no seu sistema para uso, por favor adicione um novo.</none_one_role_is_register_on_your_system_please_add_one>
+    <field_name_need_to_be_filled>O Campo de nome precisa ser preenchido.</field_name_need_to_be_filled>
+    <invalid_role_name>Nome de Cargo inserido é inválido, verifique sua escrita.</invalid_role_name>
+    <role_successfully_added>Cargo adicionado com sucesso!</role_successfully_added>
+    <impossible_to_add_role_at_moment>Impossível adicionar cargo no momento!</impossible_to_add_role_at_moment>
+    <name_already_exist>Este nome de cargo já existe.</name_already_exist>
+    <id>ID</id>
+    <authid>AUTH-ID</authid>
+    <edit_role>Edição de Cargo</edit_role>
+    <role_successfully_edited>Cargo editado com sucesso!</role_successfully_edited>
+    <impossible_to_edit_role_at_moment>Impossível editar o cargo no momento!</impossible_to_edit_role_at_moment>
+    <warning_role_will_be_removed>Atenção!! O Cargo será removido, isso pode causar inconsistencia no seu sistema.</warning_role_will_be_removed>
+    <role_id>ID do Cargo</role_id>
+    <role_name>Nome do Cargo</role_name>
+    <remove_role>Remoção de Cargo</remove_role>
+    <no_user_registered>Nenhum usuário registrado.</no_user_registered>
+    <none_one_user_is_register_on_your_system_please_add_one>Nenhum usuário está cadastrado no seu sistema. Por Favor adicione um novo.</none_one_user_is_register_on_your_system_please_add_one>
+    <profile_change>Alterar Perfil</profile_change>
+    <total_of_users_registered>Total de Usuários Cadastrados</total_of_users_registered>
+    <you_cannot_remove_yourself>Você não pode remover a si mesmo do sistema!!</you_cannot_remove_yourself>
+    <user_manager>Gerência de Usuários</user_manager>
+    <new_user>Novo usuário</new_user>
+    <active_users>Usuários Ativos</active_users>
+    <personal_data>Dados Pessoais</personal_data>
+    <enable_user>Ativar Usuário</enable_user>
+    <access_data>Dados de Acesso</access_data>
+    <register_user>Registrar Usuário</register_user>
+</def>

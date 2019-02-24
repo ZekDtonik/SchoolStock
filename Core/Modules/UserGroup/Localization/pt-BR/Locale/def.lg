@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+    <user_group_manager>Gerência de Grupo de Usuário</user_group_manager>
+    <new_user_group>Novo Grupo de Usuário</new_user_group>
+    <active_user_groups>Grupo de usuários Ativos</active_user_groups>
+    <user_group_name>Nome do grupo de usuário</user_group_name>
+    <user_group_description>Descrição Breve do Grupo de Usuário</user_group_description>
+    <register_group>Cadastrar Grupo</register_group>
+    <save_group>Salvar Grupo</save_group>
+    <basic_register>Dados de Registro Básico</basic_register>
+    <permission_access>Permissões de Acesso</permission_access>
+    <attestation>Atestado</attestation>
+    <medics>Médicos</medics>
+    <user_group>Grupo de Usuários</user_group>
+    <enable_user_group>Ativar Grupo de Usuário</enable_user_group>
+    <active>Ativar</active>
+    <all_user_group_fields_need_to_be_filled>Todos os campos e permissões do grupo de usuários precisam ser preenchidos.</all_user_group_fields_need_to_be_filled>
+    <user_group_name_already_exist>Nome do grupo de usuário já existe</user_group_name_already_exist>
+    <user_system>Usuário do Sistema</user_system>
+    <successfully_user_group_added>Grupo de usuário adicionado com sucesso!</successfully_user_group_added>
+    <group_id_needed_not_found>O identificador necessário para a requisição não foi encontrado.</group_id_needed_not_found>
+    <get_data>Recuperação de Dados</get_data>
+    <access_token_receive_is_wrong>O token de acesso recebido está incorreto.</access_token_receive_is_wrong>
+    <warning_user_group_will_be_removed>Atenção! você está prestes a remover o grupo de usuário [b]%s[/b].</warning_user_group_will_be_removed>
+    <this_action_is_permanent_do_it>Esta é uma ação irreversível, tem certeza que deseja fazer isto?</this_action_is_permanent_do_it>
+    <remove_user_group>Remover Grupo de usuário</remove_user_group>
+    <guid_not_found>GUID do grupo de usuario não encontrado!</guid_not_found>
+    <guid_not_registered>Este identificador de grupo de usuário não está registrado!</guid_not_registered>
+    <user_group_successfully_removed>Grupo de usuário removido com sucesso!</user_group_successfully_removed>
+    <impossible_to_remove_user_group>Impossível remover o grupo de usuário no momento!</impossible_to_remove_user_group>
+    <user_group_successfully_edited>Grupo de usuário editado com sucesso!</user_group_successfully_edited>
+    <edit_user_group>Edição de Grupo de Usuário</edit_user_group>
+    <no_user_group_registered>Nenhum Grupo de Usuário registrado.</no_user_group_registered>
+    <none_one_user_group_is_register_on_your_system_please_add_one>Nenhum grupo de usuário está cadastrado no seu sistema, por favor adicione uma para aplicar a um usuário ativo.</none_one_user_group_is_register_on_your_system_please_add_one>
+    <guid>G-UID</guid>
+    <user_group_and_permission_manager>Gestor de permissões e grupo de usuários</user_group_and_permission_manager>
+    <total_of_user_group_registered>Total de Grupo de Usuários Cadastrados.</total_of_user_group_registered>
+    <you_cannot_remove_user_group_that_is_in_use>você não pode remover um grupo de usuário que você esta usando!</you_cannot_remove_user_group_that_is_in_use>
+</def>

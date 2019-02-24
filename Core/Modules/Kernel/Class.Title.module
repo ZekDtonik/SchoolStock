@@ -1,0 +1,52 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: crafh
+ * Date: 07/11/2017
+ * Time: 16:08
+ */
+
+namespace Modules;
+
+
+class Title
+{
+    private static $typeTitle;
+    private $obTitle;
+    private $prefix;
+
+    public function setPrefix($prefix) { $this->prefix = $prefix; }
+    public function getPrefix() { return $this->prefix; }
+    public function __construct() {ob_start();}
+
+    /** @function aplica um titulo global genérico
+     * baseado no nome do arquivo.
+     */
+    public static function show()
+    {
+        $titleMapping = explode('/', $_SERVER['SCRIPT_NAME']);
+        $endTitleMapping = end($titleMapping);
+        $titleMappingGetName = explode('.', $endTitleMapping);
+        $fileToTitle = $titleMappingGetName[0];
+
+        echo _tr("system_locale/__" . strtolower($fileToTitle));
+    }
+
+    public function setTitle($value)
+    {
+        $this->obTitle = $value;
+    }
+
+    public function start()
+    {
+        $buffer = ob_get_contents();
+        ob_end_clean();
+        $buffer = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . self::getTitle() . '$3', $buffer);
+        echo $buffer;
+
+    }
+    public function getTitle()
+    {
+        return $this->getPrefix().$this->obTitle;
+    }
+}

@@ -1,0 +1,212 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kevin
+ * Date: 14/06/18
+ * Time: 19:40
+ */
+
+namespace Modules;
+use Interfaces\ThrowableAll;
+use PDO;
+/** @class loginsTry - Gerencia uma quantidade
+ * especifica de tentativas de login para aumentar
+ * a segurança do sistema
+ * @param return true: pode continuar a executar o login
+ * @param return false: bloqueia a tentativa de login pelo tempo
+ * definido nas configurações
+ *
+ * @inheritdoc - O admin pode editar o tempo que fica fora min de 2 minutos
+ * @return array
+ */
+class AttemptLogin
+{
+    private $timeBlock;
+    private $attemptsQnt;
+    private $ip;
+    private $userAgent;
+    private $attempts;
+    //Em minutos
+    private const DEFAULT_TIME_BLOCK = 2;
+    private const DEFAULT_ATTEMPTS = 5;
+    /** @param string login_try_quantity - Coluna da Table settings que informa a quantidade de tentativas de login
+     * possíveis para o usuário
+     * @param string login_try_timer_block - Coluna da table settings que informa a quantidade de tempo que o sistema
+     * fica bloqueado impossibilitando o usuário de realizar o login.
+     */
+    private const _ATSETTINGS = __SETTINGS;
+    private const _ATTRYLOGIN = __TRLOG;
+    private const _ATDBASE = _APPDBASE;
+    private function getSql(){return CNN::getSql();}
+    protected function __construct($useDbSettings = false)
+    {
+        $this->installAttempt();
+        try {
+            /* Variaveis de acesso */
+            $ips = explode(".", $_SERVER['REMOTE_ADDR']);
+            $this->ip = trim(implode($ips));
+            $this->userAgent = md5(trim($_SERVER['HTTP_USER_AGENT']));//Removo todos os espaços e crio um hash para comparação
+            $this->attempts = 1;//começa com um, pois a função é disparada ao realizar a tentativa de login
+            $return = null;
+
+            if($useDbSettings){
+                /* Realiza a chamada nas configurações para recuperar o tempo de bloqueio */
+                $queryTimeBlock = $this->getSql()->query("SELECT login_try_quantity,login_try_timer_block FROM " . self::_ATSETTINGS);
+                $fetchTryList = $queryTimeBlock->fetch(PDO::FETCH_ASSOC);
+                $this->timeBlock = $fetchTryList['login_try_timer_block'];
+                $this->attemptsQnt = $fetchTryList['login_try_quantity'];
+            }
+            else{
+                $this->timeBlock = self::DEFAULT_TIME_BLOCK;
+                $this->attemptsQnt = self::DEFAULT_ATTEMPTS;
+            }
+        } catch (\Exception $exception) {
+            return [
+                "status" => "Error",
+                "description" => $exception->getMessage()
+            ];
+        }
+
+
+    }
+    public function start(){
+        try{
+            //----------------------------------------------
+            // Conexão obrigatória
+            //----------------------------------------------
+            /* Realiza a chamada na tabela de tentativas*/
+            $tryQuery = $this->getSql()->prepare("SELECT * FROM " . self::_ATTRYLOGIN . " WHERE ip=? AND user_agent=?");
+            $tryQuery->bindValue(1, $this->ip);
+            $tryQuery->bindValue(2, $this->userAgent);
+            $tryQuery->execute();
+            $tryList = $tryQuery->fetch(PDO::FETCH_ASSOC);
+            //verifica a quantidade de tentativas restantes, o tempo maximo usado
+            $userTry = $tryList["try"];
+            $userTime = $tryList["time"];
+            //time
+            $time = time();
+            $idleTime = time() + 60;
+            $_SESSION['idle'] = $idleTime;
+            //Tentativas restantes
+            $tryLeft = $this->attemptsQnt - $userTry > 0 ? $this->attemptsQnt - $userTry : 0;
+            //SE NADA EXISTIR, SERÁ A PRIMEIRA TENTATIVA ENTAO É ADICIONADO AO BANCO COM O VALOR DO TRY = 1;
+            if ($tryQuery->rowCount() == 0) {
+
+                $insertNewTry = $this->getSql()->prepare("INSERT INTO " . self::_ATTRYLOGIN . " (ip, user_agent, `time`, try) VALUES (:ip,:useragent,:timer,:try)");
+                $insertNewTry->bindValue(":ip", $this->ip);
+                $insertNewTry->bindValue(":useragent", $this->userAgent);
+                $insertNewTry->bindValue(":timer", $time);
+                $insertNewTry->bindValue(":try", $this->attempts);
+                $insertNewTry->execute();
+
+                $return = true;
+            } //CASO CONTRARIO SERA ANALISADO ALGUNS PASSOS
+            else {
+                //se as tentativas for menor que o permitido e
+                //o horario atual for maior igual que o salvo, entao pode tentar de novo
+                if ($userTry <= $this->attemptsQnt && time() >= $userTime) {
+                    $return = true;
+                } //se as tentativas forem maior que o permitido
+                else if ($userTry > $this->attemptsQnt) {
+                    $time = time() + (60 * $this->timeBlock);
+                    $userTime = $time;//repopulo o valor do time a ser atualizado
+                    $userTry = 1;//Reseto a contagem para manter o fluxo correto
+                    $return = false;//retorno falso por que não existe mais tentativas
+                } else {
+                    $return = false;//mantenho false caso o passo um nao prossiga
+                }
+
+                if ($return && $_SESSION['idle'] > time()) {//variavel de controle
+                    $this->attempts = $userTry + 1;
+                } else {
+                    $this->attempts = 1;
+                }
+                //Atualização do banco de tentativas
+                $updateNewTry = $this->getSql()->prepare("UPDATE " . self::_ATTRYLOGIN . " SET `time`=:timer, try=:try WHERE ip=:ip AND user_agent=:useragent");
+                $updateNewTry->bindValue(":ip", $this->ip);
+                $updateNewTry->bindValue(":useragent", $this->userAgent);
+                $updateNewTry->bindValue(":timer", $userTime);
+                $updateNewTry->bindValue(":try", $this->attempts);
+                $updateNewTry->execute();
+
+                if (!$updateNewTry) {
+                    //Emite mensagem de erro caso não consiga atualizar
+                    //Código de erro LG-0008
+                    return [
+                        "status" => "Error",
+                        "description" => _tr('error_locale/internal_error_user_trys_cannot_be_updated')
+                    ];
+                }
+            }
+            return [
+                "userTime" => $userTime,
+                "tryLeft" => $tryLeft,
+                "timeBlock" => $this->timeBlock,
+                "status" => $return
+            ];
+        }
+        catch (\Throwable $exception){
+            return [
+                "status" => "Error",
+                "description" => $exception->getMessage()
+            ];
+        }
+    }
+    public function erase(){
+        $DeleteTry = $this->getSql()->prepare("DELETE FROM " . self::_ATTRYLOGIN . " WHERE ip=? AND user_agent=?");
+        $DeleteTry->bindValue(1, $this->ip);
+        $DeleteTry->bindValue(2, $this->userAgent);
+        $DeleteTry->execute();
+        if (!$DeleteTry) {
+            //Emite mensagem de erro caso não consiga apagar
+            //Código de erro LG-0009
+            //throw new \Exception(_tr('error_locale/internal_error_user_trys_cannot_be_clear'));
+            return false;
+        }
+        else
+            return true;
+    }
+    /**@function installAttempt - */
+    public function installAttempt(){
+        try{
+            $sqlInstall = null;
+            #Verifica se ja existe a tabela settings
+            $checkSettings = $this->getSql()->query("SHOW TABLES LIKE '".self::_ATSETTINGS."'");
+
+            if($checkSettings->rowCount() > 0){
+                $checkTables = $this->getSql()->query("SELECT count(".self::_ATSETTINGS.".login_try_quantity) AS haveTrys, 
+                count(".self::_ATSETTINGS.".login_try_timer_block) AS haveTimerBlock FROM INFORMATION_SCHEMA 
+                WHERE table_name='".self::_ATSETTINGS."' AND table_schema='".self::_ATDBASE."'");
+                $ftChk = $checkTables->fetch(PDO::FETCH_ASSOC);
+                if($ftChk['haveTrys'] == 0 && $ftChk['haveTimerBlock'] == 0){
+                    $sqlInstall = "ALTER TABLE ".self::_ATSETTINGS." 
+                    ADD COLUMN login_try_quantity INT DEFAULT '5' NOT NULL,
+                    ADD COLUMN login_try_timer_block INT DEFAULT '2' NOT NULL";
+                }
+
+            }
+            else{
+                $sqlInstall = "CREATE TABLE IF NOT EXISTS ".self::_ATSETTINGS."(
+                login_try_quantity INT DEFAULT '5' NOT NULL ,
+                login_try_timer_block INT DEFAULT '2' NOT NULL 
+            )";
+            }
+            $sqlInstall .= "CREATE TABLE IF NOT EXISTS ".self::_ATTRYLOGIN."(
+            id int auto_increment primary key,
+            ip varchar(200), 
+            user_agent varchar(500), 
+            `time` varchar(100), 
+            try int not null
+        )";
+
+            $installSql = $this->getSql()->prepare($sqlInstall);
+            $installSql->execute();
+
+            return ($installSql);
+        }
+        catch (\Throwable $e){
+            return false;
+        }
+
+    }
+}

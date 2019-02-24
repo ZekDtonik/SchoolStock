@@ -1,0 +1,52 @@
+@font-face {
+    font-family: 'EncodeSans';
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Bold.eot');
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Bold.woff2') format('woff2'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Bold.woff') format('woff'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SchoolStock';
+    src:  url('../fonts/SchoolStock/SchoolStock.eot?703u4k');
+    src:  url('../fonts/SchoolStock/SchoolStock.eot?703u4k#iefix') format('embedded-opentype'),
+    url('../fonts/SchoolStock/SchoolStock.ttf?703u4k') format('truetype'),
+    url('../fonts/SchoolStock/SchoolStock.woff?703u4k') format('woff'),
+    url('../fonts/SchoolStock/SchoolStock.svg?703u4k#SchoolStock') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'EncodeSans';
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Thin.eot');
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Thin.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Thin.woff2') format('woff2'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Thin.woff') format('woff'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'EncodeSans';
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Regular.eot');
+    src: url('../fonts/EncodeSans/EncodeSansSemiExpanded-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Regular.woff2') format('woff2'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Regular.woff') format('woff'),
+    url('../fonts/EncodeSans/EncodeSansSemiExpanded-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'AlbaFoxIcons';
+    src:  url('../fonts/AlbaFoxIcons/AlbaFoxIcons.eot?2n91ju');
+    src:  url('../fonts/AlbaFoxIcons/AlbaFoxIcons.eot?2n91ju#iefix') format('embedded-opentype'),
+    url('../fonts/AlbaFoxIcons/AlbaFoxIcons.ttf?2n91ju') format('truetype'),
+    url('../fonts/AlbaFoxIcons/AlbaFoxIcons.woff?2n91ju') format('woff'),
+    url('../fonts/AlbaFoxIcons/AlbaFoxIcons.svg?2n91ju#AlbaFoxIcons') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+

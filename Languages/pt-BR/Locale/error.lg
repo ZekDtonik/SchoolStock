@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<errors>
+
+    <internal_error>Erro Interno</internal_error>
+    <internal_fatal_error>Erro Interno Fatal</internal_fatal_error>
+    <internal_error_value_type_not_is_array_type>Erro Interno (LG-0002), valor recebido da definição da sessão não é do tipo necessário.</internal_error_value_type_not_is_array_type>
+    <permission_needed_not_receive>Erro, (PS-1000) Permissão necessária não recebida, impossível continuar.</permission_needed_not_receive>
+    <permission_type_needed_not_receive>Erro, (PS-1001) Tipo de permissão necessária na entrada no módulo de gerenciadores não recebida.</permission_type_needed_not_receive>
+</errors>

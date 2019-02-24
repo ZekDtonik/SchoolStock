@@ -1,0 +1,23 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: crafh
+ * Date: 05/04/2018
+ * Time: 16:35
+ */
+
+namespace Interfaces;
+
+
+interface ActiveSidebar
+{
+    /**@inheritdoc getIcon() informa o nome da classe css que representa o
+     * icone a ser apresentado no menu principal da aplicação
+     */
+    static function getIcon();
+    /**@inheritdoc getDescription() informa um titilo traduzido com o nome
+     * do menu para ser usado na title e paragrafo do botao
+     */
+    static function getDescription();
+
+}

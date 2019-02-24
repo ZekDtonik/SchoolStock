@@ -1,0 +1,227 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 11/08/2018 - 10:14
+ * Grh : Class.Upload.module
+ */
+
+namespace Modules;
+
+/** @class Upload - Mecanismo de gerenciamento de upload para sistemas
+ * @dependencie = Language class
+ * @param array $options - Define os parametros de instancia da classe
+ * @param array $options SETS :
+ * @inheritdoc
+ * ----------- OPTIONS -------------
+ * @param place = Local de envio do arquivo
+ * @param mimeTypes = Define o tipo de arquivos aceitaveis
+ * @sub possiveis tipos:
+ * -> __images__ : Para documentos como png, jpeg e etc..
+ * -> __documents__ : Para documentos como pdf, docx e etc..
+ * -> __audio__  : Para documentos como mp3, wav e etc..
+ * -> __video__  : Para documentos como mpg, avi e etc...
+ * -> __worker__ : Para documentos como pptx, excel e etc..
+ * ->> você pode definir o seu proprio padrão inseridos os mime types e
+ * ->> separando-os com vírgulas
+ * @param size = Tamanho do arquivo, o padrão é em bytes
+ * @param fieldName = Não obrigatório, apenas indica o nome do campo de forma
+ * traduzida para apresentação em mensagens
+ * @param filename = define o padrão do nome do arquivo salvo
+ * @sub possiveis tipos:
+ * -> ramdon : gerado um nome aleatorio para o arquivo
+ * -> curt ou nulo: nome original do arquivo sem caracteres especiais
+ */
+class Upload
+{
+    private $files;
+    private $options;
+    private $filename;
+
+    public function getFilename() { return $this->filename; }
+    private function setFilename($filename) { $this->filename = $filename; }
+    private function getOptions($value) { return $this->options[$value]; }
+    public function setOptions($options ) { $this->options = $options; }
+    private function getFiles($value = null) {
+        if($value == null){
+            return $this->files;
+        }
+        else{
+            return $this->files[$value];
+        }
+
+    }
+    public function setFiles($files) { $this->files = $files; }
+    public function __construct($arrayFile = null) {
+        $this->files = $arrayFile;
+    }
+    public function execute(){
+        try{
+            //Atribui valores padrão as configurações
+            if(!isset($this->options['mimeTypes'])) $this->options['mimeTypes'] = '__images__';
+            if(!isset($this->options['size'])) $this->options[''] = 1024 * 1024;//1mb
+            if(!isset($this->options['place'])) $this->options['palce'] = APP_ROOT.DS.'/assets/imgs/';
+            if(!isset($this->options['filename'])) $this->options['filename'] = 'random';
+            if(!isset($this->options['fieldName'])) $this->options['fieldName'] = 'upload';
+            if(!isset($this->options['required'])) $this->options['required'] = false;
+
+
+            //Tratamento de informações
+            if($this->getFiles('error') == UPLOAD_ERR_NO_FILE && $this->getOptions('required')){
+                $msg = sprintf(_tr('required_upload_is_needed_to_be_filled'),$this->getOptions('fieldName'));
+                throw new \RuntimeException($msg);
+            }
+            else if($this->getFiles('error') != 4){
+                if($this->getFiles('error') == UPLOAD_ERR_INI_SIZE || $this->getFiles('error') == UPLOAD_ERR_FORM_SIZE){
+                    throw new \RuntimeException(_tr('file_size_exceed_max_limit'));
+                }
+                else if($this->getFiles('error') == UPLOAD_ERR_PARTIAL){
+                    throw new \RuntimeException('file_send_corrupted');
+                }
+                elseif($this->getFiles('size') > $this->getOptions('size')){
+                    $msg = sprintf(_tr("file_size_of_field_too_big"),$this->getOptions('fieldName'),($this->getOptions('size') / 1024));
+                    throw new \RuntimeException($msg);
+                }
+                else if(!$this->checkMimeType()){
+                    $msg = sprintf(_tr('invalid_file_type_of_field'),$this->getOptions('fieldName'),$this->mimeNotation());
+                    throw new \RuntimeException($msg);
+                }
+                else{
+                   return true;
+                }
+            }
+        }
+        catch(\RuntimeException $exception){
+            throw new \RuntimeException($exception->getMessage());
+        }
+    }
+    private function generateNewName(){
+        $getExtension = explode(".",$this->getFiles('name'));
+        $extension = end($getExtension);
+        if($this->getOptions('filename') =='random'){
+            $genId = sha1($getExtension[0]);
+            return $genId.'.'.$extension;
+        }
+        else{
+            $nameMake = preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç)/", "/(Ç)/","/( )/"), explode(" ", "a A e E i I o O u U n N c C -"), $this->getFiles('name'));
+            $nameRefined = preg_replace("/[^a-z0-9\-\.\_]/i",'',$nameMake);
+            return trim($nameRefined).'.'.$extension;
+        }
+    }
+    private function generateMimeTypes(){
+
+        $images = [
+            "image/png",
+            "image/jpeg",
+            "image/bmp",
+            "image/gif"
+        ];
+        $documents = [
+            "application/pdf",
+            "application/zip",
+            "application/x-7z-compressed",
+            "application/vnd.oasis.opendocument.text",
+            "application/msword",
+            "application/rtf",
+            "text/plain"
+        ];
+        $worker = [
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "application/vnd.oasis.opendocument.presentation",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ];
+        $video = [
+            "video/webm",
+            "video/3gpp2",
+            "video/3gpp",
+            "video/ogg",
+            "video/mpeg",
+            "video/x-msvideo"
+        ];
+        $audio = [
+            "audio/mpeg3",
+            "audio/x-mpeg-3",
+            "audio/mpeg",
+            "audio/wav",
+            "audio/x-wav",
+            "audio/ogg"
+        ];
+
+        $inquire = explode("|",$this->getOptions('mimeTypes'));
+        $vectorfetch = [];
+        if(is_array($inquire) && count($inquire) > 0){
+            foreach ($inquire as $item) {
+                if($item == '__images__'){
+                    $vectorfetch = array_merge($vectorfetch,$images);
+                }
+                else if($item == '__documents__'){
+                    $vectorfetch = array_merge($vectorfetch,$documents);
+                }
+                else if($item == '__worker__'){
+                    $vectorfetch = array_merge($vectorfetch,$worker);
+                }
+                else if($item == '__video__'){
+                    $vectorfetch = array_merge($vectorfetch,$video);
+                }
+                else if($item == '__audio__'){
+                    $vectorfetch = array_merge($vectorfetch,$audio);
+                }
+            }
+            return $vectorfetch;
+        }
+        else{
+            return $this->getOptions('mimeTypes');
+        }
+    }
+    private function checkMimeType(){
+        $docFInfo = new \finfo();
+        $fileInfo = $docFInfo->file($this->getFiles('tmp_name'),FILEINFO_MIME_TYPE);
+        if(in_array($fileInfo,$this->generateMimeTypes()))
+           return true;
+        else
+            return false;
+    }
+    private function mimeNotation(){
+        $getArrayDataChumk = $this->generateMimeTypes();
+        $fn = function($value){
+            $return = strstr($value,'/',false);
+            return preg_replace("/[\/]/",'.',$return);
+        };
+        $mapped = array_map($fn,$getArrayDataChumk);
+        $mecanismToString = implode(', ',$mapped);
+
+        return $mecanismToString;
+    }
+    public function sendData(){
+        if($this->getFiles('error') == 4){
+            return true;
+        }
+        else{
+            if(!file_exists($this->getOptions('place'))){
+                mkdir($this->getOptions('place'),0777,true);
+            }
+            if(file_exists($this->getOptions('place'))){
+                if(!is_writable($this->getOptions('place'))){
+                    chmod($this->getOptions('place'),0777);
+                }
+                $this->setFilename($this->generateNewName());
+                $newFileName =  $this->getOptions('place').$this->getFilename();
+                if(file_exists($newFileName)){
+                    return true;
+                }
+                $moveUpload = move_uploaded_file($this->getFiles('tmp_name'),$newFileName);
+                if($moveUpload){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            return false;
+        }
+
+    }
+
+}

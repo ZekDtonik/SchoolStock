@@ -1,0 +1,136 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 20/07/2018 - 15:23
+ * Grh : EditUser.module
+ */
+
+namespace Modules\Application\Users\Manager;
+
+
+use Interfaces\ThrowableAll;
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Chg
+{
+    private $sql;
+    private $authToEdit;
+    private $moduleName;
+    private $accessToken;
+
+    private function getAccessToken() { return $this->accessToken; }
+    private function getModuleName() { return $this->moduleName; }
+    private function getSql(): \PDO { return $this->sql; }
+    private function getAuthToEdit() { return $this->authToEdit; }
+    public function setAuthToEdit($authToEdit) { $this->authToEdit = $authToEdit; }
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    public function __construct($moduleName = null) {
+        $this->sql = CNN::getSql();
+        $this->setModuleName($moduleName);
+    }
+    public function init(){
+        try{
+            if($this->getAccessToken() != System::getAccessToken()){
+                System::message('error',_tr('edit_user'),_tr('invalid_access_token'));
+            }
+            else if(null == $this->getAuthToEdit()){
+                System::message('error',_tr('edit_user'),_tr('user_authid_not_found'));
+            }
+            else{
+               //ChamadaQuery
+               $query = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+               $query->bindValue(1,$this->getAuthToEdit());
+               $query->execute();
+               $fetchAboutUser = $query->fetch(\PDO::FETCH_ASSOC);
+               if($query->rowCount() == 0){
+                   System::message('error',_tr('edit_user'),_tr('user_not_found'));
+               }
+               else{
+                   //para checar nomes e etc..
+                   $querycheck = $this->getSql()->prepare("SELECT * FROM ".__USERS);
+                   $fetch =$querycheck->fetchAll(\PDO::FETCH_ASSOC);
+
+                   //Variaveis FLAGS de objeto ja existente
+                   $checkLogin = false;
+                   $checkEmail = false;
+                   $checkEmailAlt = false;
+                   //É possivel melhorar o desempenho da aplicação quando os dados do banco são massivos
+                   //criando um limite na query do banco, assim limitamos a quantidade de recursos
+                   //processados pelo servidor de dados por vez, contudo, dependendo da quantidade de dados
+                   //na tabela chamada varias outras querys são realizadas ate alcançar a condição
+                   //proposta, como neste sistema os dados são de nivel baixo e não necessita de minimos
+                   //de processamento ou escalabilidade, deixamos o modo básico funcional e seguro ativo.
+                   foreach ($fetch as $item) {
+                       if(($_POST['login'] != $fetchAboutUser['login']) == $item['login']){
+                           $checkLogin = true;
+                       }
+                       if(($_POST['email'] != $fetchAboutUser['email']) == $item['email']){
+                           $checkEmail = true;
+                       }
+                       if(!empty($_POST['email_alt']) && $_POST['email_alt'] != $fetchAboutUser['emailAlt'] && $_POST['email_alt'] == $item['emailAlt']){
+                           $checkEmailAlt = true;
+                       }
+                   }
+                   if(empty($_POST['name']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['login'])){
+                       System::message('error',_tr('edit_user'),sprintf(_tr('field_with_required_attribute_is_need_to_be_filled'),'<span class="demo ais-required"></span>'));
+                   }
+                   else if($checkLogin){
+                       System::message('error',_tr('edit_user'),_tr('login_name_already_exist'));
+                   }
+                   else if($checkEmail){
+                       System::message('error',_tr('edit_user'),_tr('email_address_already_exist'));
+                   }
+                   else if($checkEmailAlt){
+                       System::message('error',_tr('edit_user'),_tr('alternative_email_already_exist'));
+                   }
+                   else if(Auth::isEmail($_POST['email']) == false){
+                       System::message('error',_tr('edit_user'),_tr('invalid_email'));
+                   }
+                   else if(!empty($_POST['email_alt']) && Auth::isEmail($_POST['email_alt']) == false){
+                       System::message('error',_tr('edit_user'),_tr('invalid_alternative_email'));
+                   }
+                   else if(Auth::isNames($_POST['name']) == false){
+                       System::message('error',_tr('edit_user'),_tr('invalid_name'));
+                   }
+                   else if(Auth::isNames($_POST['lastname']) == false){
+                       System::message('error',_tr('edit_user'),_tr('invalid_last_name'));
+                   }
+                   else{
+//Caso nao exista nenhum problema, salva o novo usuário no banco de dados
+                       //Gerando MetaDados
+                       $password = !empty($_POST['password'])  ?  md5($_POST['password']) : $fetchAboutUser['password'] ;
+                           $date = new \DateTime('now',new \DateTimeZone('America/Sao_Paulo'));
+                       //Formato de data não brasileiro, mas aceitavel no modo universal do DB
+                       $registerDate = $date->format('Y-m-d');
+                       $status = !isset($_POST['active']) || empty($_POST['active']) ? 0 : 1;
+                       $emailAlt = !isset($_POST['email_alt']) ? null :$_POST['email_alt'];
+                       //Prepara com PDO
+                       $saveUser = $this->getSql()->prepare("UPDATE ".__USERS." SET lastEdited=?, login=?, `password`=?, `status`=?, `name`=?, lastname=?, email=?, emailAlt=? WHERE authid=?");
+                       $saveUser->bindValue(1,$registerDate);
+                       $saveUser->bindValue(2,$_POST['login']);
+                       $saveUser->bindValue(3,$password);
+                       $saveUser->bindValue(4,$status);
+                       $saveUser->bindValue(5,$_POST['name']);
+                       $saveUser->bindValue(6,$_POST['lastname']);
+                       $saveUser->bindValue(7,$_POST['email']);
+                       $saveUser->bindValue(8,$emailAlt);
+                       $saveUser->bindValue(9,$this->getAuthToEdit());
+                       $saveUser->execute();
+
+                       if($saveUser){
+                           System::message('success',_tr('edit_user'),_tr('successfully_user_edited'));
+                       }
+                       else{
+                           System::message('error',_tr('edit_user'),_tr('impossible_to_add_user'));
+                       }
+                   }
+               }
+            }
+        }
+        catch (ThrowableAll $exception){}
+    }
+}

@@ -1,0 +1,147 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *    Author: Kevin Marques
+ *    Date: 05/04/2016 - 09:18
+ *
+ */
+
+namespace Modules;
+
+
+use Abstracts\Console;
+use Exceptions\ActiveSidebarException;
+use Exceptions\MainApplicationException;
+use Interfaces\ActiveSidebar;
+use Interfaces\ModuleInteractions;
+use PDO;
+
+class Panel extends Console
+{
+    private $get;
+
+    public function setGet($get) { $this->get = $get; }
+    public function getGet() { return $this->get; }
+    public function __construct() {
+        parent::__construct();
+    }
+    /**
+     *
+     */
+    public static function pSide($search = true)
+    {
+        !defined('_page') ? define("_page",$_GET['page']) : null;
+        !defined('pg_home') ? define("pg_home",'home') : null;
+        !defined("PathAppSession") ? define("PathAppSession","") : null;
+        !defined("WWW_PATH") ? define("WWW_PATH","/") : null;
+        if(class_exists('Engine')){
+            $getModule = new \Engine();
+            $modules = $getModule->ListQualifiedModules();
+
+            $data = array();
+            $data[0] = '';
+            for($a = 1; $a <=count($modules); $a++){
+                $data[$a] =$a;
+            }
+            /* Módulo Unico estático do sistema */
+            if(_page == pg_home){
+                $data[0] = "ativo";
+            }
+            else {
+                for($b = 0; $b < count($modules); $b++){
+                    if($modules[$b] instanceof ActiveSidebar){
+                        if((_page == $modules[$b]->getName())){
+                            $data[$b+1] = "ativo";
+                            break;
+                        }
+                    }
+
+                }
+            }
+
+            
+            
+            echo "<div class='searchMobile'>";
+            if($search){Panel::searchNav(false);}
+            echo "</div>
+            <ul>
+                <li class='" . $data[0] . "' title='" . _tr('system_locale/title_home_page') . "'>
+                    <a href='" . WWW_PATH . PathAppSession . pg_home . "/' class='AsideIcon homeIcon'>
+                        <span>" . _tr('system_locale/title_home_page') . "</span>
+                    </a>
+                </li>";
+
+                for($i = 0 ; $i < count($modules); $i++){
+                    if($modules[$i] instanceof ActiveSidebar){
+                        echo "
+                        <li class='" . $data[($i+1)] . "' title='" . $modules[$i]->getDescription() . "'>
+                            <a href='" .WWW_PATH . PathAppSession. $modules[$i]->getName() . "/' class='AsideIcon ". $modules[$i]->getIcon() ."'>
+                                <span>" . $modules[$i]->getDescription() . "</span>
+                            </a>
+                        </li>";
+                    }
+                }
+                echo"    
+                 <div class='closeMenuAside' title='"._tr('close_page')."'></div>
+            </ul>";
+        }
+
+    }
+    public static function searchNav($mediaQr = true)
+    {
+        $mediaClass = null;
+        if ($mediaQr) {
+            $mediaClass = "mediaQr";
+        }
+        echo "<div class='topSeachBox " . $mediaClass . "'>";
+
+        echo "<form action='" . WWW_PATH . PathAppSession . "Search/' method='post' enctype='application/x-www-form-urlencoded'>";
+        echo "<label for='topNavSearch'>";
+        echo "<input type='text' name='topNavSearch' id='topNavSearch'  autocomplete='off' placeholder='" . _tr('placeholder_search_tip') . "' />";
+
+        echo "</label>";
+        echo "<label for='subSearchNav'  class='butLabelSubmit'><input type='submit' id='subSearchNav'/></label>";
+        echo "</form>";
+
+        echo "<div class='srBox'>";
+        echo "<div class='preSearchResultBox'></div>";
+        echo "</div>";
+
+        echo "</div>
+            ";
+    }
+
+    public function pHead()
+    {
+        echo "<div id='breadcrumb'>";
+        //$bd = new BreadCrumb();
+        //echo $bd->outBC();
+        //indica o menu superior ao lado bo bigcrumbs
+        $this->startModuleMenu();//Panel::titleFrame();
+        echo "</div>";
+    }
+
+    /**
+     * @description O método recupera o GET do Browser. Baseado na construção
+     * de um modulo o namespace e o className são iguais, dessa forma é possivel
+     * manter a construção da classe com seus respectivos namespaces.
+     * @inheritdoc O método verifica se a construção @param $nameSpaceClass existe
+     * caso positivo, verifica se o modulo é integrante do @class Component
+     */
+    public function startModuleMenu(){
+        try{
+            $className = $this->getGet();
+            #Seguindo o padrão de atribuição do módulo vide
+            $nameSpaceClass = '\\Modules\\'.$className.'\\'.$className;
+            if(class_exists($nameSpaceClass)){
+                $moduleMenu = new $nameSpaceClass();
+                if($moduleMenu instanceof ModuleInteractions){
+                    echo $moduleMenu->getMenuInteractive();
+                }
+            }
+        }
+        catch (ActiveSidebarException $e){}
+        catch (MainApplicationException $e){}
+
+    }
+}

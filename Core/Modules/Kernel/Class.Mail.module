@@ -1,0 +1,30 @@
+<?php
+/*
+#		  Marx Media Systems
+#			   File Name
+#		 	  Class.Mail.module
+#	Data Created: 29/11/16 - 14:26
+#		Author: Kevin Marques
+
+
+        //Cabeçalhos para email, facil acesso
+        $headers = "MIME-Version: 1.0"."\r\n";
+        $headers.= "Content-Type: Text/html; Charset=utf-8\r\n";
+        $headers.= "From: "._MAILSUPPORTMAIL_."\r\n";
+        $headers.= "FromName:"._MAILSUPPORTNAME_."\r\n";
+*/
+
+namespace Modules;
+
+use Modules\Template\Template;
+use PDO;
+
+//Classe de funçao MAIL utilizado para todas as funções do site.
+class Mail
+{
+    public function __construct() {
+
+    }
+}
+
+?>

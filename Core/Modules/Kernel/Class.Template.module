@@ -1,0 +1,118 @@
+<?php
+/**
+ * Created by AlbaFox Solutions.
+ *    Author: Kevin Marques
+ *    Date: 12/05/2018 - 01:14
+ *   File: Class.Template.module
+ *      
+ */
+    namespace Modules\Template;
+
+use Modules\BoxMessage;
+use Modules\Language;
+use Modules\System;
+use Modules\Upshot;
+
+class Template{
+    private $dataLoader;
+    private $dataParser;
+    private $dataTreated;
+    private $buffer;
+    private $dataIsUrl;
+    private $noTranslate;
+    private const DEFAULT_TR_PATTERN = "/_\{:([a-z_]+)\}/i";
+    #-----------------------------------------------
+    # GETTERS
+    #-----------------------------------------------
+    private function getBuffer(){return $this->buffer;}
+    private function getDataTreated(){return $this->dataTreated;}
+    private function getDataParser() { return $this->dataParser; }
+    private function getDataLoader() { return $this->dataLoader; }
+    private function getDataIsUrl() { return $this->dataIsUrl; }
+    private function getNoTranslate() { return $this->noTranslate; }
+    #-----------------------------------------------
+    # SETTERS
+    #-----------------------------------------------
+    public function setBuffer($bufferData){$this->buffer = $bufferData;}
+    public function setDataTreated($data){$this->dataTreated = $data;}
+    public function setDataParser($dataParser) { $this->dataParser = $dataParser; }
+    public function setDataLoader($dataLoader, $dataIsUrl = false) { $this->dataLoader = $dataLoader; $this->dataIsUrl = $dataIsUrl;}
+    private function setNoTranslate($noTranslate) { $this->noTranslate = $noTranslate; }
+    /**
+     * @description Construtor que realiza o dataParser
+     * no dataLoader em um template especificado no dataLoader
+     * as informações são opcionais pois este módulo funciona com
+     * buffer de Dados.
+     * @param $dataLoader : string - Recebe a string ou url para tratamento
+     * @param $dataParser : array - Recebe os valores que serão aplicados sobre
+     * o dataLoader
+     * @param bool $dataIsUrl : boolean - Especifica se o dataLoader é uma url ou não
+     * @param bool $noTranslate: boolean - Define se a funcionlidade de tradução implicita será ativada
+     */
+    public function __construct($dataLoader = null, $dataParser = null, $dataIsUrl = false,$noTranslate = false){
+        try{
+            $this->setDataLoader($dataLoader,$dataIsUrl);
+            $this->setDataParser($dataParser);
+            $this->setNoTranslate($noTranslate);
+            if(!empty($this->getDataLoader()) && $this->getDataIsUrl()){
+                if(file_exists($this->getDataLoader())){
+                    $this->setBuffer(file_get_contents($this->getDataLoader()));
+                }
+                else{
+                    if($this->getNoTranslate() == true){
+                        throw new \Exception("Address File of Template not is valid.");
+                    }
+                    else{
+                        throw new \Exception(_tr('wrong_template_url_link'));
+                    }
+                }
+            }
+            elseif (!empty($this->getDataLoader()) && !$this->getDataIsUrl()){
+                $this->setBuffer($this->getDataLoader());
+            }
+            $this->treatBuffer();
+        }
+        catch (\Throwable $e){
+            if($this->getNoTranslate() == true){
+                BoxMessage::show('ais-engine','Error on Engine',$e->getMessage(),null);
+            }
+            else{
+                BoxMessage::show('ais-engine',_tr('error_on_template_engine'),$e->getMessage(),null);
+            }
+
+        }
+    }
+    private function treatBuffer(){
+        $keys = [];
+        $values=[];
+        $dataComplete = null;
+        if(count($this->getDataParser()) > 0){
+            foreach ($this->getDataParser() as $k => $v) {
+                $keys[] = "/_\{".$k."\}/";
+                $values[] = $v;
+            }
+        }
+        $tmp = preg_replace($keys,$values,$this->getBuffer());
+        if($this->getNoTranslate() === false){
+            $end = preg_replace_callback(self::DEFAULT_TR_PATTERN,function($arr){
+                $dataReturn = $arr[0];
+                if(class_exists("\\Modules\\Language")){
+                    $lg = new Language();
+                    $dataReturn = $lg->_($arr[1]);
+                }
+                return $dataReturn;
+            },$tmp);
+            $dataComplete = $end;
+        }
+        else{
+            $dataComplete = $tmp;
+        }
+
+        //Dados tratados
+        $this->setDataTreated($dataComplete);
+    }
+    public function showTemplate(){
+        return $this->getDataTreated();
+    }
+}
+    ?>

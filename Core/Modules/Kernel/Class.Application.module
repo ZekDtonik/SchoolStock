@@ -1,0 +1,240 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 05/07/2018 - 10:02
+ * Grh : Class.Application.module
+ */
+
+namespace Modules;
+
+
+use Modules\Application\Credentials;
+use Modules\Application\Employee;
+use Modules\Application\Role;
+use Modules\Application\UserGroup;
+use Modules\Application\Users;
+use Modules\Template\Template;
+
+class Application
+{
+    private $sql;
+
+    private function getSql(): \PDO { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+
+    private function header(){
+        
+        echo "<aside id='boxMenuAside' class='dark'>";
+        $this->profileMenu();
+            \Modules\Panel::pSide(false);
+        echo "</aside>";
+
+    }
+    public function home(){
+        $parserMain2 = [];
+        $parserMain2['content'] = '';
+        $parserMain = [];
+        $parserMain['content'] = '';
+        //------------------------------
+        //MENSAGEM DE BEM VINDO
+        $parserBemvindo =[];
+        $parserBemvindo['title'] = _tr('welcome_to_grh');
+        $bemvindo = new Template(APP_ROOT.DS.MODULES_PATH.DS."Kernel/Gui/welcome.tpl",$parserBemvindo,true);
+        $parserMain2['content'] .= $bemvindo->showTemplate();
+        //------------------------------
+        //Widget Total de Grupos de Usuários
+        $parserMain['content'] .= UserGroup::widgets('totalUserGroup');
+        //------------------------------
+        //Widget Total de Credenciais
+        $parserMain['content'] .= Credentials::widgets('totalCredentials');
+        //------------------------------
+        //Widget Total de Usuários
+        $parserMain['content'] .= Users::widgets('totalUsers');
+        //------------------------------
+        //Widget Total de Funcionários
+        $parserMain['content'] .= Employee::widgets('totalEmployee');
+        //------------------------------
+        //Widget Total de Cargos
+        $parserMain['content'] .= Role::widgets('totalRole');
+        //------------------------------
+        //Widget Total de Ocupações
+        $parserMain['content'] .= Role::widgets('totalOccupation');
+        //------------------------------
+        //
+        //template Main
+        $templateMain = new Template(APP_ROOT.DS.MODULES_PATH.DS."Kernel/Gui/home.tpl",$parserMain2,true);
+        echo $templateMain->showTemplate();
+        $templateMainSub = new Template(APP_ROOT.DS.MODULES_PATH.DS."Kernel/Gui/home.tpl",$parserMain,true);
+        echo $templateMainSub->showTemplate();
+    }
+    /**
+     * @throws \Exceptions\EngineException
+     */
+    private function profileMenu(){
+        $acc = new Access();
+        $qr = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=:authid");
+        $qr->bindValue(":authid",$_SESSION['authid']);
+        $qr->execute();
+        $ft = $qr->fetch(\PDO::FETCH_ASSOC);
+
+        $image = !empty($ft['avatar']) ? "<img src='".WWW_PATH_PLACE.$ft['authid'].DS.$ft['avatar']."'/>" : '';
+        //Gera um token de acesso unico para previnir acesso indevido ao subnivel
+        $logout =[];
+        $logout['url']  = _system.DS.'logout'.DS.System::getAccessToken();
+        $logout['method'] = 'GET';
+        $datasend = base64_encode(json_encode($logout));
+        echo "<div class='profile-menu'> 
+            <div class='avatar'>".$image."</div>
+            <div class='user'>
+                <span>".$_SESSION['fullname']."</span> 
+                <span id='lvl'>".$acc->getUserCredential()."</span>                
+            </div>
+            <div class='menu'> 
+                <ul class='options'> 
+                    <li id='profile-opt'><a href='".WWW_PATH."Profile/' ><div class='ais ais-profile'></div>"._tr('profile')."</a></li>
+                    <li id='logout-opt'><a href='#' data-send='".$datasend."'><div class='ais ais-logout'></div>"._tr('logout')."</a></li>
+                </ul>
+            </div>
+            
+        </div>";
+    }
+    public function contentStart(){
+
+        echo "<section class='content'>";
+        $this->header();
+        echo "<section class='container'>";
+
+    }
+    public function contentEnd(){
+        echo"</section></section>";
+    }
+    public function profile(){
+        try{
+            //----------------------------------------
+            $getUSerData = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+            $getUSerData->bindValue(1,$_SESSION['authid']);
+            $getUSerData->execute();
+
+            $fts = $getUSerData->fetch(\PDO::FETCH_ASSOC);
+
+            $parser=[];
+            if(empty($fts['avatar'])) {
+                $parser['image_avatar'] ='<div class="default-avatar"></div>' ;
+            }
+            else{
+                $parser['image_avatar'] ='<img src="'.WWW_PATH_PLACE.$fts['authid'].DS.$fts['avatar'].'"/>';
+            }
+            $parser['user_name'] = $fts['name'].' '.$fts['lastname'];
+            $parser['user_login'] = $fts['login'];
+            $parser['user_email'] = $fts['email'];
+            $parser['user_authid'] = $fts['authid'];
+            $parser['user_lastEdited'] = $fts['lastEdited'];
+            //values
+            $parser['value_name'] = $fts['name'];
+            $parser['value_lastname'] = $fts['lastname'];
+            $parser['value_email'] = $fts['email'];
+            $parser['value_email_alt'] = $fts['emailAlt'];
+            $parser['link_back'] = WWW_PATH;
+            //data-send
+            $dataSend = [];
+            $dataSend['url'] = _system.DS.'change_profile'.DS.$fts['authid'].DS.System::getAccessToken();
+            $dataSend['method'] = 'POST';
+
+            $parser['data_send'] = 'data-send="'.base64_encode(json_encode($dataSend)).'"';
+
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.'Kernel/Gui/profile.tpl',$parser,true);
+            echo $template->showTemplate();
+        }
+        catch (\Exception $e){
+            BoxMessage::containerShow('ais-wrong',_tr('internal_error'),$e->getMessage());
+        }
+    }
+    public function makeProfileChange($authid = null,$accessToken = null){
+        try{
+            if(empty($authid)){
+                System::message('error',_tr('change_profile'),_tr('bad_request_on_change_profile_data'));
+            }
+            else if($accessToken != System::getAccessToken()){
+                System::message('error',_tr('change_profile'),_tr('bad_request_on_change_profile_data'));
+            }
+            else{
+                if(empty($_POST['name']) ||  empty($_POST['lastname']) ||empty($_POST['email'])){
+                    System::message('error',_tr('change_profile'),sprintf(_tr('fields_with_required_icon_need_to_be_filled'),"<div class='ais ais-required'></div>"));
+                }
+                else if(Auth::isEmail($_POST['email']) == false){
+                    System::message('error',_tr('change_profile'),_tr('invalid_email'));
+                }
+                else if(!empty($_POST['emailAlt']) && Auth::isEmail($_POST['emailAlt']) == false){
+                    System::message('error',_tr('change_profile'),_tr('invalid_alternative_email'));
+                }
+                else if(!empty($_POST['password']) && System::passPattern($_POST['password']) == false){
+                    System::message('error',_tr('change_profile'),_tr('invalid_password'));
+                }
+                else if(!empty($_POST['password']) && strlen($_POST['password']) < 5){
+                    System::message('error',_tr('change_profile'),sprintf(_tr('password_length_need_at_lest'),5));
+                }
+                else if(!empty($_POST['password']) && $_POST['password'] != $_POST['repeatPassword']){
+                    System::message('error',_tr('change_profile'),_tr('invalid_password'));
+                }
+                else{
+                    //Sistema de Upload
+                    $upload = new Upload();
+                    $upload->setFiles($_FILES['avatar']);
+                    $upload->setOptions([
+                        "place" => _USER_MEDIA_PLACE.$authid.DS,
+                        "size" => (1024 * 1024), //1mb
+                        "mimeTypes" => "__images__",
+                        "fieldName" => _tr('photo')
+                    ]);
+                    //Aplica as definições de upload
+                    $upload->execute();
+                    //fetch
+                    $query = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+                    $query->bindValue(1,$authid);
+                    $query->execute();
+                    $ft = $query->fetch(\PDO::FETCH_ASSOC);
+                    //Variaveis
+                    $lastEditedTime= new \DateTime('now',new \DateTimeZone("America/Sao_Paulo"));
+                    $lastEdited= $lastEditedTime->format('Y-m-d');
+                    $resultUpload = $upload->sendData();
+                    $avatar = !empty($_FILES['avatar']) ? $upload->getFilename() : '';
+                    $password = !empty($_POST['password']) ? $_POST['password'] : $ft['password'];
+                    //Salvar dados
+
+                    $this->getSql()->beginTransaction();
+                    $requests = $this->getSql()->prepare("UPDATE ".__USERS." SET avatar=:avatar, lastEdited=:lastEdited, name=:name,lastname=:lastname,password=:password,email=:email,emailAlt=:emailAlt WHERE authid=:authid");
+                    $requests->bindValue(':authid',$authid);
+                    $requests->bindValue(':name',$_POST['name']);
+                    $requests->bindValue(':lastname',$_POST['lastname']);
+                    $requests->bindValue(':lastEdited',$lastEdited);
+                    $requests->bindValue(':avatar',$avatar);
+                    $requests->bindValue(':password',$password);
+                    $requests->bindValue(':email',$_POST['email']);
+                    $requests->bindValue(':emailAlt',$_POST['emailAlt']);
+                    $requests->execute();
+
+                    if($requests){
+                        if($resultUpload){
+                            $this->getSql()->commit();
+                            System::message('success',_tr('change_profile'),_tr('successfully_profile_updated'),System::goTo(WWW_PATH._profile,0));
+                        }
+                        else{
+                            $this->getSql()->rollBack();
+                        }
+                    }
+                    else{
+                        $this->getSql()->rollBack();
+                        System::message('error',_tr('change_profile'),_tr('impossible_to_update_profile'));
+                    }
+                }
+            }
+        }
+        catch (\RuntimeException $e){
+            System::message('error',_tr('change_profile'),$e->getMessage());
+        }
+
+    }
+}

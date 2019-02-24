@@ -1,0 +1,120 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 18/07/2018 - 16:30
+ * Grh : AddUser.module
+ */
+
+namespace Modules\Application\Users\Manager;
+
+
+use Interfaces\ThrowableAll;
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Add
+{
+    private $sql;
+    private $accessToken;
+
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql() { return $this->sql; }
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        //print_r($_POST);
+        try{
+            if(empty($_POST['name']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['login']) || empty($_POST['password'])){
+                System::message('error',_tr('new_user'),sprintf(_tr('field_with_required_attribute_is_need_to_be_filled'),'<span class="demo ais-required"></span>'));
+            }
+            else if($this->getAccessToken() != System::getAccessToken()){
+                System::message('error',_tr('new_user'),_tr('invalid_access_token'));
+            }
+            else if(Auth::isEmail($_POST['email']) == false){
+                System::message('error',_tr('new_user'),_tr('invalid_email'));
+            }
+            else if(!empty($_POST['email_alt']) && Auth::isEmail($_POST['email_alt']) == false){
+                System::message('error',_tr('new_user'),_tr('invalid_alternative_email'));
+            }
+            else if(Auth::isNames($_POST['name']) == false){
+                System::message('error',_tr('new_user'),_tr('invalid_name'));
+            }
+            else if(Auth::isNames($_POST['lastname']) == false){
+                System::message('error',_tr('new_user'),_tr('invalid_last_name'));
+            }
+            else {
+                //Pos teste básicos, verificar se existe emails e logins já cadastrados
+                $queryCheck = $this->getSql()->query("SELECT email, emailAlt, login FROM ".__USERS);
+                $fetchingDatagram = $queryCheck->fetchAll(\PDO::FETCH_ASSOC);
+                $loginExist = false;
+                $emailExist = false;
+                $emailAltExist =false;
+                //Check Login
+                foreach ($fetchingDatagram as $item) {
+                    if($item['login'] == $_POST['login']){
+                        $loginExist = true;
+
+                    }
+                    if($item['email'] == $_POST['email']){
+                        $emailExist = true;
+                        break;
+                    }
+                    if(!empty($_POST['email_alt']) && $item['emailAlt'] == $_POST['email_alt']){
+                        $emailAltExist = true;
+                        break;
+                    }
+                }
+                if($loginExist){
+                    System::message('error',_tr('new_user'),_tr('login_name_already_exist'));
+                }
+                else if($emailExist){
+                    System::message('error',_tr('new_user'),_tr('email_address_already_exist'));
+                }
+                else if($emailAltExist){
+                    System::message('error',_tr('new_user'),_tr('alternative_email_already_exist'));
+                }
+                else{
+                    //Caso nao exista nenhum problema, salva o novo usuário no banco de dados
+                    //Gerando MetaDados
+                    $authid = strtoupper(System::createToken(8));
+                    $date = new \DateTime('now',new \DateTimeZone('America/Sao_Paulo'));
+                    //Formato de data não brasileiro, mas aceitavel no modo universal do DB
+                    $registerDate = $date->format('Y-m-d');
+                    $status = !isset($_POST['active']) || empty($_POST['active']) ? 0 : 1;
+                    $emailAlt = !isset($_POST['email_alt']) ? null :$_POST['email_alt'];
+                    //Prepara com PDO
+                    $saveUser = $this->getSql()->prepare("INSERT INTO ".__USERS." (authid, registerDate, login, `password`, `status`, `name`, lastname, email, emailAlt) VALUES (?,?,?,?,?,?,?,?,?)");
+                    $saveUser->bindValue(1,$authid);
+                    $saveUser->bindValue(2,$registerDate);
+                    $saveUser->bindValue(3,$_POST['login']);
+                    $saveUser->bindValue(4,md5($_POST['password']));
+                    $saveUser->bindValue(5,$status);
+                    $saveUser->bindValue(6,$_POST['name']);
+                    $saveUser->bindValue(7,$_POST['lastname']);
+                    $saveUser->bindValue(8,$_POST['email']);
+                    $saveUser->bindValue(9,$emailAlt);
+                    $saveUser->execute();
+
+                    if($saveUser){
+                        System::message('success',_tr('new_user'),_tr('successfully_user_added'));
+                    }
+                    else{
+                        System::message('error',_tr('new_user'),_tr('impossible_to_add_user'));
+                    }
+
+                }
+            }
+        }
+        catch (ThrowableAll $exception){
+            $exp = [];
+            $exp['code'] = $exception->getCode();
+            $exp['msg'] = $exception->getMessage();
+            echo json_encode($exp);
+        }
+    }
+
+}

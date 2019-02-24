@@ -1,0 +1,144 @@
+/*  Language Button index and PopUp Language UL */
+#langBoxFloat {
+    position: absolute;
+    top: 10px;
+    left: 30px;
+    display: block;
+    width: 49px;
+    height: 49px;
+    z-index: 1000;
+    transition: all 100ms ease-in;
+    cursor: pointer;
+}
+#langBoxFloat::before {
+
+    transition: all 100ms ease-in;
+    font-family: "MarxMedia", sans-serif;
+    font-size: 14px;
+    display: block;
+    padding-top: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+    text-align: center;
+    color: #333;
+    position: absolute;
+}
+
+#langBoxFloat:hover::before {
+    color: #fff;
+}
+
+#langBoxFloat:hover {
+    color: #fff;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 3px;
+}
+
+#langBoxFloat > span {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 12px;
+    padding-top: 18px;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+}
+
+#langBoxFloat:hover > #LangBox {
+    visibility: visible; /* shows sub-menu */
+    opacity: 1;
+    transform: translateX(0%);
+    transition-delay: 0s;
+    cursor: pointer;
+
+}
+
+#langBoxFloat #LangBox {
+    position: relative;
+    z-index: 10;
+    visibility: hidden; /* hides sub-menu */
+    opacity: 0;
+    transform: translateZ(0) translateY(2%);
+    transition: all 0.5s ease 0s, visibility 0s linear 0.5s; /* the last value is the transition-delay for visibility */
+    padding-top: 52px;
+    width: 50px;
+    height: auto;
+    min-height: 30px;
+    border-radius: 5px;
+}
+
+#langBoxFloat #LangBox ul {
+    position: relative;
+    padding: 8px;
+    background: white;
+    width: 35px;
+    border: 1px solid #dddddd;
+    height: auto;
+    min-height: 30px;
+    border-radius: 5px;
+    transition: 2s;
+}
+
+#langBoxFloat #LangBox ul::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%; /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #dddddd transparent;
+}
+
+#langBoxFloat #LangBox ul span {
+    color: #417ca2;
+    font-family: "Dosis", Helvetica Neue, sans-serif;
+    font-size: 11px;
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    height: 14px;
+    text-transform: uppercase;
+    padding: 0 !important;
+}
+
+#langBoxFloat #LangBox ul a {
+    text-decoration: none;
+    color: #333;
+}
+
+#langBoxFloat #LangBox ul a:hover {
+    box-shadow: 1px 1px 2px #333;
+}
+
+#langBoxFloat #LangBox ul a:hover > li {
+    box-shadow: 1px 1px 2px #333;
+}
+
+#langBoxFloat #LangBox ul a li {
+    width: 100%;
+    height: 33px;
+    padding-left: 1px;
+    list-style: none;
+    border-top: 1px solid #ccc;
+}
+
+#langBoxFloat #LangBox ul a li img {
+    margin: 0;
+    padding: 0;
+}
+
+#langBoxFloat #LangBox ul a li p {
+    padding-top: 8px;
+}
+
+.defaultAllLang {
+    width: 32px;
+    height: 32px;
+    display: block;
+    float: left;
+}
+/*-------------------------------------------*/

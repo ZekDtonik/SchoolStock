@@ -1,0 +1,134 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 13/04/2018 - 10:23
+ * Acctos : Abstract.Component.modulent.module
+ */
+
+namespace Abstracts;
+
+
+use Exceptions\MainApplicationException;
+use Exceptions\PermissionException;
+use Interfaces\ModularInit;
+use Modules\Application\Credentials\Manager\Permissions;
+
+
+abstract class Component implements ModularInit
+{
+    private $interface;
+    private $title = "";
+    protected function getClass(){
+        $class = get_class($this);
+        $name = explode("\\",$class);
+        return end($name);
+    }
+    public function setActionInterface($interface) {$this->interface = $interface;}
+    public function setTitle($title) {$this->title = $title;}
+    public function getTitle() { return $this->title; }
+    public function getActionInterface() { return $this->interface; }
+    public static function getName(){
+        $classSR = explode('\\',get_called_class());
+        return end($classSR);
+    }
+    final public function loader($methodFor__autoload = null) {
+        if(!isset($methodFor__autoload))
+            spl_autoload_register(array($this,'_defaultLoad'));
+        else
+            spl_autoload_register(array($this,$methodFor__autoload));
+    }
+    final protected function _defaultLoad($class){
+
+
+        $includeClass = explode("\\", $class);//
+        $PageName = end($includeClass);
+        /*  Requisitando todas as classes utilizadas pelo APP;
+            Endereçamento de Raiz de Site definido anteriorimente
+
+            *Não Esquecer: O nome do arquivo deve ser o mesmo nome da Classe
+            só assim será feito a inclusão
+         */
+        //var_dump($PageName);
+        /** Extensão do módulo a ser adicionado */
+        $moduleExtension = '.module';
+        $incExtension = '.inc';
+        $classPlace = explode('\\',get_called_class());
+        $mainClassPlace = end($classPlace);
+        /** Local base de Dominio de Sistema */
+        $domainPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $PageName . $moduleExtension;
+        $InterfacesPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Interfaces".DS. $PageName. $moduleExtension;
+        $AbstractsPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Abstracts".DS. $PageName. $moduleExtension;
+        $ControllerPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Handler".DS. $PageName. $moduleExtension;
+        $ExceptionPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Exceptions".DS. $PageName. $moduleExtension;
+        $GuiPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Gui" . DS . $PageName . $moduleExtension;
+
+        if(file_exists($domainPlace)){
+            if(!in_array($domainPlace,get_included_files()))
+                include ($domainPlace);
+        }
+        else if(file_exists($InterfacesPlace)){
+            if(!in_array($InterfacesPlace,get_included_files()))
+                include ($InterfacesPlace);
+        }
+        else if(file_exists($AbstractsPlace)){
+            if(!in_array($AbstractsPlace,get_included_files()))
+                include ($AbstractsPlace);
+        }
+        else if(file_exists($ControllerPlace)){
+            if(!in_array($ControllerPlace,get_included_files()))
+                include ($ControllerPlace);
+        }
+        else if(file_exists($ExceptionPlace)){
+            if(!in_array($ExceptionPlace,get_included_files()))
+                include ($ExceptionPlace);
+        }
+        else if(file_exists($GuiPlace)){
+            if(!in_array($GuiPlace,get_included_files()))
+                include ($GuiPlace);
+        }
+    }
+    public function __construct() {
+        $this->loader();
+    }
+    //--------------------------------------------------
+    //
+    /*** @inheritdoc
+     * @param $moduleName string Nome do módulo (NÃO É O NOME DA CLASSE, e sim, o nome pessoal dado ao objeto)
+     * @param $description string - Descrição do que o módulo faz
+     * @param $moduleVersion string - Versão atual do módulo
+     * @param $author string - nome do desenvolvedor do módulo
+     * @param bool $showPermsInUserGroup - flag que define se o modulo aparecerá nos grupos de usuário
+     * (ainda tem q ser um módulo com menu ativo [não é um SubSystem])
+     */
+    protected function
+    manifestGenerator($moduleName, $description, $moduleVersion, $author, $showPermsInUserGroup = true){
+
+    }
+
+    /***
+     * @inheritdoc
+     *
+     * @param $type string
+     * @since 2.6.0
+     * @throws PermissionException
+     */
+    final protected function applyRestriction($type,$assync = false){
+        if(class_exists('\Modules\Application\Credentials\Manager\Permissions')){
+            $finalResult= new Permissions();
+            $finalResult->assync($assync);
+            $finalResult->setClass(self::getClass());
+            $finalResult->permission($type);
+        }
+    }
+
+    /***
+     * @inheritdoc
+     * @since 3.0.0
+     * @param $widgetName - qual o nome do widget que deseja usar
+     * @docs = O widget monta a estrutura de apresentação com template
+     * do kernel para uso
+     * @return mixed Vetor ou String HTML5
+     */
+    abstract static function widgets($widgetName);
+}

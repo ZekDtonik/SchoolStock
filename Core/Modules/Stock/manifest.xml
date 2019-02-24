@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <module>Stock</module>
+    <module_name_translate>stock</module_name_translate>
+    <module_description_translate>stock_manager</module_description_translate>
+    <version>1.0.0</version>
+    <author>Kevin Marques</author>
+    <permission>
+        <minimal_required>1.2.4.0</minimal_required>
+        <show_manager>true</show_manager>
+    </permission>
+    <develop_comment>Gestor funcionários da empresa</develop_comment>
+    <hashsum>394f9a07148e69d627aee694a425be95</hashsum>
+</manifest>

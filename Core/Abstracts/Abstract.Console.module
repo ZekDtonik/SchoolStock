@@ -1,0 +1,185 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 23/04/2018 - 10:51
+ * Acctos : Abstract.Console.module
+ */
+
+namespace Abstracts;
+
+
+abstract class Console
+{
+    private $paramInterface;
+
+    public function setParamInterface($paramInterface) {$this->paramInterface = $paramInterface; }
+    public function getParamInterface() { return $this->paramInterface; }
+
+    public function __construct() {}
+
+    private function getInterface() {
+        $opt = $this->getParamInterface();
+        //seta a variavel pre existente
+        $interface = null;
+        //Verifica se o tipo de interface foi definida
+        !isset($opt['type']) ? $opt['type'] = false : null;
+        //verifica se o metodo de botoes foi definido
+        !isset($opt['method']) ? $opt['method'] = 'js' : null;
+        switch ($opt['type']) {
+            case 'save':
+                //inteface HREF botoes
+                !isset($opt['save']) ? $savePath = "javascript:void(0);" : $savePath = $opt['save'];
+                !isset($opt['cancel']) ? $cancelPath = WWW_PATH . PathAppSession : $cancelPath = $opt['cancel'];
+
+                //botao salvar
+                $interface .= "<a href='" . $savePath . "' id='beforePrependSaveData'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_save_data'>";
+                $interface .= "<div name='save' class='dButton btnSavePinned' id='save_data' title='" . _tr('save') . "'>" . _tr('save') . "</div>";
+                $interface .= "<label for='save_data' class='labelIcon save'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao cancelar
+                $interface .= "<a href='" . $cancelPath . "'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_cancel_data'>";
+                $interface .= "<div name='cancel' id='cancel'  class='dButton btnCancelPinned' title='" . _tr('cancel') . "'>" . _tr('cancel') . "</div>";
+                $interface .= "<label for='cancel' class='labelIcon cancel'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                break;
+            case 'update':
+                switch ($opt['subtype']) {
+                    case 'complete':
+                        $btName = _tr('complete');
+                        $clBtIcon = 'check';
+                        break;
+                    default:
+                        $btName = _tr('cancel');
+                        $clBtIcon = 'cancel';
+                        break;
+
+                }
+                //inteface HREF botoes
+                !isset($opt['save']) ? $savePath = "javascript:void(0);" : $savePath = $opt['save'];
+                //!isset($opt['cancel']) ? $cancelPath = "javascript:void(0);" : $cancelPath = $opt['cancel'];
+                !isset($opt['cancel']) ? $cancelPath = WWW_PATH . PathAppSession : $cancelPath = $opt['cancel'];
+
+                //botao atualizar
+                $interface .= "<a href='" . $savePath . "' id='beforePrependSaveData'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_save_data'>";
+                $interface .= "<div name='save' class='dButton btnUpdatePinned'  id='save_data' title='" . _tr('update') . "'>" . _tr('update') . "</div>";;
+                $interface .= "<label for='save_data' class='labelIcon update'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao cancelar ou finalizar
+                $interface .= "<a href='" . $cancelPath . "'>";
+                $interface .= "<label class='prepend-gui  btnPinned' id='prepend_cancel_data'>";
+                $interface .= "<div name='cancel' id='cancel'  class='dButton btnCancelPinned' title='" . $btName . "'>" . $btName . "</div>";
+                $interface .= "<label for='cancel' class='labelIcon " . $clBtIcon . "'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                break;
+            case 'library':
+                //inteface HREF botoes
+                !isset($opt['withdraw']) ? $withdrawPath = "javascript:void(0);" : $withdrawPath = $opt['withdraw'];
+                !isset($opt['deposit']) ? $depositPath = "javascript:void(0);" : $depositPath = $opt['deposit'];
+                !isset($opt['reserve']) ? $reservePath = "javascript:void(0);" : $reservePath = $opt['reserve'];
+                !isset($opt['renew']) ? $renewPath = "javascript:void(0);" : $renewPath = $opt['renew'];
+
+                //Botao Retirar livros (emprestar)
+                $interface .= "<a href='" . $withdrawPath . "' id='href_wdraw'>";
+                $interface .= "<label class='prepend-gui btnPinned'>";
+                $interface .= "<div name='withdraw' id='withdrawbtn'  class='specialBtnPinned' 
+				title='" . _tr('to_lend') . "'>" . _tr('to_lend') . "</div>";
+                $interface .= "<label for='withdrawbtn' class='labelIcon withdraw '></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //Botao renovar livros (emprestar)
+                $interface .= "<a href='" . $renewPath . "' id='href_wdraw'>";
+                $interface .= "<label class='prepend-gui btnPinned'>";
+                $interface .= "<div name='renew' id='renewbtn'  class='specialBtnPinned' 
+                title='" . _tr('renew') . "'>" . _tr('renew') . "</div>";
+                $interface .= "<label for='renewbtn' class='labelIcon renew'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao devolver livros
+                $interface .= "<a href='" . $depositPath . "'>";
+                $interface .= "<label for='depositbtn' class='prepend-gui btnPinned'>";
+                $interface .= "<div name='deposit' id='deposit' class='specialBtnPinned' 
+				title='" . _tr('deposit') . "'>" . _tr('deposit') . "</div>";
+                $interface .= "<label for='depositbtn' class='labelIcon deposit'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao reservar livros
+                $interface .= "<a href='" . $reservePath . "'>";
+                $interface .= "<label for='reserve' class='prepend-gui btnPinned' >";
+                $interface .= "<div name='reserve' class='specialBtnPinned' id='reserve' 
+				title='" . _tr('reserve') . "'>" . _tr('reserve') . "</div>";
+                $interface .= "<label for='reserve' class='labelIcon reserve_book'></label>";
+                $interface .= "</label>";
+                $interface .= "</div></div>";
+                $interface .= "</a>";
+                break;
+            case 'withdraw':
+                //inteface HREF botoes
+                !isset($opt['save']) ? $savePath = "javascript:void(0);" : $savePath = $opt['save'];
+                !isset($opt['cancel']) ? $cancelPath = WWW_PATH . PathAppSession : $cancelPath = $opt['cancel'];
+
+                //botao emprestar
+                $interface .= "<a href='" . $savePath . "' id='beforePrependSaveData'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_save_data'>";
+                $interface .= "<div name='save' class='dButton btnSavePinned' id='save_data' title='" . _tr('to_lend') . "'>" . _tr('to_lend') . "</div>";
+                $interface .= "<label for='save_data' class='labelIcon withdraw'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao cancelar
+                $interface .= "<a href='" . $cancelPath . "'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_cancel_data'>";
+                $interface .= "<div name='cancel' id='cancel'  class='dButton btnCancelPinned' title='" . _tr('cancel') . "'>" . _tr('cancel') . "</div>";
+                $interface .= "<label for='cancel' class='labelIcon cancel'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                break;
+            case 'reserve':
+                //inteface HREF botoes
+                !isset($opt['save']) ? $savePath = "javascript:void(0);" : $savePath = $opt['save'];
+                !isset($opt['cancel']) ? $cancelPath = WWW_PATH . PathAppSession : $cancelPath = $opt['cancel'];
+
+                //botao reservar
+                $interface .= "<a href='" . $savePath . "' id='beforePrependSaveData'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_save_data'>";
+                $interface .= "<div name='save' class='dButton btnSavePinned bgLgOrange' id='save_data' title='" . _tr('reserve') . "'>" . _tr('reserve') . "</div>";
+                $interface .= "<label for='extras' class='labelIcon time'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                //botao cancelar
+                $interface .= "<a href='" . $cancelPath . "'>";
+                $interface .= "<label class='prepend-gui btnPinned' id='prepend_cancel_data'>";
+                $interface .= "<div name='cancel' id='cancel'  class='dButton btnCancelPinned' title='" . _tr('cancel') . "'>" . _tr('cancel') . "</div>";
+                $interface .= "<label for='withdraw' class='labelIcon cancel'></label>";
+                $interface .= "</label>";
+                $interface .= "</a>";
+                break;
+        }
+        $this->interface = $interface;
+        return $interface;
+    }
+    final public function showInterface(){
+
+        //Mostra a interface
+        if (empty($this->getParamInterface())) {
+            return false;
+        } else {
+            //<div id='pnInterface'><div id='inputGroup' class='agnRight'>
+            echo "
+            <div class='module-action-container'> 
+            <input type='checkbox' id='shower' class='hidden'>
+            <label for='shower' id='BoxApp' class='fullsize module-actions'>
+            <div class='module-action-btn-shower' title='"._tr('actions')."'></div>
+		        <div id='Group-mPinned' class='dFlex'>";
+            echo $this->getInterface();
+            echo "</div>
+            </label></div>";
+        }
+    }
+}

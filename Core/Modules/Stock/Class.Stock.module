@@ -1,0 +1,182 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Kevin
+ *    Date: 15/03/2016 - 20:53
+ *
+ */
+
+namespace Modules\Stock;
+
+use Abstracts\Component;
+
+use Interfaces\{
+    ActiveSidebar, ModuleInteractions
+};
+use Modules\{Application\Credentials\Manager\Permissions, Kernel\ModuleMenu, Upshot, CNN};
+
+
+use PDO;
+use PDOException;
+
+class Stock extends Component implements ActiveSidebar,ModuleInteractions
+{
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->loader();//Autoload padrão carregado pelo Component
+        //$this->loader('atl'); Use com o parametro para autoload personalizado
+    }
+    public function init(...$gets) {
+        try{
+            /**
+             * @decription Instancia de Permissoes
+             * @doc - Usado para checar o nível de acsso do usuário em questão
+             */
+            $instancePermission = new Permissions();
+            /**
+             * @description - Switch de acesso de área do módulo
+             * @param $gets [] - GETS do navegador que define o padrão de acesso
+             */
+            
+            switch (strtolower($gets[0][1])){
+                /**
+                 * @case PAGINA PRINCIPAL DO MODULO
+                 */
+                case strtolower('estoque'):
+                    /**
+                     * SUB ACTION DA PÁGINA !!!!!
+                     */
+                    switch (strtolower($gets[0][1])) {
+                        /**
+                         * @case PAGINAS DESCENDENTES SEGUINDO O FLUXO DE LINKS
+                         */
+                        case 'cadastro':
+                            break;
+                    }
+                    break;
+            }
+            //$this->setModuleMenu($this->getMenuInteractive());
+        }
+        catch (\Exception $exception){
+            Upshot::noData(_tr('internal_error'),$exception->getMessage(),'wrong',null);
+        }
+
+    }
+    public function requests(...$dataRequest) {
+        //var_dump($dataRequest);
+        /**
+         * @switch Este suite recupera o nome da ação do módulo que esta fazendo a
+         * requisição.
+         * @internal-doc O nome da ação esta no primeiro $_GET depois do
+         * nome do módulo.
+         */
+        switch ($dataRequest[0]){
+            /**
+             * --------------------------------------------------
+             * ***                  BIBLIOTECA                ***
+             * --------------------------------------------------
+             */
+            /**
+             * @description Request Handler para AddItem do Modulo
+             */
+            case pg_newitem:
+                _AddItem::init($dataRequest);
+                break;
+            /**
+             * @description Request Handler para EditBook do Modulo
+             */
+            case lib_editbookSubPage:
+                break;
+
+            default:
+                echo _tr('bad_request');
+            /**
+             * --------------------------------------------------
+             * ***               FIM BIBLIOTECA               ***
+             * --------------------------------------------------
+             */
+        }
+    }
+    /** @method Função de autoload Personalizado */
+    final protected function _atl($class){
+
+
+        $includeClass = explode("\\", $class);//
+        $PageName = end($includeClass);
+        /*  Requisitando todas as classes utilizadas pelo APP;
+            Endereçamento de Raiz de Site definido anteriorimente
+
+            *Não Esquecer: O nome do arquivo deve ser o mesmo nome da Classe
+            só assim será feito a inclusão
+         */
+        //var_dump($PageName);
+        /** Extensão do módulo a ser adicionado */
+        $moduleExtension = '.module';
+        $incExtension = '.inc';
+        $classPlace = explode('\\',__CLASS__);
+        $mainClassPlace = end($classPlace);
+        /** Local base de Dominio de Sistema */
+        $domainPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $PageName . $moduleExtension;
+        $InterfacesPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Interfaces".DS. $PageName. $moduleExtension;
+        $AbstractsPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Abstracts".DS. $PageName. $moduleExtension;
+        $ControllerPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Handler".DS. $PageName. $moduleExtension;
+        $ExceptionPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Exceptions".DS. $PageName. $moduleExtension;
+        $GuiPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Gui" . DS . $PageName . $moduleExtension;
+        echo $GuiPlace."<br>";
+        if(file_exists($domainPlace)){
+            if(!in_array($domainPlace,get_included_files()))
+                include ($domainPlace);
+        }
+        else if(file_exists($InterfacesPlace)){
+            if(!in_array($InterfacesPlace,get_included_files()))
+                include ($InterfacesPlace);
+        }
+        else if(file_exists($AbstractsPlace)){
+            if(!in_array($AbstractsPlace,get_included_files()))
+                include ($AbstractsPlace);
+        }
+        else if(file_exists($ControllerPlace)){
+            if(!in_array($ControllerPlace,get_included_files()))
+                include ($ControllerPlace);
+        }
+        else if(file_exists($ExceptionPlace)){
+            if(!in_array($ExceptionPlace,get_included_files()))
+                include ($ExceptionPlace);
+        }
+        else if(file_exists($GuiPlace)){
+            if(!in_array($GuiPlace,get_included_files()))
+                include ($GuiPlace);
+        }
+    }
+    static function getIcon() {
+        return "ais-doc";
+    }
+    static function getDescription() {
+        return _tr('stock_manager');
+    }
+    static function getName() {
+        return 'Stock';
+    }
+    public function getMenuInteractive() {
+        $menu = new ModuleMenu(PgAC);
+        $menu->createButton('dashboard','dashboard','link/example/pg1','pg1');
+        $menu->createButton('add_item','newBook','link/example/pg2','pg2');
+        $menu->createButton('bookcase','viewBook','link/example/pg3','pg3');
+        $menu->createButton('circulations','circule_book','link/example/pg4','pg4');
+        return $menu->show(true);
+    }
+    /***
+     * @inheritdoc
+     * @since 3.0.0
+     *
+     * @param $widgetName - qual o nome do widget que deseja usar
+     *
+     * @docs = O widget monta a estrutura de apresentação com template
+     * do kernel para uso
+     * @return mixed Vetor ou String HTML5
+     */
+    static function widgets($widgetName) {
+        // TODO: Implement widgets() method.
+}}//fim da classe Library

@@ -1,0 +1,12 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 14/04/2018 - 09:35
+ * Acctos : Interface.ThrowableAllrowableAll.module
+ */
+
+namespace Interfaces;
+
+
+interface ThrowableAll extends \Throwable{}

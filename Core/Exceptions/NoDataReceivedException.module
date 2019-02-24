@@ -1,0 +1,16 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 28/04/2018 - 14:00
+ * Acctos : NoDataReceivedException.module
+ */
+
+namespace Exceptions;
+
+use Interfaces\ThrowableAll;
+
+class NoDataReceivedException extends \Exception implements ThrowableAll {}
+{
+
+}

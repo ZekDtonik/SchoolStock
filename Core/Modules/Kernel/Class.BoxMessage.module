@@ -1,0 +1,50 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 20/07/2018 - 13:26
+ * Grh : Class.BoxMessage.module
+ */
+
+namespace Modules;
+
+
+use Modules\Template\Template;
+
+class BoxMessage
+{
+    private function __construct() {
+
+    }
+    public static function show($icon, $title, $msg, $return = false){
+        $Parser= [];
+        $Parser['icon'] = $icon;
+        $Parser['title'] = $title;
+        $Parser['msg'] = $msg;
+
+        $template = new Template(APP_ROOT.DS."Templates/View/content.tpl",$Parser,true);
+
+
+        if($return)
+            return $template->showTemplate();
+        else
+            echo $template->showTemplate();
+    }
+    public static function containerShow($icon, $title, $msg,$container = true){
+        $shiContainer = '';
+        $sheContainer = '';
+        if($container){
+            $shiContainer = '<section class=\'container\'>';
+            $sheContainer = '</section>';
+        }
+        echo "$shiContainer
+            <div class='rol jc-center al-center wp-100'>
+                <div class='col'>
+        ";
+        self::show($icon,$title,$msg);
+        echo "
+                </div>
+            </div>
+            $sheContainer";
+    }
+}

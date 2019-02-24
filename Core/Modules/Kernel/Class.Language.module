@@ -1,0 +1,528 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *    Author: Kevin Marques
+ *   Date: 25/03/2016 - 02:18
+ *
+ */
+
+namespace Modules;
+
+/*  Sistema de linguagem automatizada para o APP
+    O sistema identifica a localização do usuario baseado
+    no ACCEPT_LANGUAGE e indica o arquivo correto a ser incluido,
+    tambem fornece um método de forçamento de mudança de linguagem
+    baseado em SESSAO ou cookie!
+*/
+
+
+use Exceptions\MainApplicationException;
+
+
+class Language
+{
+    public $location;
+    private $fallback; //Idioma fallback em caso de falha na localização do translate da versão usual
+    private $packages;  // todos os pacotes existentes
+    private $extraPackages; //Pacotes que vem de modulos ativos
+    private $packagesActive; //Pacotes ativos que serão utilizados para tradução
+    private $path;     // Caminho definido pelo sistema
+    private $imagePath;//Pasta padrão das imagens dos paises
+    private $locale;//Pasta padrão das internacionalização
+    private $extension;
+    private $prefix;
+    private $forceActive;
+    private $accLang;
+    private $sql;
+    private $otherPlaces = [];
+    private static $languageShort;
+
+    const __PREFIX__ = "lang_";
+    const FALLBACK_CODE = self::__PREFIX__."1046";
+    #Constante que define a linguagem padrão "Pode ser alterado para String"
+    const DEFAULT_LANGUAGE = __DefaultLanguage;
+    #definição de nome de tag xml que define o arquivo de internacionalização padrão
+    const DEFAULT_LOCALE = "default_locale";
+
+    private function setOtherPlaces($otherPlaces) { $this->otherPlaces = $otherPlaces; }
+    public function getOtherPlaces(): array { return $this->otherPlaces; }
+    public function getSql() { return $this->sql; }
+    public function setForceActive($forceActive) { $this->forceActive = $forceActive; }
+    public function forceActive() { return $this->forceActive; }
+    public static function setLanguageShort($languageShort) { self::$languageShort = $languageShort; }
+    public static function getLanguageShort() { return self::$languageShort; }
+    public function getPrefix() { return $this->prefix; }
+    public function getLocale() { return $this->locale; }
+    public function getFallback(){ return $this->fallback; }
+    private function getPackagesActive() { return $this->packagesActive; }
+    private function getImagePath() { return $this->imagePath; }
+    private function getPackages() { return $this->packages; }
+    public function setTimeZone($zone) {
+        return $_SESSION['timeZoneLang'] = $zone;
+        //$tzoneSet = @date_default_timezone_set($zone); exemplo
+    }
+    public static function getTimeZone() {return @$_SESSION['timeZoneLang'];}
+    public function setLanguage($lang) {$_SESSION['selectedLang'] = $lang;}
+    public function getLanguage() {
+        if (isset($_SESSION['selectedLang']))
+            return $_SESSION['selectedLang'];
+        else
+            return $this->getFallback()->controller->code;
+    }
+    public function getDefaultLocaleOnSettings(){
+        try{
+            $queryGet = $this->getSql()->query("SELECT default_locale FROM ".__SETTINGS);
+            $ftResult = $queryGet->fetch(\PDO::FETCH_ASSOC);
+            return $ftResult['default_locale'];
+        }
+        catch (\Exception $e){
+            return null;
+        }
+    }
+    /**
+     * Language constructor.
+     */
+    public function __construct(...$otherPlaces)
+    {
+        try{
+            #-----------------------------------------------------------
+            $this->forceActive = false;
+            $this->sql = CNN::getSql();
+            $this->setOtherPlaces($otherPlaces);
+            #-----------------------------------------------------------
+            //indica a pasta padrao de linguagem
+            $this->path = __Language_path;
+            $this->extension = "lang";
+            $this->imagePath = "Images".DS;
+            $this->locale = "Locale".DS;
+            $this->prefix = self::__PREFIX__;
+            #-----------------------------------------------------------
+            #Realiza a leitura inicial da pasta de Pacotes de linguagem
+            $packages = glob($this->path."*",GLOB_ONLYDIR);
+            #-----------------------------------------------------------
+            $this->listPackages($packages);
+            #----------------------------------------------------------
+            #Atribui a versão fallback
+            $this->setActivePackages();
+            #-----------------------------------------------------------
+            #Realiza Leitura de outros locais definidos
+            if(null !== $this->getOtherPlaces()){
+                foreach ($this->getOtherPlaces() as $otherPlace) {
+                    $extraPackages = glob($otherPlace."/*/Localization/*",GLOB_ONLYDIR);
+                    $this->listExtraPackages($extraPackages);
+                }
+
+            }
+
+        }
+        catch (\Throwable $e){
+            echo "<div class='Bar false'>".$e->getMessage()."</div>";
+        }
+    }
+    /**
+     * @description Recupera e salva no objeto
+     * a lista de pacotes existentes a partir do INIT.lang
+     * de cada idioma
+     * @return int $contador total de pacotes existentes no sistema
+     */
+    private function listPackages($packages){
+        try{
+            $countPackages = 0;
+            foreach ($packages as $init) {
+                #Recupera todos os inits dos pacotes
+                $getInit = glob($init."/init.".$this->extension);
+                //Caso a recuperação encontre um init, incrementa nos pacotes encontrados
+                if(sizeof($getInit) > 0){
+                    if(file_exists(APP_ROOT.DS.$getInit[0])){
+                        $xmlOpen = new \SimpleXMLElement(APP_ROOT.DS.$getInit[0],0,true);
+                        /** @noinspection PhpUndefinedFieldInspection */
+                        $xmlOpen->folder_name = $init;
+                        /**
+                         * @description Define a linguagem portugues do brasil como
+                         * linguagem padrão! em caso de falha de leitura
+                         * ou código mal escrito, a função recursiva retorna
+                         * o parametro padrão, caso não exista retorna a instrução
+                         */
+                        if(isset($xmlOpen->controller->code)){
+                            if($xmlOpen->controller->code == 1046){
+                                $this->fallback = $xmlOpen;
+                            }
+                        }
+                        if(isset($xmlOpen->controller->lang)){
+                            $this->packages[] = $xmlOpen;
+                            $countPackages++;
+                        }
+                    }
+                }
+                if($countPackages == 0){
+                    Upshot::noData("Impossível continuar","Nenhum recurso de idioma foi encontrado no sistema.","wrong",null,false,false);
+                    die();
+                }
+            }
+            return $countPackages;
+        }
+        catch (\Throwable $e){
+            echo "<div class='Bar false'>".$e->getMessage()."</div>";
+            return false;
+        }
+    }
+    /**
+     * @description Recupera e salva no objeto pre existente
+     * a lista de conteudo dos packages extras existentes a partir do INIT.lang
+     * dentro dos módulos de cada idioma
+     * @inheritdoc Pacotes extras não criam seletores de linguagem
+     * apenas incrementam dados uteis a linguagens pre existentes
+     * montados no $this->packages
+     * @return int $contador total de pacotes extras existentes.
+     */
+    private function listExtraPackages($packages){
+        try{
+            $countPackages = 0;
+            foreach ($packages as $init) {
+                #Recupera todos os inits dos pacotes
+                $getInit = glob($init."/init.".$this->extension);
+                /** @description Caso a recuperação encontre um init, verifica se existe um pacote com o mesmo
+                 * codigo LCID, se já existir os novos dados são somados ao content, se o CODE LCID não existir
+                 * um novo seletor da linguagem especificada é criado e aparecerá no menu de idiomas da aplicação
+                 */
+                if(sizeof($getInit) > 0){
+                    #Caso o documento exista
+                    if(file_exists(APP_ROOT.DS.$getInit[0])){
+                        //Carrega o objeto com as informações do init
+                        $xmlOpen = new \SimpleXMLElement(APP_ROOT.DS.$getInit[0],0,true);
+                        /** @noinspection PhpUndefinedFieldInspection */
+                        $xmlOpen->folder_name = $init;
+
+                        if(isset($xmlOpen->controller->lang)){
+                            $this->extraPackages[] = $xmlOpen;
+                            $countPackages++;
+                        }
+                    }
+                }
+                if($countPackages == 0){
+                    Upshot::noData("Impossível continuar","Nenhum recurso de idioma foi encontrado no sistema.","wrong",null,false,false);
+                    die();
+                }
+            }
+            return $countPackages;
+        }
+        catch (\Throwable $e){
+            echo "<div class='Bar false'>".$e->getMessage()."</div>";
+            return false;
+        }
+    }
+    /**
+     * @description Lista os pacotes que estarão ativos
+     * para o funcionamento do sistema. Sendo:
+     * Idioma FallBack (atualmente Pt-BR)
+     * Idioma Escolhido
+     * @internal se não houver nenhuma versão selecionada
+     * a versão fallback é utilizada
+     * @inheritdoc Caso a versão selecionada seja o mesmo pacote da versão fallback
+     * não é criada um clone, aumentando a escalabilidade
+     * @return void
+     */
+    private function setActivePackages(){
+        $this->packagesActive[] = $this->getFallback();
+        #Recupera a versão da linguagem selecionada
+        foreach ($this->getPackages() as $package){
+            #Verifica se existe getLanguage (linguagem selecionada)
+            #Caso não exista valor de sessão para idioma selecionado,
+            # ACCEPT_LANGUAGE entra em ação
+            if(null === $this->getLanguage()){
+                //compactação da variavel
+                $AcLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+                #Para usar o default locale vinda das configs do sistema
+                #o campo no DB deve estar preenchido
+                if(null !== $this->getDefaultLocaleOnSettings()){
+                    $AcLanguage = $this->getDefaultLocaleOnSettings();
+                }
+                //caso o retorno do valor do browser não contenha informações uteis
+                if ($AcLanguage == '' or empty($AcLanguage) or $AcLanguage == null):
+                    $this->accLang = self::DEFAULT_LANGUAGE;
+                else:
+                    $this->accLang = $AcLanguage;
+                endif;
+
+                $loc = explode(',', $this->accLang);
+                $dataLoc = $loc[0];
+                $this->location = $dataLoc;
+                #----------------------------------------------------------
+                # Utiliza o location para atribuir o idioma de uso
+                #Caso a linguagem aceita pelo browser for igual a linguagem de controle do pacote
+                $LanguageInController = (string) $package->controller->lang;
+                if(strtolower($this->location) == strtolower($LanguageInController)){
+                    //Salva em uma variavel
+                    $codeAcceptLang = (string) $package->controller->code;
+                    $codeFallbackLang = (string) $this->getFallback()->controller->code;
+                    #Caso o idioma aceita for diferente do idioma fallback
+                    #adiciona ao pacote ativo
+                    if($codeAcceptLang != $codeFallbackLang){
+                        $this->packagesActive[] = $package;
+                    }
+                    /** @description Mantem o accept language como o padrão adicionando ao @method $this->getLanguage()
+                     * Quando o usuário acessar o navegador que contiver um accept language
+                     * Esse bloco será executado e o idioma especifico será utilizado
+                     * @internal NOTA! o @method _($translation) é a função que traduz baseado na
+                     * seleção do @method $this->getLanguage() method
+                     */
+                    $this->setLanguage($codeAcceptLang);
+                }
+                #----------------------------------------------------------
+            }
+            #Se o codigo da linguagem selecionada for igual ao codigo existente no pacote
+            # e diferente da versão fallback, adiciona ao pacotes ativos
+            else if($this->getLanguage() == $package->controller->code &&
+                $this->getLanguage() != $this->getFallback()->controller->code){
+                //Adiciona aos pacotes ativos
+                $this->packagesActive[] = $package;
+            }
+        }
+    }
+    /**
+     * @function getContent() recupera o conteudo dos docs definidos no init
+     * @
+     */
+    public function getContent() {
+        try{
+            /***
+             * @description para cada pacote existente realiza a operação
+             */
+            foreach ($this->getPackagesActive() as $package) {
+                $packageCode = (string)$this->getPrefix().$package->controller->code;
+                if(isset($_SESSION[$packageCode])){
+                    #Converte o tipo de dado da versão para int
+                    $arrayVersions[] = $_SESSION[$packageCode]->language->controller->version;
+                    $arrayVersions[] = $package->controller->version;
+                    //Função de conversão de dados
+                    #Transforma string version em inteiro
+                    $strToInt = function (array $data){
+                        $change = function($string){ return (int) str_replace(".",'',$string);};
+                        return array_map($change,$data);
+                    };
+                    $arrayVersions = $strToInt($arrayVersions);
+                    /** @description Função que verifica se a versão é diferente ou não
+                     * @return boolean false = versão igual; true = versão diferente
+                     */
+                    $check = function(array $data){
+                        if($data[0] == $data[1])
+                            return false;
+                        else
+                            return true;
+                    };
+                    //Se true, define um nova sessão de dados
+                    if($check($arrayVersions) || $this->forceActive()){
+                        $this->setSessionLanguage();
+                    }
+                }
+                else{
+                    $this->setSessionLanguage();
+                }
+            }
+            self::setLanguageShort($_SESSION[$this->getPrefix().$this->getLanguage()]->language->controller->lang);
+        }
+        catch (\Exception $ec){
+
+        }
+        catch (\Error $er){
+
+        }
+    }
+    private function setSessionLanguage(){
+        try{
+            foreach ($this->getPackagesActive() as $activePackage) {
+                $nObj = new \stdClass();
+                $nObj->language = $activePackage;
+                $nObj->content = new \stdClass();
+                $fileExtension =".".$activePackage->core->lang_extension;
+                #Checa a pasta de arquivos de idiomas para saber se contem algum arquivo
+                $counterXml = 0;
+                foreach ((array) $activePackage->lang as  $key => $item){
+                    $place = APP_ROOT.DS.$activePackage->folder_name.DS.$this->getLocale().$item.$fileExtension;
+                    if(file_exists($place)){
+                        $xmlObject = new \SimpleXMLElement($place,LIBXML_NOERROR|LIBXML_NOWARNING,true);
+                        if($xmlObject) $counterXml++;
+
+                        $nObj->content->$key = $xmlObject;
+                    }
+                }
+                #Checa por dados extras
+                foreach ($this->extraPackages as $extraPackage) {
+                    //Verifica se o codigo de controller LCID do pacote extra é igual aos pacotes ativos
+                    if((int) $extraPackage->controller->code == (int) $activePackage->controller->code){
+                        foreach ((array)$extraPackage->lang as $keyExtra => $itemExtra) {
+                            #link de entrada do arquivo
+                            $placeExtras = APP_ROOT.DS.$extraPackage->folder_name.DS.$this->getLocale().$itemExtra.$fileExtension;
+                            #Abre a chamada de um novo XmlRead
+                            if(file_exists($placeExtras)){
+                                $xmlObjectExtra = new \SimpleXMLElement($placeExtras,LIBXML_NOERROR|LIBXML_NOWARNING,true);
+
+                                # BUG: Se o arquivo lido atual estiver sem nenhuma definição de linguagem
+                                # (valores dentro da tag xml principal ex: <def></def>)
+                                # O pacote de content da chave extra é identificada como nula e substitui no ELSE os dados que
+                                # ja existem
+                                //TODO: BUGFIX = Alterar o comparador para solucionar o problema mostrado acima ou remover o else abaixo [ver consequências]
+                                #Se existir o pacote da chave especifica, append object
+                                if(null !== $nObj->content->$keyExtra){
+                                    $this->appendToObject($nObj->content->$keyExtra,$xmlObjectExtra);
+                                }
+                                else{
+                                    $nObj->content->$key = $xmlObjectExtra;
+                                }
+                            }
+
+                        }
+                    }
+                }
+                        if(!$counterXml){
+                    #Retorna a informação para o tratamento principal de excesão de arquivo.
+                    throw new MainApplicationException("Nenhum Package de tradução foi encontrado! Impossivel continuar");
+                }
+                $languageCode = (string) $this->getPrefix().$activePackage->controller->code;
+                $_SESSION[$languageCode] = json_decode(json_encode($nObj));
+            }
+            $this->setTimeZone($_SESSION[$this->getPrefix().$this->getLanguage()]->language->controller->system->timezone);
+        }
+        catch (\Throwable $e){
+            Upshot::showData("Erro Interno", $e->getMessage(),null,'wrong',null);
+        }
+    }
+    /** @nmethod appendToObject - Adiciona ao final do pacote de linguagem principal novas linhas
+     * de linguagem dos pacotes extras de cada modulo aplicavel bem-formatado
+     * @param object $objToAppend - Referenciado = objeto principal de linguagem
+     * @param object $xmlObject - pacote de linguagem extra para atribuição
+     * @return void
+     */
+    public function appendToObject(&$objToAppend, $xmlObject){
+        foreach ((array)$xmlObject as $key => $item) {
+            //Caso a linha seja um array
+            #Acontece caso exista elementos com mesmo nome repetido
+            if(is_array($item)){
+                $objToAppend->$key = $item[0];
+            }
+            //Caso a linha seja um objeto
+            #Acontece caso exista uma sub-grupo com elementos internos
+            else if(is_object($item)){
+                foreach ((array) $item as $subKey => $subItem) {
+                    $objToAppend->$subKey = $subItem;
+                }
+            }
+            //Caso linha retornando um valor proprio
+            #Padrão de atribuição
+            else{
+                $objToAppend->$key = $item;
+            }
+
+        }
+    }
+    /**
+     * @description recuriveDataObject Itera sobre um objeto construido a partir de uma definição de
+     * caminho vindo de um array criado. Cada indice númerico do array contem um nome, sendo cada nome
+     * observando a ordenação do array uma propriedade do objeto. Cada indice é um sub-nivel da propriedade
+     * inicial definida no indice zero do vetor, exemplo: array('system','data','event') significa que o
+     * iterador ira alcançar a propriedade do objeto: Object->system->data->event
+     * @param $array
+     * @param $obj
+     * @param int $count
+     * @param bool $returnBoolean
+     * @return bool|mixed|string
+     */
+    private function recursiveDataObject($array,$obj,$count = 0,$returnBoolean = false){
+        if(is_array($array)){
+            if(sizeof($array) == $count){
+                if(isset($obj))
+                    return $obj;
+                else{
+                    if($returnBoolean)
+                        return false;
+                    else
+                        return $array[$count-1];
+                }
+            }
+            else{
+                $string = $array[$count];
+                $count++;
+                if(isset($obj->$string))
+                    return $this->recursiveDataObject($array,$obj->$string,$count,$returnBoolean);
+                else{
+                    if($returnBoolean)
+                        return false;
+                    else
+                        return end($array);
+                }
+            }
+        }
+        else{
+            if($returnBoolean)
+                return false;
+            else
+                return implode("/",$array);
+        }
+    }
+    /**
+     * @param $translation string em padrao de barras para tradução, cada barra é um avanço
+     * @return bool|mixed|string
+     */
+    public function _($translation){
+        //Transforma a string recebido em Vetor
+        $getArray = explode("/",$translation);
+        //Vetor de Analise
+        $dataToParser = [];
+        //Caso o tamanho do vetor criado a partir da string tenha tamanho 1
+        if(sizeof($getArray) == 1){
+            #Adiciona o local padrão de accesso diretamente
+            $dataToParser[] = self::DEFAULT_LOCALE;
+            //Recupera o valor recebido na string
+            $dataToParser[] = $getArray[0];
+        }
+        else
+            $dataToParser = $getArray;
+
+
+        //recursividade de acesso a objetos
+        $selectedLanguage = $this->recursiveDataObject($dataToParser,$_SESSION[$this->getPrefix().$this->getLanguage()]->content,0,true);
+        if(!$selectedLanguage)
+            $selectedLanguage = $this->recursiveDataObject($dataToParser,$_SESSION[self::FALLBACK_CODE]->content);
+
+        if(is_object($selectedLanguage))
+            return 'bad_string_applied_object_returned';
+        else if(is_array($selectedLanguage))
+            return end($selectedLanguage);
+        else{
+            $result = preg_replace(array("/\[/","/\]/"),explode(" ","< >"),$selectedLanguage);
+            return $result;
+        }
+
+    }
+    /**
+     * @description Metodo que pega o nome do arquivo para incluir no sistema
+     * @return void
+     */
+    public function ShowListLanguage()
+    {
+
+        $LGG = $_SESSION[$this->getPrefix().$this->getLanguage()];
+        $LGA = $LGG->language->controller->lang;
+
+        echo "<div id='LangBox'>";
+
+        echo "<ul><span>" . ucfirst($LGA) . "</span>";
+        foreach ($this->packages as $pkLangs) {
+            $lang  = $pkLangs->controller->code;
+            $langExtense = $pkLangs->controller->lang_extense;
+            $countryIcon = $pkLangs->controller->graphs->icon_default;
+            $langFormated = str_replace("-","_",$lang);
+            echo "
+            <a href='#' id='$lang' >
+                <li title='".$langExtense."' >
+                    <div class='defaultAllLang'>
+                    <img src='" . WWW_PATH.$pkLangs->folder_name.DS.$this->getImagePath(). $countryIcon . "' id='lang_$langFormated' /> </div>
+                </li>
+            </a>";
+        }
+        echo "</ul></div>";
+    }
+
+
+}
+

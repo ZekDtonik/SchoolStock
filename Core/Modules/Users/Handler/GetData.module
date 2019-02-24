@@ -1,0 +1,56 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 13/07/2018 - 10:22
+ * Grh : GetDataCredential.moduleodule
+ */
+
+namespace Modules\Application\Users\Manager;
+
+
+use Modules\CNN;
+use Modules\System;
+
+class GetData
+{
+    private $sql;
+    private $moduleName;
+
+    private function getSql() { return $this->sql; }
+    private function getModuleName() { return $this->moduleName; }
+    public function __construct($moduleName) {
+        $this->sql = CNN::getSql();
+        $this->moduleName = $moduleName;
+    }
+    public function getData($id,$accessToken){
+        if(empty($id)){
+            System::message('error',_tr('get_data'),_tr('group_id_needed_not_found'));
+        }
+        else if($accessToken != System::getAccessToken()){
+            System::message('error',_tr('get_data'),_tr('access_token_receive_is_wrong'));
+        }
+        else{
+            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+            $recoverGroupName->bindValue(1,$id);
+            $recoverGroupName->execute();
+            $fetchData = $recoverGroupName->fetch(\PDO::FETCH_ASSOC);
+
+            return $fetchData;
+        }
+    }
+    public function getDataToRemoveUser($id,$accessToken){
+
+        $fetchData = $this->getData($id,$accessToken);
+        $groupName = $fetchData['name'];
+        $sendData = [];
+        $sendData['title'] = _tr('remove_user');
+        $sendData['msg'] = sprintf(_tr('warning_user_will_be_removed'),$groupName).'<br/><span class="txtRed bold txt-center">'._tr('this_action_is_permanent_do_it').'</span>';
+        $sendData['url'] = _system.DS.$this->getModuleName().DS.'remove'.DS.$id.DS.System::getAccessToken();
+        $sendData['method'] = 'GET';
+        $sendData['type'] = 'confirm';
+
+        echo json_encode($sendData);
+    }
+
+}

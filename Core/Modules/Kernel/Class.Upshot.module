@@ -1,0 +1,211 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Kevin
+ * Date: 08/07/2016
+ * Time: 18:53
+ */
+
+namespace Modules;
+
+/**
+ * Classe padrão de indicador de finalização, utiliza de outro metodo
+ * para redirecionar a página para mostrar informações finais
+ * sobre resultados!!
+ *
+ */
+use PDO;
+
+class Upshot
+{
+    private $sql;
+
+    private $action;
+    private $attr;
+    private $attrE; //atributo extra recebe o valor do GET[extras]
+    private $bigIcon;
+    private $title;
+    private $subTitle;
+    private $text;
+    private $link;
+    /** For Library Variables */
+    private $bookNameRef;
+    private $authorName;
+    private $type;
+    private $icon;
+    /** For Student Variable */
+    /**
+     * @var string $patternEntity padrão que identifica o que será mostrado
+     * como informações para o usuário ao finalizar um processo ou ação
+     *
+     * @param string $patternEntity tipo de padrao Ex:[ library:(idb)=12345 ] | [info extra] < ATTR E
+     *
+     * @return mixed HTML
+     */
+    public function __construct($patternEntity = false, $WithSession = false)
+    {
+        //SQL
+        $this->sql = CNN::getSql();
+
+        //Definições de Variaveis
+        $bigIcon = null;
+        //Estrutura de Função
+        $getStruture = explode(":", $patternEntity);
+        $this->action = strtolower(trim($getStruture[0]));
+        $this->attr = $getStruture[1];
+
+        $cnn = CNN::getSql();
+        /** Caso o padrao esteja vazio ou incompleto
+         * caso o ExApp. Detalhes extras da finalização de procedimento
+         * de funções.. retorna para a pagina incial baseada no livro
+         */
+        if (empty($patternEntity) OR empty(ExAc) or $WithSession == true and $_SESSION['upshorS'] != true) {
+            Auth::RedirectByLevel();
+        } else {
+            //Definições de Variaveis
+            $bigIcon = null;
+            //Estrutura de Função
+            $getStruture = explode(":", $patternEntity);
+            $this->action = strtolower(trim($getStruture[0]));
+            $this->attr = $getStruture[1];
+            if (preg_match("/(\|){1}/", $this->attr)) {
+                $getSubstruture = explode("|", $this->attr);
+                $this->attrE = $getStruture[1];
+            }
+
+            switch ($this->action) {
+                case "newbook":
+
+                    /** Titulo e subtitulos basicos da definição!*/
+                    $this->title = _tr('book_added');
+                    !empty($this->attrE) ? $this->subTitle = _tr('book_has_been_successful_added_no_upload') :
+                        $this->subTitle = _tr('book_has_been_successful_added');
+                    /** @var mixed $actionSql game */
+                    $actionSql = $cnn->prepare("SELECT * FROM " . __LIBRARY . " WHERE idb=:idb");
+                    $actionSql->bindValue(":idb", $this->attr);
+                    $actionSql->execute();
+                    $ftAc = $actionSql->fetch(PDO::FETCH_ASSOC);
+                    $this->bookNameRef = $ftAc['bookname'];
+                    $this->type = $ftAc['type'];
+                    $this->authorName = $ftAc['author'];
+                    $this->icon = 'libraryAdd';//icon CSS ::before
+                    $this->link = "Administration/Library/";//link de redirecionamento do OK
+                break;
+
+                case "editbook":
+                    /** Titulo e subtitulos basicos da definição!*/
+                    $this->title = _tr('book_edited');
+                    !empty($this->attrE) ? $this->subTitle = _tr('book_has_been_successful_added_no_upload') :
+                        $this->subTitle = _tr('book_has_been_successful_added');
+                    /** @var mixed $actionSql game */
+                    $actionSql = $cnn->prepare("SELECT * FROM " . __LIBRARY . " WHERE idb=:idb");
+                    $actionSql->bindValue(":idb", $this->attr);
+                    $actionSql->execute();
+                    $ftAc = $actionSql->fetch(PDO::FETCH_ASSOC);
+                    $this->bookNameRef = $ftAc['bookname'];
+                    $this->type = $ftAc['type'];
+                    $this->authorName = $ftAc['author'];
+                    $this->icon = 'libraryAdd';//icon CSS ::before
+                    $this->link = "Administration/Library/";//link de redirecionamento do OK
+                break;
+                case "booknotexist":
+                    /**  */
+                    $this->title = _tr('book_not_exists');
+                    $this->subTitle = _tr('specified_book_cannot_be_found');
+                    $this->link = "Administration/Library/BookCase/";
+                break;
+            }
+            self::show();
+        }
+    }
+
+    protected function show()
+    {
+        echo "<div id=\"BoxApp\" class='block w320 inMiddle'>
+            <div class='upshotIcon " . $this->icon . "'></div>
+            <div >
+              <h1>" . $this->title . "</h1>
+              <h3>" . $this->subTitle . "</h3>
+              <div class=\"barSp\"></div>
+              <h3 class='text-center'>" . _tr('book_name') . "</h3>
+              <p>" . $this->bookNameRef . "</p>
+              <span>
+                <ul>
+                  <li>" . _tr('book_type') . ": <span>" . ucfirst($this->type) . "</span></li>
+                  <li>" . _tr('author') . ": <span>" . $this->authorName . "</span></li>
+                  
+                </ul>
+              
+              </span>
+            <a href='" . $this->link . "' id=\"buttonOk\">OK</a>
+            </div>
+            
+            </div>";
+        $_SESSION['upshorS'] = false;
+    }
+
+    /** cria a sessao pra mostrar a tela de finalização!, caso nao coloque isso nao mostra */
+    public static function initSession()
+    {
+        $_SESSION['upshorS'] = true;
+    }
+
+    public static function noEdata($title, $subTitle, $icon, $link = ADMLOC,$incenter = false,$showBar = true)
+    {
+        if($incenter){ $inc = 'vertical_middle';}
+        $return = "<div id=\"BoxApp\" class='block mxw640 inMiddle $inc'>
+                <div class='upshotIcon " . $icon . "'></div>                 
+                  <h1>" . $title . "</h1>
+                  <h3>" . $subTitle . "</h3>";
+                if($showBar){
+                    echo"<div class=\"barSp mg-tb-12\"></div>";
+                }
+        if ($link) {
+            $return .= "<a href='" . $link . "' id=\"buttonOk\">OK</a>";
+        }
+        $return .= "</div>";
+        return $return;
+    }
+
+    public static function confirmAction()
+    {
+
+    }
+
+    public static function showData($title, $subTitle, $content = null, $icon, $link = ADMLOC, $showBar = true)
+    {
+
+        echo "<div id=\"BoxApp\" class='block mxw640 inMiddle '>
+                <div class='upshotIcon " . $icon . "'></div>                 
+                  <h1>" . $title . "</h1>
+                  <h3>" . $subTitle . "</h3>";
+                  if($content != null){
+                      echo"<br><div >".$content."</div>";
+                  }
+                  if($showBar){
+                      echo"<div class=\"barSp mg-tb-12\"></div>";
+                  }
+        if ($link) {
+            echo "<a href='" . $link . "' id=\"buttonOk\">OK</a>";
+        }
+        echo "</div>";
+    }
+    public static function noData($title, $subTitle, $icon, $link = ADMLOC, $vertical_middle = false,$showBar = true)
+    {
+        $verticalmd ='';
+        if ($vertical_middle) {
+            $verticalmd = "vertical_middle";
+        }
+        echo "<div id=\"BoxApp\" class='block mxw640 inMiddle " . $verticalmd . "'>
+                <div class='upshotIcon " . $icon . "'></div>                 
+                  <h1>" . $title . "</h1>
+                  <h3>" . $subTitle . "</h3>";
+        if($showBar){
+            echo"<div class=\"barSp mg-tb-12\"></div>";
+        }
+        if ($link) {
+            echo "<a href='" . $link . "' id=\"buttonOk\">OK</a>";
+        }
+        echo "</div>";
+    }
+}

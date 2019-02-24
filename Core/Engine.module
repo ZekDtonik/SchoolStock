@@ -1,0 +1,411 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: crafh
+ * Date: 06/04/2018
+ * Time: 17:38
+ * Version: 2.5.0
+ */
+
+/**
+ * A classe Engine é o nucleo de carregamento e autoload
+ * Dessa maneira a primeira inclusão deve ser feita diretamente
+ */
+include_once "Interfaces/Interface.AcctosModular.module";
+use Interfaces\AcctosModular;
+use Exceptions\{
+    ClassNotFoundException,EngineException
+};
+/* @exception = Nenhum tratamento de exceção é tratada no Engine.
+ * Todas as exceções são re-disparadas.
+ */
+class Engine implements AcctosModular
+{
+    private $place = [];
+    private $gets;
+    private $namespace;
+    private $globPath;
+    /**
+     * @param mixed $place
+     * @inheritdoc Define um padrão de local de carregamento
+     * personalizado para incluir os arquivos das classes
+     */
+    public function setPlace(...$place): void {
+        $this->place[] = $place;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getGlobPath(): string {
+        return $this->globPath;
+    }
+    /**
+     * @return mixed
+     */
+    public function getPlace(): array {
+        return $this->place;
+    }
+    /**
+     *
+     * @return array[]
+     */
+    public function gets(): array {
+        return $this->gets;
+    }
+
+    /**
+     * @param mixed $namespace
+     */
+    public function setNamespace($namespace): void {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNamespace() {
+        return $this->namespace;
+    }
+    /**
+     * Engine constructor.
+     * @param array[] ...$_gets
+     * @inheritdoc A recuperação da lista de gets, segue de forma ordenada
+     * do menor para o maior, ou seja, apesar do parametro ser variavel
+     * a sua ordem não é.
+     *
+     * @inheritdoc Glob path de busca qualificada de módulos.
+     * @var globPath pode ser alterado para versão especificada
+     */
+    public function __construct(...$_gets) {
+        $this->globPath = "Core/Modules";
+        $this->gets = $_gets;
+        !defined("MODULES_PATH") ? define("MODULES_PATH","Core/Modules") : null;
+    }
+    public function autoLoad(){
+        //Registrar o autoload do sistema
+        spl_autoload_register(array($this,'Loader'));
+    }
+    private function Loader($class){
+        try{
+            /**
+             *  Nomeclatura de arquivos difere dos nomes das classes;
+             * Emitindo Explode e puxando a ultima ocorrencia do retorno
+             * do __autoload
+             *
+             * Litera uma barra e puxa o nome da classe
+             * @var string $includeClass quebra a String emitido pelo __autoload em vetor
+             * @var array $PageName pega o nome do arquivo
+             *
+             * @param require inclui a classe especificada pelo autoload
+             *
+             */
+            $includeClass = explode("\\", $class);//
+            $PageName = end($includeClass);
+            /*  Requisitando todas as classes utilizadas pelo APP;
+                Endereçamento de Raiz de Site definido anteriorimente
+
+                *Não Esquecer: O nome do arquivo deve ser o mesmo nome da Classe
+                só assim será feito a inclusão
+             */
+            //var_dump($PageName);
+            /** Extensão do módulo a ser adicionado */
+            $moduleExtension = '.module';
+            $incExtension = '.inc';
+            /** Local base de Dominio de Sistema */
+            $domainPlace = APP_ROOT . DS . "Core" . DS . $PageName . $incExtension;
+            /** Local padrão, Modulos Deve ser pesquisados inicialmente aqui */
+            $mainPlace = APP_ROOT . DS . "Core" . DS . "Modules" . DS . "Class." . $PageName . $moduleExtension;
+            /** Local Kernel, Modulos do back-end importantes são salvos nessa pasta */
+            $kernelPlace = APP_ROOT . DS . "Core" . DS . "Modules" . DS . "Kernel" . DS . "Class." . $PageName . $moduleExtension;
+            /** Extensão do módulo a ser adicionado */
+            $absClassPlace = APP_ROOT . DS . "Core" . DS . "Abstracts" . DS . "Abstract." . $PageName . $moduleExtension;
+            /** Extensão do módulo a ser adicionado */
+            $interfacePlace = APP_ROOT . DS . "Core" . DS . "Interfaces" . DS . "Interface." . $PageName . $moduleExtension;
+            /** Local de Exceções */
+            $exceptionPlace = APP_ROOT . DS . "Core" . DS . "Exceptions" . DS . $PageName . $moduleExtension;
+            /** Local de Módulo complexo, deve buscar por pastas do módulo em Questão */
+            $fullModuleClass =      APP_ROOT . DS . "Core" . DS . "Modules" . DS . $PageName. DS . "Class."     . $PageName . $moduleExtension;
+            $fullModuleAbstract =   APP_ROOT . DS . "Core" . DS . "Modules" . DS . $PageName. DS . "Abstracts"  . DS . $PageName . $moduleExtension;
+            $fullModuleInterface =  APP_ROOT . DS . "Core" . DS . "Modules" . DS . $PageName. DS . "Interfaces" . DS . $PageName . $moduleExtension;
+            $fullModuleGui =        APP_ROOT . DS . "Core" . DS . "Modules" . DS . $PageName. DS . "Gui"        . DS . $PageName . $moduleExtension;
+
+            //echo $fullModuleClass.'<br/>';
+            /** @internal Adiciona o arquivo baseado na busca
+             * Verifica se o caminho existe e se não foi inlcuido
+             * #caso não tenha sido inclui no sistema
+             */
+            if(file_exists($domainPlace)){
+                if(!in_array($domainPlace,get_included_files()))
+                    include ($domainPlace);
+            }
+            else if(file_exists($mainPlace)){
+                if(!in_array($mainPlace,get_included_files()))
+                    include ($mainPlace);
+            }
+            else if(file_exists($kernelPlace)){
+                if(!in_array($kernelPlace,get_included_files()))
+                    include ($kernelPlace);
+            }
+            else if(file_exists($absClassPlace)){
+                if(!in_array($absClassPlace,get_included_files()))
+                    include ($absClassPlace);
+            }
+            else if(file_exists($interfacePlace)){
+                if(!in_array($interfacePlace,get_included_files()))
+                    include ($interfacePlace);
+            }
+            else if(file_exists($fullModuleClass)){
+                if(!in_array($fullModuleClass,get_included_files()))
+                    include ($fullModuleClass);
+            }
+            else if(file_exists($fullModuleAbstract)){
+                if(!in_array($fullModuleAbstract,get_included_files()))
+                    include ($fullModuleAbstract);
+            }
+            else if(file_exists($fullModuleInterface)){
+                if(!in_array($fullModuleInterface,get_included_files()))
+                    include ($fullModuleInterface);
+            }
+            else if(file_exists($fullModuleGui)){
+                if(!in_array($fullModuleGui,get_included_files()))
+                    include ($fullModuleGui);
+            }
+            else if(file_exists($exceptionPlace)){
+                if(!in_array($exceptionPlace,get_included_files()))
+                    include ($exceptionPlace);
+            }
+
+            /* @internal versão para caminho personalizado definido
+             * Verifica se o Place não esta vazio, e itera em todas
+             * as arrays e recupera o item, montando a variavel de controle
+             * de caminho, verifica se ja foi incluido, caso negativo inclui
+             * no sistema.
+             */
+            else if(sizeof($this->getPlace()) > 0){
+                foreach ($this->getPlace() as $item) {
+                    $personalizedPlace = $item.$PageName.$moduleExtension;
+                    if(file_exists($personalizedPlace)){
+                        if(!in_array($personalizedPlace,get_included_files()))
+                            include ($personalizedPlace);
+                    }
+                }
+            }
+        }
+        catch (Throwable $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            //$catchEcho = "<div class='overlay-engine dFlex jc-center al-center' >
+            //    <div class='box'>
+            //        <h1>"._tr('engine_error')."</h1>
+            //        <h3>".$msg."</h3>
+            //    </div>
+            //</div>";
+            //echo $catchEcho;
+            throw new EngineException($msg);
+        }
+    }
+
+    /**
+     * @function array ListQualifiedModules - Lista módulos qualificados
+     * e aplica em array para inserir no menu
+     * @inheritdoc - O modulo obrigatoriamente deve estar incluido
+     *em uma pasta como mesmo nome
+     * @inheritdoc - O método é funcional apenas para módulos que atribuem
+     * menu lateral. Modulos de Back-end não utilizam este método
+     * @return array
+     * @throws EngineException
+     * @throws ErrorException
+     */
+    public function ListQualifiedModules(){
+        try{
+            //Lista todas os arquivos e pastas e aplica em uma lista
+            $listOfModules = glob($this->getGlobPath()."/*");
+            // Vetor de Objetos
+            $Object = [];
+            //separa a lista de modulos
+            foreach ($listOfModules as $name){
+                /***
+                 * Como o metodo procura módulos qualificados e os modulso qualificados
+                 * devem estar organizados em pastas, verifica se o nome atual é uma pasta
+                 */
+                if(is_dir($name)){
+                    /**
+                     * Caso seja uma pasta, procura dentro dessa pasta por arquivos com terminação .module
+                     * Esses arquivos são inicializados e devem implementar as interfaces
+                     *  -> ActiveSidedar para funcionamento correto do menu lateral principel
+                     *  -> ModularInit - Define o padrão de inicialização do Modulo
+                     */
+
+                    $read = glob($name.'/*.module');
+                    foreach ($read as $nameModule){
+                        #Recupera o arquivo do modulo e salva como string
+                        $fileToString = file_get_contents(addslashes(APP_ROOT.DS."".$nameModule),FILE_SKIP_EMPTY_LINES);
+                        //procura o namespace dentro da string recuperada e salva por referencia o namespace recuperado
+                        preg_match_all("/(namespace{1} *([a-z0-9_\\\\])+ *)/i",$fileToString,$getNameSpace);
+                        $namespace = sizeof($getNameSpace) > 0 ? $getNameSpace[0] : null;
+                        //Recupera o nome da Classe pelo nome do arquivo
+                        //Ambos tem que serem iguais
+                        $broken = explode(".",$nameModule);
+                        //Atribui isoladamente o nome da Classe
+                        $module = $broken[1];
+                        //Define o namespace obrigatorio \Modules\ModuleName\ClassName
+                        $supplyModule = trim(preg_replace('/namespace/','',$namespace[0]));
+                        //Define o name space da classe, tenta recuperar o namespace pelo arquivo, caso exista utiliza a existente
+                        #caso não exista, retorna a opção padrão.
+                        # --> Os modelos só serão instanciados se existir namespace, caso contrario nem mesmo instancia
+                        #deve-se seguir o padrão minimo PSR-0
+                        $nameSpaceClass = empty($namespace) ? '\Modules\\'.$module.'\\'.$module : $supplyModule.'\\'.$module;
+                        if(class_exists($nameSpaceClass)){
+                            #Lista as interfaces implementadas da classe (modelo, ou seja, não é objeto)
+                            $classImplements = class_implements($nameSpaceClass);
+                            //Verifica no array de implementações se a interface ActiveSidebar existe
+                            if(in_array('Interfaces\ActiveSidebar',$classImplements)){
+                                //Se existir, instancia a classe qualificada
+                                $instance = new $nameSpaceClass();
+                                //Salva o objeto criado no array;
+                                $Object[] = $instance;
+                            }
+                        }
+                    }
+                }
+            }
+            //Retorna o objeto para uso
+            return $Object;
+        }
+        catch (ErrorException $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            throw new ErrorException($msg);
+        }
+        catch (Throwable $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            throw new EngineException($msg);
+        }
+
+    }
+
+    /***
+     * @inheritdoc a sequencia de listagem dos GETS de endereçamento do browser
+     * é seguida do menor para o maior Ex: $_GET[0] -> $_GET[1]...
+     *
+     * Mediador de acesso das páginas - Atribui o inicializador do modulo baseado no
+     * recebimento do get do browser
+     * --> O Get está definido em $this->gets[]
+     * <> Não é possivel alterar a extensao do arquivo
+     * @throws EngineException
+     * @throws \Exceptions\PermissionException
+     * @throws ErrorException
+     */
+    public function pageMediator(&$Title, &$actionInterface){
+        /***
+         * Nivel inicial de atribuição do controle
+         */
+        try{
+            #Recupera os objetos inicializados e instanciados
+            $QualifiedModules = $this->ListQualifiedModules();
+            #Primeiro Get do navegador
+            # ==> Get principal de ação da página. Nesse sistema, o padrão funciona
+            # com base em URL amigavel .htaccess
+            $class = empty($this->gets()[0]) ? null :  $this->gets()[0];
+            $instance = null;
+            /**
+             * @internal Itera em todos os modulos instanciados
+             * para futura inicialização
+             */
+            for($i = 0; $i < count($QualifiedModules); $i++){
+                #Verifica o GET recebido com o nome salva do módulo
+                if($class == $QualifiedModules[$i]->getName()){
+                    //Se encontrar atribui o valor a variavel instance
+                    $instance = $QualifiedModules[$i];
+                    //Interrompe a iteração para seguir com o init
+                    break;
+                }
+            }
+            //Verifica se a instancia é instancia da interface Component
+            if($instance instanceof \Abstracts\Component){
+                //var_dump($instance);
+                //inicializa o modulo a partir do GET PageAction do Sistema
+                $instance->init($this->gets());
+                $Title = $instance->getTitle();
+                $actionInterface = $instance->getActionInterface();
+                //$moduleMenu = $instance->getModuleMenu();
+            }
+
+        }
+        catch (\Exceptions\PermissionException $exception){
+            throw new \Exceptions\PermissionException($exception->getMessage());
+        }
+        catch (ErrorException $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            //\Modules\BoxMessage::show('ais-wrong',_tr('engine_error'),$msg);
+            throw new ErrorException($msg);
+        }
+        catch (Throwable $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            //\Modules\BoxMessage::show('ais-wrong',_tr('engine_error'),$msg);
+            throw new EngineException($msg);
+        }
+    }
+
+    /***
+     * @inheritdoc a sequencia de listagem dos GETS de endereçamento do browser
+     * é seguida do menor para o maior Ex: $_GET[0] -> $_GET[1]...
+     *
+     * Mediador de requisições - Atribui o inicializador do modulo baseado no
+     * recebimento de get assincronos https ou https
+     * --> O Get está definido em $this->gets[]
+     * <> Não é possivel alterar a extensao do arquivo
+     * @throws EngineException
+     * @throws \Exceptions\PermissionException
+     * @throws ErrorException
+     */
+    public function requestMediator(...$requests) {
+        /***
+         * Nivel inicial de atribuição do controle
+         */
+        try{
+            //print_r($this->gets());
+            #Recupera os objetos inicializados e instanciados
+            $QualifiedModules = $this->ListQualifiedModules();
+            #Primeiro Get do navegador
+            # ==> Get principal de ação da página. Nesse sistema, o padrão funciona
+            # com base em URL amigavel .htaccess
+            $class = empty($this->gets()[0][0]) ? null :  $this->gets()[0][0];
+            $instance = null;
+            /**
+             * @internal Itera em todos os modulos instanciados
+             * para futura inicialização
+             */
+            for($i = 0; $i < count($QualifiedModules); $i++){
+                #Verifica o GET recebido com o nome salva do módulo
+                if($class == $QualifiedModules[$i]->getName()){
+                    //Se encontrar atribui o valor a variavel instance
+                    $instance = $QualifiedModules[$i];
+                    //Interrompe a iteração para seguir com o init
+                    break;
+                }
+            }
+
+            //Verifica se a instancia é instancia da interface ModularInit
+            #observado a partir da abstração Component que implementa ModularInit
+            if($instance instanceof \Abstracts\Component){
+                //inicializa o modulo a partir do GET so system do Sistema
+                //A matriz aplicada no request ao inves do vetor como existe no pageMediador
+                //se da ao fato de que os dados recebidos no instanciador está com um parametro
+                //e nao multiplos parametros como no pageMediator.
+                $instance->requests($this->gets()[0][1],$this->gets()[0][2],$this->gets()[0][3]);
+            }
+
+        }
+        catch (\Exceptions\PermissionException $exception){
+            throw new \Exceptions\PermissionException($exception->getMessage());
+        }
+        catch (ErrorException $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            throw new ErrorException($msg);
+        }
+        catch (Throwable $exception){
+            $msg = 'ERROR: '.$exception->getCode()."-".$exception->getLine().'<br>'.$exception->getMessage();
+            throw new EngineException($msg);
+        }
+    }
+}

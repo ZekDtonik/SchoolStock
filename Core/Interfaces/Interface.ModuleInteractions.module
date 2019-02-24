@@ -1,0 +1,21 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 11/05/2018 - 01:38
+ * Acctos : Interface.ModuleInteractions.moduleons.module
+ */
+
+namespace Interfaces;
+
+
+interface ModuleInteractions
+{
+    /** @inheritdoc Retorna a interface de Modulo de menu, implementado pela biblioteca do módulo
+     * qualquer nome de metodo pode ser criado para definir a estrutura da interface de menus que ficaram
+     * na barra de breadCrumb
+     * @important não é qualquer interface grafica, vide @markdown module-menu-basic.md para construção apropriada
+     * @return mixed Retorna a variavel que salva a string construtora do menu do módulo para ser apresentado
+    */
+    public function getMenuInteractive();
+}

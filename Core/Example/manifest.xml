@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <module>Employee</module>
+    <module_name_translate>employee</module_name_translate>
+    <module_description_translate>employee_manager</module_description_translate>
+    <version>1.0.0</version>
+    <author>Kevin Marques</author>
+    <permission>
+        <minimal_required>1.2.4.0</minimal_required>
+        <show_manager>true</show_manager>
+    </permission>
+    <develop_comment>Gestor funcionários da empresa</develop_comment>
+    <hashsum>aef74b7226a0290f8332740d384add4c</hashsum>
+</manifest>

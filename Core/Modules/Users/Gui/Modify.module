@@ -1,0 +1,78 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 17/07/2018 - 23:49
+ * Grh : EditUsers.module
+ */
+
+namespace Modules\Application\Users\GraphicInterface;
+
+
+use Interfaces\ThrowableAll;
+use Modules\BoxMessage;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Modify
+{
+    private $sql;
+    private $authidToEdit;
+    private $moduleName;
+
+    public function getSql() { return $this->sql; }
+    private function getModuleName() { return $this->moduleName; }
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    public function setAuthidToEdit($authidToEdit) { $this->authidToEdit = $authidToEdit; }
+    private function getAuthidToEdit() { return $this->authidToEdit; }
+    public function __construct($ModuleName) {
+        $this->setModuleName($ModuleName);
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        try{
+            if(null === $this->getAuthidToEdit()){
+                BoxMessage::show('ais-wrong',_tr('user_authid_not_found'),_tr('authid_identification_need_not_found_start_again'));
+            }
+            else{
+                //Recupera as informações do usuário que esta sendo editado
+                $recoverUserData = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+                $recoverUserData->bindValue(1,$this->getAuthidToEdit());
+                $recoverUserData->execute();
+
+                if($recoverUserData->rowCount()){
+                    $fetchUser = $recoverUserData->fetch(\PDO::FETCH_ASSOC);
+                    $active = $fetchUser['status'] == 1 ? 'checked="checked"' : '';
+                    $Parser = [];
+                    $Parser['title_user'] = _tr('edit_user');
+                    $Parser['value_name'] = $fetchUser['name'];
+                    $Parser['value_lastname'] =$fetchUser['lastname'];
+                    $Parser['value_email'] =$fetchUser['email'];
+                    $Parser['value_email_alt'] =$fetchUser['emailAlt'];
+                    $Parser['value_login'] =$fetchUser['login'];
+                    $Parser['value_password'] ='';//$fetchUser['password'];
+                    $Parser['pass_red_in_edit'] = 'rHidden';
+                    $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
+                    $Parser['checked_active'] = $active;
+
+                    //Dados para Ativação de Data-send
+                    $dataSendPost = [];
+                    $dataSendPost['url'] = _system.$this->getModuleName().DS.'edit'.DS.$this->getAuthidToEdit().DS.System::getAccessToken();
+                    $dataSendPost['method'] = 'POST';
+                    $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($dataSendPost)).'"';
+                    $templateNew = new Template(APP_ROOT.DS.MODULES_PATH.DS.$this->getModuleName().DS."Gui/Views/formUser.tpl",$Parser,true);
+                    echo $templateNew->showTemplate();
+                }
+                else{
+                    BoxMessage::show('ais-wrong',_tr('user_authid_not_found'),_tr('authid_identification_need_not_found_start_again'));
+                }
+            }
+            ;
+        }
+        catch (ThrowableAll $e){
+            echo $e->getMessage();
+        }
+
+    }
+}

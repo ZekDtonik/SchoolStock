@@ -1,0 +1,89 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 20/07/2018 - 10:36
+ * Grh : ActiveUser.module
+ */
+
+namespace Modules\Application\Users\Manager;
+
+
+use Modules\CNN;
+use Modules\System;
+
+class Active
+{
+    private $sql;
+    private $authId;
+    private $accessToken;
+
+    private function getAccessToken() { return $this->accessToken; }
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    private function getAuthId() { return $this->authId; }
+    public function setAuthId($authId) { $this->authId = $authId; }
+    private function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        if($this->getAccessToken() != System::getAccessToken()){
+            $this->message('error',_tr('activation_user'),_tr('invalid_access_token'),false);
+        }
+        else if(null === $this->getAuthId()){
+            $this->message('error',_tr('activation_user'),_tr('user_authid_not_found'),false);
+        }
+        else{
+            $qu = $this->getSql()->prepare("SELECT * FROM ".__USERS." WHERE authid=?");
+            $qu->bindValue(1,$this->getAuthId());
+            $qu->execute();
+
+            if($qu->rowCount() == 0){
+                $this->message('error',_tr('activation_user'),_tr('user_authid_is_invalid'),false);
+            }
+            else{
+                $fetch = $qu->fetch(\PDO::FETCH_ASSOC);
+                $status = $fetch['status'];
+                //nao pode alterar status de super usuário
+                if($status == 4){
+                    $this->message('info',_tr('activation_user'),_tr('impossible_change_super_user_status'),false);
+                }
+                else{
+                    //Caso o estado seja ativo, inverte, caso nao ativo, inverte;
+                    // se true (> false; se false (> true;
+                    $setSt = $status == 1 ? 2 : 1;
+                    $change = $this->getSql()->prepare("UPDATE ".__USERS." SET status=? WHERE authid=? ");
+                    $change->bindValue(1,$setSt);
+                    $change->bindValue(2,$this->getAuthId());
+                    $change->execute();
+
+                    if($change){
+                        if($setSt == 1){$msg = _tr('user_status_activated');}else{$msg= _tr('user_status_deactivated');}
+                        $this->message('success',_tr('activation_user'),$msg,true);
+                    }
+                    else{
+                        $this->message('warning',_tr('activation_user'),_tr('impossible_to_change_user_status'),false);
+                    }
+                }
+            }
+        }
+    }
+    private function message($type = null,$title,$msg, $success = false){
+        $useType = null;
+        if($type != 'error' && $type != 'warning' &&$type != 'success' && $type != 'info' ){
+            $useType = 'info';
+        }
+        else{
+            $useType = $type;
+        }
+        $pctMsg = [];
+        $pctMsg['type'] = $useType;
+        $pctMsg['title'] = $title;
+        $pctMsg['msg'] = $msg;
+        $pctMsg['success'] = $success;
+
+        $JSON = json_encode($pctMsg);
+        echo $JSON;
+
+    }
+}

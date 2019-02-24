@@ -1,0 +1,17 @@
+    #Options -Indexes
+
+    RewriteEngine on
+
+    #RewriteCond %{REQUEST_URI} -f
+    #RewriteCond %{REQUEST_URI} -d
+    #RewriteRule ^(.*)$ /Grh/$1 [L]
+    #RewriteBase /
+    RewriteBase /
+
+    RewriteCond %{SCRIPT_FILENAME} !-f [OR]
+    RewriteCond %{SCRIPT_FILENAME} !-d
+
+    RewriteRule ^(app)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/? app.php?page=$2&level1=$3&level2=$4&level3=$5&level4=$6&level5=$7 [NC,L,QSA]
+    RewriteRule (system)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/? index.php?page=$1&level1=$2&level2=$3&level3=$4&level4=$5&level5=$6 [NC,L]
+    RewriteRule ^(Installer)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/? install/index.php?page=$1&level1=$2&level2=$3&level3=$4&level4=$5&level5=$6 [NC,L]
+    RewriteRule ^(setup)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/?([a-zA-Z_0-9\-=+%]*)/? install/making.php?page=$1&level1=$2&level2=$3&level3=$4&level4=$5&level5=$6 [NC,L]

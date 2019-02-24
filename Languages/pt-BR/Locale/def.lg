@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+    <on>LIG.</on>
+    <off>DSL.</off>
+    <hours>Horas</hours>
+    <register_date>Data de cadastro</register_date>
+    <name>Nome</name>
+    <last_name>Sobrenome</last_name>
+    <back>Voltar</back>
+    <return>Retornar</return>
+    <view>Visualizar</view>
+    <delete>Excluir</delete>
+    <audit>Auditoria</audit>
+    <list>Listar</list>
+    <cid>CID</cid>
+    <role>Cargo</role>
+    <user_login>Login de Usuário</user_login>
+    <spawn_date>Data de Nascimento</spawn_date>
+    <report>Relatório</report>
+    <employee>Funcionário</employee>
+    <default_email>Email padrão</default_email>
+    <email>Email</email>
+    <no_inform>Sem Informações</no_inform>
+    <email_alt>Email Alternativo</email_alt>
+    <language>Idioma</language>
+    <system>Sistema</system>
+    <profile>Perfil</profile>
+    <logout>Desconectar</logout>
+    <clock_time>Horário</clock_time>
+    <active_account>Ativar conta</active_account>
+    <useful_link_time>Tempo útil do link</useful_link_time>
+    <clock_time_session>Tempo de sessão!</clock_time_session>
+    <session_time>Tempo de Sessão sem Recarregar a página!</session_time>
+    <last_logged_date>Último Acesso</last_logged_date>
+    <actual_page>Página principal atual.</actual_page>
+    <credentials>Suas Credenciais, Identifica seu nível de acesso ao sistema.</credentials>
+    <global_credentials>Credenciais</global_credentials>
+    <history>Histórico</history>
+    <invalid_access_token>Token de segurança inválido, recarregue a página</invalid_access_token>
+    <definitions>Definições</definitions>
+    <user_credentials>Credenciais de usuários</user_credentials>
+    <login>Login</login>
+    <password>Senha</password>
+    <access>Acesso</access>
+    <access_denied>Acesso Negado</access_denied>
+    <logon>Logar</logon>
+    /* Days of Week*/
+    <sunday>Domingo</sunday>
+    <monday>Segunda</monday>
+    <tuesday>Terça</tuesday>
+    <wednesday>Quarta</wednesday>
+    <thursday>Quinta</thursday>
+    <friday>Sexta</friday>
+    <saturday>Sábado</saturday>
+    <sday>D</sday>
+    <mday>S</mday>
+    <tuday>T</tuday>
+    <wday>Q</wday>
+    <thday>Q</thday>
+    <fday>S</fday>
+    <saday>S</saday>
+    <acctos_guardian>Acctos Guardian</acctos_guardian>
+    <hello>Olá</hello>
+    <user_avatar>Imagem de Perfil do Usuário</user_avatar>
+    <disconnect>Desconectar</disconnect>
+    <placeholder_search_tip>Buscar por...</placeholder_search_tip>
+    <send></send>
+    <no_credited>Não Credenciado</no_credited>
+    <warning>Aviso</warning>
+    <add_of>Adição de</add_of>
+    <edit_of>Edição de</edit_of>
+    <matter_new>Nova Disciplina</matter_new>
+    <matter_edit>Editar Disciplina</matter_edit>
+    <matter_del>Remover Disciplina</matter_del>
+    <your_ip>Seu IP</your_ip>
+    <resend_email>Reenviar Email</resend_email>
+    <none_email_received>Não recebi nenhum email!</none_email_received>
+    <savebook>Adicionar a Estante</savebook>
+    <editbook>Editar Livro</editbook>
+    <code>Código</code>
+    <anti_fraud_nick_name>Apelido para identificação</anti_fraud_nick_name>
+    <authorize>Autorizar Uso</authorize>
+    <login_info>Informações de Acesso</login_info>
+    <sessions>Sessões</sessions>
+    <biography>Biografia</biography>
+    <spawn_uf>UF de nascimento</spawn_uf>
+    <yes>SIM</yes>
+    <no>NÃO</no>
+    <extras>Extras</extras>
+    <password_new>Nova Senha</password_new>
+    <password_match>Confirme a Senha</password_match>
+    <passwords_not_match>As senhas não combinam!</passwords_not_match>
+    <reset_password>Redefinir Senha</reset_password>
+    <update>Atualizar</update>
+    <save>Salvar</save>
+    <cancel>Cancelar</cancel>
+    <read>Leitura</read>
+    <add>Adição</add>
+    <edit>Edição</edit>
+    <edit_account>Editar Conta</edit_account>
+    <del>Exclusão</del>
+    <matutinal>Matutino</matutinal>
+    <vespertine>Vespertino</vespertine>
+    <nightly>Noturno</nightly>
+    <other>Outros</other>
+    <library>Biblioteca</library>
+    <activities>Atividades</activities>
+    <insert_copie_code>Insira o código do exemplar</insert_copie_code>
+    <goto_copies>Ir para Exemplares</goto_copies>
+    <falculty_start>1º Semestre</falculty_start>
+    <shift>Turno</shift>
+    <classes>Turma</classes>
+    <minimize>Minimizar</minimize>
+    <maximize>Maximizar</maximize>
+    <labeled>Rotulado</labeled>
+    <news>Novo</news>//1
+    <regular>Regular</regular>//2
+    <damaged>Danificado</damaged>//3
+    <precarious>Precário</precarious>//4
+    <unusable>Inutilizável</unusable>//5
+    <not_defined>Não Definido</not_defined>
+    <list_order>Ordem de Listagem</list_order>
+    <order_for>Ordenar por</order_for>
+    <user_photo>Foto do Usuário</user_photo>
+    <labels_list_for>Lista de Rotulação para</labels_list_for>
+    <labels>Rótulos</labels>
+    <copies>Exemplares</copies>
+    <saved>Salvo!</saved>
+    <configs>Configurações</configs>
+    <loading>Carregando. Aguarde!</loading>
+    <available>Disponível</available>
+    <license_time>Tempo de licença (em Dias)</license_time>
+    <loan_details>Detalhes do Empréstimo</loan_details>
+    <reserve_details>Detalhes da Reserva</reserve_details>
+    <specific_fine_value>Valor específico de multa</specific_fine_value>
+    <additional_changes>Definições Adicionais</additional_changes>
+    <expire_date>Data de Validade</expire_date>
+    <giveback_date>Data de Devolução</giveback_date>
+    <fine_paid>Multa Paga</fine_paid>
+    <nothing_found>Nada Encontrado!</nothing_found>
+    <book_added>Livro Adicionado!</book_added>
+    <book_edited>Livro Atualizado!</book_edited>
+    <remove_book>Remover Livro</remove_book>
+    <login_field_alt>Login de usuário!</login_field_alt>
+    <password_field_alt>Senha de usuário</password_field_alt>
+    <confirm_password_field_alt>Confirmação de Senha de usuário</confirm_password_field_alt>
+    <mail_field_alt>Email de usuário!</mail_field_alt>
+    <submit_button_login>Fazer Login</submit_button_login>
+    <submit_button_mail>Enviar Email</submit_button_mail>
+    <submit_button_save_pass>Salvar Nova Senha</submit_button_save_pass>
+    <welcome_to_app>Bem-vindo a Acctos</welcome_to_app>
+    <easy_way_to_teacher>O meio mais fácil de ensinar!</easy_way_to_teacher>
+    <organize_manage_easy_access_for_all>Organize, gerencie e facilite o acesso para todos.
+    </organize_manage_easy_access_for_all>
+    <control_panel>Painel de Controle</control_panel>
+    <login_user>Acesse sua conta na Acctos</login_user>
+    <access_pass_login>Sua senha de acesso.</access_pass_login>
+    <new_pass_login>Nova senha de acesso.</new_pass_login>
+    <confirm_pass_login>Confirme a nova senha</confirm_pass_login>
+    <access_user_login>Seu login de acesso.</access_user_login>
+    <access_email_user>Seu email de usuário.</access_email_user>
+    <forgot_password>Esqueci minha senha!</forgot_password>
+    <violation_of_terms_of_use>Violação dos Termos de uso!</violation_of_terms_of_use>
+    <privacy_police>Politica de Privacidade</privacy_police>
+    <the_parent_request>A pedido dos Pais</the_parent_request>
+    <requested_by_user>A pedido do usuario</requested_by_user>
+    <contact_auth>Contate a administração!</contact_auth>
+    <recover_lost_password>Recuperação de senha</recover_lost_password>
+    <system_recovery>Sistema de Recuperação</system_recovery>
+    <teaching_fundamental>Ensino Fundamental</teaching_fundamental>
+    <teaching_regular>Ensino Médio</teaching_regular>
+    <teaching_superior>Ensino Superior</teaching_superior>
+    <teaching_additional>Ensino Suplementar</teaching_additional>
+    <teaching_tecnic>Ensino Tecnico</teaching_tecnic>
+    <teaching_masters_degree>Mestrado</teaching_masters_degree>
+    <teaching_bachelor_degree>Bacharelado</teaching_bachelor_degree>
+    <teaching_doctorate_degree>Doutorado</teaching_doctorate_degree>
+    <teaching_postdoctoral>Pós-Doutorado</teaching_postdoctoral>
+    <teaching_graduation>Licenciatura</teaching_graduation>
+    <teaching_technologist>Tecnólogo</teaching_technologist>
+    <teaching_others>Outros...</teaching_others>
+    <terms_of_use_violed>Termos de uso violados.</terms_of_use_violed>
+    <admin_blocked>Este usuário administrativo  está bloqueado e impossibilitado de realizar qualquer operação!</admin_blocked>
+    <make_register>Efetivar Matrícula!</make_register>
+    <not_available>Não disponível</not_available>
+    <duplicated_value_in_field>Existe valores duplicados no campo</duplicated_value_in_field>
+    <cannot_proceed>Impossível continuar.</cannot_proceed>
+    <new_book>Cadastro de Novo Livro</new_book>
+    <reserve_book>Reservar Livro</reserve_book>
+    <call_number>Número de Chamada</call_number>
+    <copies_quantity>Total de Exemplares</copies_quantity>
+    <password_alteration>Alteração de Senha</password_alteration>
+    <actual_password>Senha Atual</actual_password>
+    <male>Masculino</male>
+    <female>Feminino</female>
+    <user>Usuário</user>
+    <student>Aluno</student>
+    <students>Alunos</students>
+    <teacher>Professor</teacher>
+    <director>DIRETOR</director>
+    <librarian>Bibliotecario</librarian>
+    <administrator>Administrador</administrator>
+    <manager>Gestor</manager>
+    <dean>Reitor</dean>
+    <new_button>Novo</new_button>
+    <add_extras>Adicionar Extras</add_extras>
+    <close_page>Fechar</close_page>
+    <users>Usuários</users>
+    <search_terms>Termos de busca</search_terms>
+    <search_terms_for>Termos de busca para</search_terms_for>
+    <filter_by>Filtrar por</filter_by>
+    <arrange>Organizar por</arrange>
+    <order_by>Ordenar</order_by>
+    <search_for>Buscar por</search_for>
+    <shelf>Estante</shelf>
+    <actived>Ativo</actived>
+    <inactive>Inativo</inactive>
+    <asterisc_field_need_to_be_filled>Campos com ( * ) são obrigatórios!</asterisc_field_need_to_be_filled>
+    <other_actions>Outras Ações</other_actions>
+    <invalid_group_name>Nome do grupo de usuário inválido.</invalid_group_name>
+    <all_fields_need_to_be_filled>Todos os campos precisam ser preenchidos.</all_fields_need_to_be_filled>
+    <ascendent>Crescente</ascendent>
+    <descendent>Decrescente</descendent>
+    <reset>Redefinir</reset>
+    <actions>Ações</actions>
+    <date_created>Data de Criação</date_created>
+    <description>Descrição</description>
+    <apply>Aplicar</apply>
+    <configs_system_page>Configurações de todo sistema!</configs_system_page>
+    <configs_profile_page>Configurações de usuário atual</configs_profile_page>
+    <logout_actual_session>Desconecta da sessão atual</logout_actual_session>
+    <only_visible>Somente Visiveis</only_visible>
+    <none_result_found>Não encontramos resultados para este filtro</none_result_found>
+    <none_result_found_descr>Nenhum resultado foi encontrado com as definições aplicadas!</none_result_found_descr>
+    <no_specified>Não Especificado!</no_specified>
+    <data_corrupted>Dados corrompidos</data_corrupted>
+    <data_corrupted_description>Impossível realizar esta ação porque os dados recebidos estão corrompidos!
+    </data_corrupted_description>
+    <father_name>Nome do Pai</father_name>
+    <mother_name>Nome da Mãe</mother_name>
+    <genre>Gênero</genre>
+    <status>Estado</status>
+    <visibility>Visibilidade</visibility>
+    <acronym>Acrônimo</acronym>
+    <tools>Ferramentas</tools>
+    <student_identification>Identificação do Aluno</student_identification>
+    <address>Endereço</address>
+    <student_documents>Documentação do Aluno</student_documents>
+    <residency_address>Endereço Residencial</residency_address>
+    <postal_code>Codigo Postal (CEP)</postal_code>
+    <home_number>Número Residencial</home_number>
+    <district>Bairro/Distrito</district>
+    <state>Estado</state>
+    <country>País</country>
+    <uf>UF</uf>
+    <city>Cidade</city>
+    <address_reference>Referência de Endereço</address_reference>
+    <telephone>Telefone</telephone>
+    <telephone_alt>Telefone Alternativo</telephone_alt>
+    <general_register>Registro Geral</general_register>
+    <id_card>Carteira de Identidade</id_card>
+    <id_card_expedition_organ>Orgão Expedidor</id_card_expedition_organ>
+    <id_card_expedition_date>Date de Expedição</id_card_expedition_date>
+    <nationality>Nacionalidade</nationality>
+    <militar_doc>Documento Militar</militar_doc>
+    <militar_doctype>Tipo de Doc. Militar</militar_doctype>
+    <reservist>Reservista</reservist>
+    <dispensed>Dispensado</dispensed>
+    <ctps>CTPS - Carteira Nacional de Trabalho</ctps>
+    <ctps_serie>CTPS - Número de Série</ctps_serie>
+    <ctps_organ>CTPS Orgão Expedidor</ctps_organ>
+    <ctps_exp_date>CTPS Data de Expedição</ctps_exp_date>
+    <ctps_uf>CTPS UF</ctps_uf>
+    <cnh>CNH - Carteira de Habilitação</cnh>
+    <cnh_exp_date>CNH Data de Expedição</cnh_exp_date>
+    <voter_title_number>Número do Título de Eleitor</voter_title_number>
+    <voter_title_section>Sessão do Título de Eleitor</voter_title_section>
+    <voter_title_zone>Zona do Título de Eleitor</voter_title_zone>
+    <passport>Passaporte</passport>
+    <passport_exp_date>Data de Expedição do Passporte</passport_exp_date>
+    <demography_area>Área Demográfica</demography_area>
+    <rural>Zona Rural</rural>
+    <urban>Zona Urbana</urban>
+    <student_contact>Contato</student_contact>
+    <student_carrer_info>Informações do Curso</student_carrer_info>
+    <student_carrer_info_schooling>Informações do Curso e Escolaridade</student_carrer_info_schooling>
+    <socioeconomic_questionnaire>Questionário Sócio-econômico</socioeconomic_questionnaire>
+    <home_institution>Instituição de Origem</home_institution>
+    <career>Curso</career>
+    <career_type>Tipo de Curso</career_type>
+    <career_info>Informações do Curso</career_info>
+    <campus>Campus</campus>
+    <polo>Local - POLO</polo>
+    <vagancy_type>Tipo de Vaga</vagancy_type>
+    <entry_form>Forma de ingresso</entry_form>
+    <ethnicity>Etnia/Raça</ethnicity>
+    <primal_grid_school>Ensino Fundamental</primal_grid_school>
+    <medium_grid_school>Ensino Médio</medium_grid_school>
+    <net_primal_grid_school>Rede do Ensino Fundamental</net_primal_grid_school>
+    <net_medium_grid_school>Rede do Ensino Médio</net_medium_grid_school>
+    <super_dotation>Altas Habilidades/Super-dotação</super_dotation>
+    <special_education_needs>Necessidades Educacionais Especiais</special_education_needs>
+    <special_education_needs_sensorial>Necessidades Especiais Sensoriais</special_education_needs_sensorial>
+    <special_education_needs_type>Tipo de Necessidades Especiais</special_education_needs_type>
+    <nis>NIS - Número de identificação Social (PIS, PSEP ou INSS-CI)</nis>
+    <enroller_matriculation>Efetivador da Matrícula</enroller_matriculation>
+    <school_public>Pública</school_public>
+    <school_private>Privada</school_private>
+    <movement>Movimentação</movement>
+    <movements>Movimentações</movements>
+    <circulation>Circulação</circulation>
+    <circulations>Circulações</circulations>
+    <type_of_movement>Tipo de Circulação</type_of_movement>
+    <only_reserve>Somente Reservas</only_reserve>
+    <only_loans>Somente Empréstimos</only_loans>
+    <only_returned>Somente Devolvidos</only_returned>
+    <only_noreturned>Somente Não pDevolvidos</only_noreturned>
+    <loan_fined>Apenas Multados</loan_fined>
+    <loan_unfined>Apenas não Multados</loan_unfined>
+
+    <visual>Visual</visual>
+    <auditory>Auditiva</auditory>
+    <gustatoy>Gustativa</gustatoy>
+    <olfactory>Olfativa</olfactory>
+    <touch>Táctil</touch>
+    <name_cpf_email_rg>Nome do Aluno, CPF, Rg ou Email...</name_cpf_email_rg>
+    <student_name>Nome do aluno</student_name>
+    <details>Detalhes</details>
+    <page>Pagina</page>
+    <pages>Paginas</pages>
+    <isbn>ISBN</isbn>
+    <place_your_file_here>Arraste e solte seu arquivo aqui!</place_your_file_here>
+    <click_here_to_select_file>Clique aqui para selecionar o arquivo.</click_here_to_select_file>
+    <simple_listing>Listagem Simples</simple_listing>
+    <action_completed>Ação Concluída</action_completed>
+    <data_successfully_added>Os dados foram salvos com sucesso!</data_successfully_added>
+    <data_not_saved>Dados que não puderam ser salvos</data_not_saved>
+    <book>Livro</book>
+    <books>Livros</books>
+    <book_id>ID do Livro</book_id>
+    <client>Cliente</client>
+    <javascript_disabled>JavaScript Desabilitado!</javascript_disabled>
+    <app_unable_to_work_properly_without_javascript>O Sistema não pode continuar sem o motor javascript, habilite para prosseguir</app_unable_to_work_properly_without_javascript>
+    <reload_app_to_proceed>Ao terminar recarregue a página!!</reload_app_to_proceed>
+    <all_rights_reserved>Todos os direitos reservados.</all_rights_reserved>
+    <warning_msie_not_supported>Navegador Internet Explorer não suporta a aplicação, atualize seu navegador!</warning_msie_not_supported>
+    <warning_msie_descr><br/><h5>O Internet Explorer não possui tecnologia suficiente para executar a aplicação. Estamos trabalhando para compatibiliza-lo com o nosso sistema, por favor utilize um outro navegador. Desculpe o transtorno.</h5></warning_msie_descr>
+    <logout_all_devices_info>Para maior segurança, ao desconectar, todas as sessões ativas de sua conta serão desconectadas!</logout_all_devices_info>
+    <email_sended>Email enviado com sucesso!</email_sended>
+    <email_sended_to_alternative>Mensagem enviada para o email alternativo!</email_sended_to_alternative>
+    <invalid_nick_for_identification>Apelido de identificação inválido.</invalid_nick_for_identification>
+    <automatic_email_sended_info>Este é um email gerado automaticamente pelo sistema, qualquer mensagem enviada para este email será instantaneamente apagado pelo servidor. Utilize o support para contactarnos.</automatic_email_sended_info>
+    <subject_session_lock_title>Código Para Solicitação de Segurança</subject_session_lock_title>
+    <here_is_the_acctos_guard_code>Aqui está o código do Acctos Guard para liberar o acesso a sua conta.</here_is_the_acctos_guard_code>
+    <use_the_code_above_to_active_new_machine>Utilize o código acima para ativar a máquina especificada, Este código tem validade de 1 hora. Caso não utilize será necessário um novo código.</use_the_code_above_to_active_new_machine>
+    <if_you_received_this_message_and_not_was_you_that_requested>Se você recebeu esta mensagem e não foi você que requisitou, alguem possui seus dados de login e está tentando acessar a sua conta. Para a sua segurança altere imediatamente a senha de sua conta.</if_you_received_this_message_and_not_was_you_that_requested>
+    <to_change_the_password_move_to_your_profile_page>Para redefinir, faça login, vá ao seu perfil de usuário e clique no botao \"Editar Conta\"</to_change_the_password_move_to_your_profile_page>
+    <password_need_to_be_between_length>A senha inserida é inválida, deve estar entre %s e %s caracteres.</password_need_to_be_between_length>
+    <access_authorized>Acesso Autorizado. Bem-Vindo!</access_authorized>
+    <acctos_guard_code>Acctos Guard Código de acesso.</acctos_guard_code>
+    <acctos_guard_reset_pwd>Acctos Guard Recuperação de Senha.</acctos_guard_reset_pwd>
+    <password_change>Senha Alterada!</password_change>
+    <password_not_change>Senha Não Alterada!</password_not_change>
+    <password_change_descr>A sua senha foi alterada com sucesso, você já pode fazer login imediatamente com o nova senha.</password_change_descr>
+    <password_not_change_descr>A sua senha não foi alterada, um procedimento incorreto impediu a alteração da sua senha. </password_not_change_descr>
+    <anti_fraud_security_system>Sistema de Proteção ao Usuário</anti_fraud_security_system>
+    <anti_fraud_security_detect_blocked_eletronic>Este computador ou aparelho móvel não possui autorização para acessar o aplicativo.</anti_fraud_security_detect_blocked_eletronic>
+    <anti_fraud_follow_next_steps_to_proceed>Para prosseguir, siga as etapas abaixo para autorizar o acesso. </anti_fraud_follow_next_steps_to_proceed>
+    <anti_fraud_email_sended_to_mailbox_with_instructions>Enviamos um email para sua caixa de entrada com o PIN necessário para a efetivação!</anti_fraud_email_sended_to_mailbox_with_instructions>
+    <anti_fraud_insert_the_code_received_in_your_email_to_active>Insira o PIN de acesso com 5 dígitos enviado a sua caixa de entrada do email cadastrado para liberar o acesso ao aplicativo.</anti_fraud_insert_the_code_received_in_your_email_to_active>
+    <anti_fraud_almost_done_fill_field_with_nick_name_and_time>Quase Pronto! Para finalizar, defina um nome desta máquina, isso facilita a identificação no painel de controle, em seguida defina um tempo de expiração deste PIN</anti_fraud_almost_done_fill_field_with_nick_name_and_time>
+    <anti_fraud_time_rules>[ul][h5]Informações de Tempo de Acesso: [/h5][li]0: Permanente[h5]Atenção! Esteja ciente que você está utilizando uma maquina privada ou pessoal para esta opção.[/h5][/li][li]1 ~ 180 (Em Dias) [h5]Após o término do tempo especificado a máquina será bloqueada novamente.[/h5][/li][/ul]</anti_fraud_time_rules>
+    <verify_span_box_in_mailbox>Caso você não esteja encontrando o nosso email, tente verificar na caixa de SPAM ou Lixo Eletrônico, alguns provedores não conseguem idenficicar a autenticidade do email recebido e trata como uma mensagem maliciosa.</verify_span_box_in_mailbox>
+    <anti_fraud_not_email_received>Se tiver certeza que não recebeu o email, tente reenviar clicando no botão abaixo!</anti_fraud_not_email_received>
+    <anti_fraud_use_time>Tempo de acesso da máquina.</anti_fraud_use_time>
+    <not_logged_in>você precisa estar logado para completar este procedimento.</not_logged_in>
+    <nick_name_only_accept_characters_alphanumeric_with_accentuations>Apelido para máquina só aceita caracteres alfanuméricos com acentuações.</nick_name_only_accept_characters_alphanumeric_with_accentuations>
+    <day_length_only_accept_numbers>O campo de dias só aceita números</day_length_only_accept_numbers>
+    <not_is_possible_active_perform_this_procedure_because_time_limit_reached>Não é possível realizar este procedimento porque o token expirou.</not_is_possible_active_perform_this_procedure_because_time_limit_reached>
+    <this_code_was_already_used_or_not_is_more_valid>Este código ja foi usado ou não é mais válido</this_code_was_already_used_or_not_is_more_valid>
+    <anti_faund_successful_authorize_new_machine>A autorização da nova maquina foi efetivada. você será redirecionado!</anti_faund_successful_authorize_new_machine>
+    <anti_fraud_cannot_complete_action>Não fo possível completar a ação. Tente novamente mais tarde.</anti_fraud_cannot_complete_action>
+    <day_length_must_be_between_zero_and_one_hundred_eighty>A validade em dias deve estar entre 0(zero) e 180(cento e oitenta).</day_length_must_be_between_zero_and_one_hundred_eighty>
+    <token_used_not_valid>O código inserido não é válido ou ja foi utilizado.</token_used_not_valid>
+    <machine_already_saved>Está maquina já está autorizada para uso, recarregue o aplicação!</machine_already_saved>
+    <book_damage_state_on_exit>Estado do livro no ato do empréstimo</book_damage_state_on_exit>
+    <impossible_save_at_momment>Impossível salvar no momento!</impossible_save_at_momment>
+    <return_date_not_is_valid>O data de devolução informada não é válida!</return_date_not_is_valid>
+    <value_fine_only_accept_numbers>O campo de valor de multa específica só aceita caracteres números.</value_fine_only_accept_numbers>
+    <successfull_update_withdraw_data>Dados do empréstimo foram atualizados.</successfull_update_withdraw_data>
+    <cannot_update_withdraw_data>Não foi possível atualizar os dados do empréstimo no momento.</cannot_update_withdraw_data>
+    <none_book_selected>Nenhum livro Selecionado!</none_book_selected>
+    <max_books_reached>Quantidade de livros por empréstimo alcançado!</max_books_reached>
+    <max_samebooks_reached>Quantidade de livros iguais por emprestimo alcançado!</max_samebooks_reached>
+    <book_has_been_successful_added>O livro foi adicionado com sucesso ao banco de dados.</book_has_been_successful_added>
+    <book_has_been_successful_added_no_upload>O livro foi adicionado com sucesso mas o arquivo de imagem não pôde ser carregado.</book_has_been_successful_added_no_upload>
+    <confirm_exclude_book>Tem certeza que deseja remover este livro?</confirm_exclude_book>
+    <remove_book_description>você esta prestes a remover um livro da biblioteca, esta ação é irreversível. Tem certeza que deseja continuar?</remove_book_description>
+    <the_copie_book_is_unusable>O exemplar %s do livro %s não pode ser emprestado porque está inutilizável.</the_copie_book_is_unusable>
+    <the_copie_book_is_out>O exemplar %s do livro %s já está emprestado, se isso não é verdade e o exemplar está no seu acervo, atualize o banco de dados!</the_copie_book_is_out>
+    <max_same_book_copies_to_user_already_reach>O limite de empréstimo para exemplares idênticos do livro (%s) destinado a este cliente ja foi alcançado, atualmente o limite é de %s, o usuário possui em aberto um empréstimo com o livro especificado!</max_same_book_copies_to_user_already_reach>
+    <user_not_found>Login de usuário não encontrado. Verifique suas informações!</user_not_found>
+    <incorrect_user_or_password>Login e/ou Senha estão incorreto(s).</incorrect_user_or_password>
+    <fields_cannot_be_empty>Os campos não podem ficam em branco!</fields_cannot_be_empty>
+    <student_not_actived>A sua conta de aluno não foi ativada. Verifique seu email com o link de ativação!</student_not_actived>
+    <student_was_blocked_by_auth>Conta bloqueada pela Administração!</student_was_blocked_by_auth>
+    <auth_not_allowed>Usuário Administrativo não foi liberado pelo Diretor.</auth_not_allowed>
+    <cannot_create_login_session>Não foi possível realizar o login. Tente mais tarde.</cannot_create_login_session>
+    <specified_book_already_selected>O exemplar especificado ja foi definido!</specified_book_already_selected>
+    <copie_not_exist>O código do exemplar definido não existe ou foi removido por outro administrador antes de você poder selecionar! Verifique o histórico para possíveis alterações.</copie_not_exist>
+    <specified_copie_is_not_available>O código do exemplar selecionado não está disponível!</specified_copie_is_not_available>
+    <none_copies_selected>Nenhum exemplar do livro \"%s\" foi selecionado!</none_copies_selected>
+    <the_book_have_empty_copies>O livro \"%s\" possúi %s exemplar(es) com o código não definido!</the_book_have_empty_copies>
+    <file_not_detected>Arquivo necessário não detectado!</file_not_detected>
+    <only_one_file_at_a_time>Só é permitido um arquivo por vez!</only_one_file_at_a_time>
+    <file_size_is_too_large>Tamanho do arquivo maior que o permitido.</file_size_is_too_large>
+    <file_type_not_accepted>Tipo de arquivo invalido!</file_type_not_accepted>
+    <file_extension_not_accepted>Extensão do arquivo inválido</file_extension_not_accepted>
+    <user_logged_the>%1\$s logou as %2\$s</user_logged_the>
+    <user_logoff>%1\$s desconectou as %2\$s</user_logoff>
+    <add_item>Novo Item</add_item>
+    <majority_the_data_are_inserted_into_your_db>Majoritariamente os dados foram inseridos no seu banco de dados.</majority_the_data_are_inserted_into_your_db>
+    <this_mail_grant_system_access_to_your_institution>Esta mensagem garante acesso ao sistema sua instituição</this_mail_grant_system_access_to_your_institution>
+    <use_link_to_active_account>Para ativar a sua conta clique no botao abaixo. você será redirecionado para o site e sua conta será ativada.</use_link_to_active_account>
+    <button_may_be_blocked_by_mail_provider>Caso o botão esteja bloqueado baseado no seu provedor de E-mail,copie e cole o link abaixo na barra de endereço do seu navegador.</button_may_be_blocked_by_mail_provider>
+    <remember_this_mail_have_expire_time>Lembre-se! este email tem validade, caso não utilize o link a tempo, uma nova requisição será necessaria para a ativação de sua conta.</remember_this_mail_have_expire_time>
+    <you_can_use_code_to_activate>você também poderá estar utilizando o código para ativação na página de cadastro.</you_can_use_code_to_activate>
+    <account_information>Informações de sua conta</account_information>
+    <access_terms_of_use_and_privacy_police_to_more_information>Para mais informações acesso os termos de uso e a politica de privacidade. </access_terms_of_use_and_privacy_police_to_more_information>
+    <if_information_not_useful_try_use_support>Caso as informações ainda nao alcance o que você deseja saber, utilize do nosso suporte e estaremos te auxiliando no que for necessário!</if_information_not_useful_try_use_support>
+    <data_to_be_send>Dados a serem Enviados</data_to_be_send>
+    <logged_successfully>Login realizado com sucesso!</logged_successfully>
+    <logout_successfully>Desconexão realizada com sucesso!</logout_successfully>
+    <token_access>Token de Acesso</token_access>
+    <bad_access_token>Token de Acesso não reconhecido ou inexistente!</bad_access_token>
+    <user_inactive>Usuário inativo</user_inactive>
+    <super_user>Super Usuário</super_user>
+    <engine_error>Erro no Motor de Execução</engine_error>
+    <session_expired>Sessão Expirada</session_expired>
+    <session_expire_make_login_again>Sua sessão expirou, realize login novamente!</session_expire_make_login_again>
+    <user_name>Nome de Usuário</user_name>
+    <user_status>Status do Usuário</user_status>
+    <nothing_was_changed>Nada foi alterado.</nothing_was_changed>
+    <field_with_required_attribute_is_need_to_be_filled>Os campos com o ícone de requerido [b] %s [/b] devem ser preenchimentos obrigatoriamente.</field_with_required_attribute_is_need_to_be_filled>
+    <internal_error>Erro Interno do Servidor</internal_error>
+    <wrong_template_url_link>A URL especificada de Endereço para o Template está Incorreto</wrong_template_url_link>
+    <the_url_specified_not_is_valid>A URL especificado não e válida.</the_url_specified_not_is_valid>
+    <error_on_template_engine>Erro no Motor de Template</error_on_template_engine>
+    <address_data>Dados de Endereço</address_data>
+    <spawn_city>Cidade de Nascimento</spawn_city>
+    <masculine>Masculino</masculine>
+    <feminine>Feminino</feminine>
+    <select_sex>Selecione seu Sexo</select_sex>
+    <nick>Apelido</nick>
+    <zipcode>Código Postal</zipcode>
+    <documentation>Documentação</documentation>
+    <select_demography>Selecione Área Demográfica</select_demography>
+    <contact_data>Dados de Contato</contact_data>
+    <npp>N.P.P NIS, PIS, PASEP</npp>
+    <database_error>Erro no Bando de Dados</database_error>
+    <you_dont_have_permission_to_do_this>Você não tem permissão para fazer isso!</you_dont_have_permission_to_do_this>
+    <repeat_password>Repita a Senha</repeat_password>
+    <bad_request_on_change_profile_data>Requisição mal resolvida na tentativa de alteração dos dados do perfil de usuário.</bad_request_on_change_profile_data>
+    <fields_with_required_icon_need_to_be_filled>Os campos com o ícone obrigatório [b]%s[/b] precisam ser preenchidos. </fields_with_required_icon_need_to_be_filled>
+    <password_length_need_at_lest>A senha deve ter pelo menos %s caracteres.</password_length_need_at_lest>
+    <successfully_profile_updated>Perfil atualizado com sucesso!</successfully_profile_updated>
+    <impossible_to_update_profile>Impossível atualizar o perfil no momento!</impossible_to_update_profile>
+    <change_profile>Alterar Perfil</change_profile>
+    <last_edited>Última Edição</last_edited>
+    <welcome_to_grh>Bem-Vindo ao GRH Sistema de Recursos Humanos</welcome_to_grh>
+    <recover_password>Recuparação</recover_password>
+    <registered_email_needed_to_be_filled>Preencha o campo abaixo com seu endereço de email cadastrado no sistema para continuar!</registered_email_needed_to_be_filled>
+    <admin_blocked_impossible_to_proceed_with_recovery>Usuário administrativo bloqueado, desta forma, não é possível continuar com a recuperação!</admin_blocked_impossible_to_proceed_with_recovery>
+    <mail_cannot_be_sent>Não foi possível enviar o email ao destinatário no momento! Tente novamente mais tarde.</mail_cannot_be_sent>
+    <email_successfully_send_you_will_be_redirected>As instruções de recuperação foram enviadas com [b]sucesso![/b] você será redirecionado em instantes!</email_successfully_send_you_will_be_redirected>
+    <security_code>Código de Segurança</security_code>
+    <save_new_password>Salvar nova Senha</save_new_password>
+    <email_not_found>Endereço de email inserido não encontrado!</email_not_found>
+    <invalid_password_pattern_need_to_be>Senha inserida inválida, é necessario seguir o padrão [kbd]%s[/kbd]</invalid_password_pattern_need_to_be>
+    <invalid_token>Token de segurança inválido</invalid_token>
+    <at_least_one_capital_letter>Pelo menos uma letra Maiuscula</at_least_one_capital_letter>
+    <token_expired>A validade do Token de segurança Expirou.</token_expired>
+</def>

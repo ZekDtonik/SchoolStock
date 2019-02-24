@@ -1,0 +1,129 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 08/07/2018 - 00:53
+ * Grh : NewCredentialsls.module
+ */
+
+namespace Modules\Application\UserGroup\GraphicInterface;
+
+
+use Interfaces\ThrowableAll;
+use Modules\Application\UserGroup\Manager\ActiveModules;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Modify
+{
+    private $guidToEdit;
+    private $moduleName;
+    private $sql;
+    private function getSql(): \PDO { return $this->sql; }
+    private function getGuidToEdit() { return $this->guidToEdit; }
+    private function getModuleName() { return $this->moduleName; }
+    public function setGuidToEdit($guidToEdit) { $this->guidToEdit = $guidToEdit; }
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    public function __construct($ModuleName,$guid) {
+        $this->sql = CNN::getSql();
+        $this->setModuleName($ModuleName);
+        $this->setGuidToEdit($guid);
+    }
+    public function init(){
+        try{
+            //Recuperando grupo para edição
+            $userGroup = $this->getSql()->prepare("SELECT * FROM see_usergroups WHERE guid=?");
+            $userGroup->bindValue(1,$this->getGuidToEdit());
+            $userGroup->execute();
+            $fetchAllData = $userGroup->fetch(\PDO::FETCH_ASSOC);
+
+            $datasend =[];
+            $datasend['url'] = _system.DS.$this->getModuleName().DS."edit".DS.$this->getGuidToEdit().DS.System::getAccessToken();
+            $datasend['method'] = "POST";
+            //-----------
+            $Parser = [];
+            $Parser['title_user_group'] = _tr('edit_user_group');
+            //----------------------------------------------------------
+            $ActiveModules = new ActiveModules();
+            $listObj = $ActiveModules->getModulesToShow();
+            //==========================================================
+            $pointer = 0;
+            $position = 0;
+            $showObject = '';
+            $total = count($listObj);
+            foreach ($listObj as $item) {
+                //checked variaveis
+                $v = $a = $e = $d = $l = '';
+
+                if(System::isJson($fetchAllData['perms'])){
+                    $jsonData = json_decode($fetchAllData['perms'],true);
+                    if(isset($jsonData[$item['module']])){
+
+                        if(!isset($jsonData[$item['module']]['view'])) $v = '' ; else $v= $jsonData[$item['module']]['view'] == 1 ? "checked='checked'": ''; ;
+                        if(!isset($jsonData[$item['module']]['add'] )) $a = '' ; else $a= $jsonData[$item['module']]['add'] == 1 ? "checked='checked'": '';
+                        if(!isset($jsonData[$item['module']]['edit'])) $e = '' ; else $e= $jsonData[$item['module']]['edit']  == 1 ? "checked='checked'": '';
+                        if(!isset($jsonData[$item['module']]['del'] )) $d = '' ; else $d= $jsonData[$item['module']]['del']  == 1 ? "checked='checked'": '';
+                        if(!isset($jsonData[$item['module']]['list'])) $l = '' ; else $l= $jsonData[$item['module']]['list']  == 1 ? "checked='checked'": '';
+                    }
+
+                }
+                else{
+                    $Parser['checked_system'] = 'checked="checked"';
+                }
+                //------------------------------
+                //Contadores
+                $pointer ++;
+                $position ++;
+                //------------------------------
+                //Construtor de Atribuição de Template
+                $eachModules = [];
+                $eachModules['module_name'] = _tr($item['module_name_translate']);
+                $eachModules['id_obj'] = strtolower($item['module']);
+                $eachModules['input_name'] = $item['module'];
+                $eachModules['checked_v_obj'] = $v;
+                $eachModules['checked_a_obj'] = $a;
+                $eachModules['checked_e_obj'] = $e;
+                $eachModules['checked_d_obj'] = $d;
+                $eachModules['checked_l_obj'] = $l;
+                //-----------------------------------
+                //Atribuidor de Linha para uma quantidade de iterações
+                if($pointer == 1)
+                    $row = "<div class='row jc-between'>";
+                else
+                    $row = '';
+                //----------------------------------
+                if($position < $total && $pointer == 4 || $position == $total){
+                    $rowEnd = "</div>";
+                    $pointer = 0;
+                }
+                else{
+                    $rowEnd = '';
+                }
+                //----------------------------------
+                //Aplicação do template de permissoes
+                $permissionForEach = new Template(APP_ROOT.DS.MODULES_PATH.DS.$this->getModuleName().DS."Gui/Views/Controller/controlPermissions.tpl",$eachModules,true);
+                $showObject .= $row.$permissionForEach->showTemplate().$rowEnd;
+
+            }
+            //Definição do escopo de troca
+            $Parser['permissions'] = $showObject;
+            //----------------------------------------------------------
+            //Edição de Permissoes
+
+            //-------------
+            if($fetchAllData['active']){$Parser['checked_active'] ='checked="checked"';}
+            $Parser['value_name'] =  $fetchAllData['name'];
+            $Parser['value_description'] = $fetchAllData['description'];
+            //Default patterns
+            $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
+            $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$this->getModuleName().DS."Gui/Views/newGroup.tpl",$Parser,true);
+            echo $template->showTemplate();
+        }
+        catch (ThrowableAll $exception){
+            echo $exception->getMessage();
+        }
+
+    }
+}
