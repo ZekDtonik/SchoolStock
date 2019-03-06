@@ -1,0 +1,55 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 08/07/2018 - 19:49
+ * Grh : AddCredential.moduleodule
+ */
+
+namespace Modules\Application\Products\Manager;
+
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Add
+{
+    private $sql;
+    private $accessToken;
+
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        if(empty($_POST['name'])|| empty($_POST['ctgid']) || $_POST['name'] == 'none' || $_POST['ctgid'] == 'none'){
+            System::message('error',"Produtos","Todos os campos do cadastro de produtos devem ser preenchidos.");
+        }
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr("Produtos"),_tr("Recebimento de token de acesso está errado").$this->getAccessToken());
+        }
+           
+       
+            else{
+                $name = $_POST['name'];
+                $ctgid = $_POST['ctgid'];
+                //----
+                $addGroup = $this->getSql()->prepare("INSERT INTO products (name, ctgid) 
+                VALUES (:name, :ctgid)");
+                $addGroup->bindValue(":name",$name);
+                $addGroup->bindValue(":ctgid",$ctgid);
+                $result = $addGroup->execute();
+
+                if ($result){
+                    System::message("success",_tr("Produtos"),_tr("Produto adicionado com sucesso!"));
+
+                }
+                else{
+                    System::message("error",_tr("Produtos"),_tr("Erro ao tentar adicionar o produto requerido."));
+                }
+            
+        }
+    }
+}

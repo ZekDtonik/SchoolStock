@@ -1,0 +1,57 @@
+<?php
+
+
+namespace Modules\Application\Category\GraphicInterface;
+
+
+use Interfaces\ThrowableAll;
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Modify
+{
+    private $ctgidToEdit;
+    private $moduleName;
+    private $sql;
+    private function getSql(): \PDO { return $this->sql; }
+    private function getCtgidToEdit() { return $this->ctgidToEdit; }
+    private function getModuleName() { return $this->moduleName; }
+    public function setCtgidToEdit($ctgidToEdit) { $this->ctgidToEdit = $ctgidToEdit; }
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+    public function __construct($ModuleName,$guid) {
+        $this->sql = CNN::getSql();
+        $this->setModuleName($ModuleName);
+        $this->setCtgidToEdit($guid);
+    }
+    public function init(){
+        try{
+            
+            $datasend =[];
+            $datasend['url'] = _system.DS.$this->getModuleName().DS."edit".DS.$this->getCtgidToEdit().DS.System::getAccessToken();
+            $datasend['method'] = "POST";
+            //-----------
+            $Parser = [];
+            $Parser['user_options'] ='';
+            $Parser['user_group_options']='';
+            //Edição de Permissoes
+            //-------------
+            //Recupera as configurações atuais
+            $cidDefActual = $this->getSql()->prepare("SELECT * FROM category WHERE ctgid=?");
+            $cidDefActual->bindValue(1,$this->getCtgidToEdit());
+            $cidDefActual->execute();
+            $ftCidActual = $cidDefActual->fetch(\PDO::FETCH_ASSOC);
+          
+            //Default patterns
+            $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
+            $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$this->getModuleName().DS."Gui/Views/editCategory.tpl",$Parser,true);
+            echo $template->showTemplate();
+        }
+        catch (ThrowableAll $exception){
+            echo $exception->getMessage();
+        }
+
+    }
+}

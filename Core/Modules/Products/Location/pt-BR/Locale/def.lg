@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+    <cid_not_found>CRD-ID não encontrado.</cid_not_found>
+    <products>Produtos</products>
+    <products_manager>Gerência de Produtos</products_manager>
+    <new_products>Novo Produto</new_products>
+    <active_products>Produtos Ativos</active_products>
+    <no_products_registered>Nenhum Produto Cadastrado</no_products_registered>
+    <!--<none_one_credentials_are_defined_to_users>Nenhuma credencial foi definida aos usuários, desta forma, nenhum usuário poderá realizar qualquer tipo de ação na aplicação.</none_one_credentials_are_defined_to_users>-->
+    <new_product>Novo Produto</new_product>
+    <all_product_fields_need_to_be_filled>Todos os campos do cadastro de produto devem ser preenchidos.</all_product_fields_need_to_be_filled>
+    <!--<credential_combo_already_exist>As credenciais que você está tentando cadastrar já existe com o CID [b]%s[/b]</credential_combo_already_exist>-->
+    <error_on_add_product>Erro ao tentar adicionar o produto requerido.</error_on_add_product>
+    <successfully_product_added>Produto adicionado com sucesso!</successfully_product_added>
+    <product_id>CRD-ID</product_id>
+    <edit_product>Edição de Produto</edit_product>
+    <save_product>Salvar Produto</save_product>
+    <product_successfully_edited>Produto editado com sucesso!</product_successfully_edited>
+    <remove_product>Remoção de Produto</remove_product>
+    <!--<warning_credential_will_be_removed>Atenção! você está prestes a remover uma credencial com as seguintes informações. [br/]O usuário atrelado a este protocolo ficará sem acesso ao sistema.</warning_credential_will_be_removed>-->
+    <product_successfully_removed>Produto removido com sucesso!</product_successfully_removed>
+    <impossible_to_remove_product>Impossível remover este produto no momento.</impossible_to_remove_product>
+    <cid_not_registered>ID do produto informado não existe, ou foi previamente removido.</cid_not_registered>
+    <!--<remember_super_user_not_shows_in_credential_table>Lembre-se: Super-Usuário não aparece na tabela de credenciais, pois, não pode ser editado ou removido.</remember_super_user_not_shows_in_credential_table>
+    <credential_name>Nome da Credencial</credential_name>
+    <total_of_credentials_registered>Total de Credenciais Cadastradas.</total_of_credentials_registered>
+    <you_cannot_remove_credential_that_you_are_using>Não é permitido remover uma credencial em que você esta utilizando.</you_cannot_remove_credential_that_you_are_using>
+    <this_user_already_is_credited>Este usuário já possui uma credencial! Duplicatas não são permitidas.</this_user_already_is_credited>-->
+</def>
