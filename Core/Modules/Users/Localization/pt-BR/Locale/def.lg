@@ -34,4 +34,6 @@
     <enable_user>Ativar Usuário</enable_user>
     <access_data>Dados de Acesso</access_data>
     <register_user>Registrar Usuário</register_user>
+    <successfully_user_added>Usuário adicionado com sucesso</successfully_user_added>
+    <login_name_already_exist>Login de Usuário já existe!</login_name_already_exist>
 </def>

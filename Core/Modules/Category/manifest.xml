@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <module>Category</module>
+    <module_name_translate>category</module_name_translate>
+    <module_description_translate>category_manager</module_description_translate>
+    <version>1.0.0</version>
+    <author>Kevin Marques</author>
+    <permission>
+        <minimal_required>1.2.4.0</minimal_required>
+        <show_manager>true</show_manager>
+    </permission>
+    <develop_comment>Gestor de categoria de produtos</develop_comment>
+    <hashsum>2e3cf72ab728d70ad62933cb99127b6b</hashsum>
+</manifest>

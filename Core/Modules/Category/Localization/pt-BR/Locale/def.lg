@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+    <cat_not_found>CAT-ID não encontrado.</cat_not_found>
+    <categories>Categorias</categories>
+    <category>Categoria</category>
+    <categories_manager>Gerência de Categorias</categories_manager>
+    <new_categories>Nova Categoria</new_categories>
+    <active_categories>Categorias Ativas</active_categories>
+    <no_categories_registered>Nenhuma Categoria Cadastrada</no_categories_registered>
+    <new_category>Nova Categoria</new_category>
+    <error_on_add_category>Erro ao tentar adicionar a categoria requerida.</error_on_add_category>
+    <successfully_category_added>Categoria adicionada com sucesso!</successfully_category_added>
+    <category_id>CAT-ID</category_id>
+    <edit_category>Edição de Categoria</edit_category>
+    <save_category>Salvar Categoria</save_category>
+    <category_successfully_edited>Categoria editada com sucesso!</category_successfully_edited>
+    <remove_category>Remoção de Categoria</remove_category>
+    <category_successfully_removed>Categoria removida com sucesso!</category_successfully_removed>
+    <impossible_to_remove_category>Impossível remover esta categoria no momento.</impossible_to_remove_category>
+    <cat_not_registered>ID da categoria informada não existe, ou foi previamente removida.</cat_not_registered>
+</def>

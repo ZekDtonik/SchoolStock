@@ -2,4 +2,6 @@
 <def>
     <no_book_available>Nenhum livro disponivel</no_book_available>
     <stock_manager>Gerência de Estoque</stock_manager>
+    <stock>Estoque</stock>
+
 </def>

@@ -8,5 +8,6 @@
 
 
 define("APP_ROOT", __DIR__);
+define("ROOT_PATH", APP_ROOT);
 // /storage/ssd2/753/7676753
 ?>

@@ -13,6 +13,7 @@
     <audit>Auditoria</audit>
     <list>Listar</list>
     <cid>CID</cid>
+
     <role>Cargo</role>
     <user_login>Login de Usuário</user_login>
     <spawn_date>Data de Nascimento</spawn_date>
