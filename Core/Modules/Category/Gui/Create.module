@@ -1,0 +1,55 @@
+<?php
+
+namespace Modules\Application\Category\GraphicInterface;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Create
+{
+    private $sql;
+
+    public function getSql() { return $this->sql; }
+    public function __construct($ModuleName) {
+        $this->sql = CNN::getSql();
+        try{
+            $datasend =[];
+            $datasend['url'] = _system.DS.$ModuleName.DS."new".DS.System::getAccessToken();
+            $datasend['method'] = "POST";
+            //
+            //Recupera a lista de usuário
+            $users = $this->getSql()->query("SELECT * FROM ".__USERS);
+            $ftUsers = $users->fetchAll(\PDO::FETCH_ASSOC);
+            //Recuperação de lista de grupo de usuário
+            $groups = $this->getSql()->query("SELECT * FROM see_usergroups");
+            $ftGroups = $groups->fetchAll(\PDO::FETCH_ASSOC);
+            //
+            $Parser = [];
+            $Parser['link_back'] = WWW_PATH.$ModuleName.DS;
+            $Parser['user_options'] ='';
+            $Parser['user_group_options'] ='';
+            //Atribuição de options do select
+            foreach ($ftUsers as $ftUser) {
+                //Apresenta apenas não super-usuário
+                if($ftUser['status'] != 4){
+                    $name = $ftUser['name'].' '.$ftUser['lastname'];
+                    $Parser['user_options'] .= "<option value='".$ftUser['authid']."'>".$name ."</option>";
+                }
+
+            }
+            foreach ($ftGroups as $ftGroup) {
+                $Parser['user_group_options'] .= "<option value='".$ftGroup['guid']."'>".$ftGroup['name']."</option>";
+            }
+            $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/newCategory.tpl",$Parser,true);
+            echo $template->showTemplate();
+        }
+        catch (ThrowableAll $exception){
+            echo $exception->getMessage();
+        }
+
+    }
+}

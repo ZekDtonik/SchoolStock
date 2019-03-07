@@ -1,0 +1,50 @@
+<?php
+/**
+ * Created by MarxMedia.
+ * Author: Kevin Marques
+ * Date: 13/07/2018 - 10:22
+ * Grh : GetDataCredential.moduleodule
+ */
+
+namespace Modules\Application\Products\Manager;
+
+
+use Modules\CNN;
+use Modules\System;
+
+class GetData
+{
+    private $sql;
+    private $moduleName;
+    public function getSql() { return $this->sql; }
+    public function getModuleName() { return $this->moduleName; }
+    public function __construct($moduleName) {
+        $this->sql = CNN::getSql();
+        $this->moduleName = $moduleName;
+    }
+    public function getData($prdid, $accessToken){
+        if(empty($prdid)){
+            System::message('error',_tr('get_data'),_tr('group_id_needed_not_found'));
+        }
+        else if($accessToken != System::getAccessToken()){
+            System::message('error',_tr('get_data'),_tr('access_token_receive_is_wrong'));
+        }
+        else{
+            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM products WHERE prdid=?");
+            $recoverGroupName->bindValue(1,$prdid);
+            $recoverGroupName->execute();
+            $fetchData = $recoverGroupName->fetch(\PDO::FETCH_ASSOC);
+            
+            $sendData = [];
+            $sendData['title'] = _tr("Remover produto");
+            $sendData['msg'] = "Tem certeza que deseja apagar?";
+          //  $sendData['msg'] = $message;
+            //echo getModuleName(); die();
+            $sendData['url'] = _system.DS.'Products'.DS.'remove'.DS.$prdid.DS.System::getAccessToken();
+            $sendData['method'] = 'GET';
+            $sendData['type'] = 'confirm';
+
+            echo json_encode($sendData);
+        }
+    }
+}
