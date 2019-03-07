@@ -1,0 +1,55 @@
+<?php
+
+namespace Modules\Application\Products\Manager;
+
+
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Chg
+{
+    private $sql;
+    private $prdidToEdit;
+    private $accessToken;
+
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    public function getAccessToken() { return $this->accessToken; }
+    public function getPrdidToEdit() { return $this->prdidToEdit; }
+    public function setPrdidToEdit($prdidToEdit) { $this->prdidToEdit = $prdidToEdit; }
+    public function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+
+    }
+    public function init(){
+        if(null == $this->getPrdidToEdit()){
+            System::message('error',_tr('products'),_tr('cid_not_found'));
+        }
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr("Produtos"),_tr("Recebimento de token de acesso está errado"));
+        }
+        else if(empty($_POST['name'] || empty($_POST['ctgid'])) || $_POST['name'] == 'none' || $_POST['ctgid'] == 'none'){
+            System::message('error',_tr("Produtos"),_tr("Todos os campos do cadastro de produto devem ser preenchidos."));
+        }
+        else{
+           
+      
+                //----
+                $editCred = $this->getSql()->prepare("UPDATE products 
+                SET name=:name, ctgid=:ctgid WHERE prdid=:prdid");
+                $editCred->bindValue(":prdid",$this->getPrdidToEdit());
+                $editCred->bindValue(":name",$_POST['name']);
+                $editCred->bindValue(":ctgid",$_POST['ctgid']);
+                $result = $editCred->execute();
+
+                if ($result){
+                    System::message("success",_tr("Produtos"),_tr("Produto editado com sucesso!"));
+                }
+                else{
+                    System::message("error",_tr("Produtos"),_tr("Erro ao adicionar produto."));
+                }
+          
+        }
+    }
+}

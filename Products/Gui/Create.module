@@ -1,0 +1,45 @@
+<?php
+
+namespace Modules\Application\Products\GraphicInterface;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Create
+{
+    private $sql;
+
+    public function getSql() { return $this->sql; }
+    public function __construct($ModuleName) {
+        $this->sql = CNN::getSql();
+        try{
+            $datasend =[];
+            $datasend['url'] = _system.DS.$ModuleName.DS."new".DS.System::getAccessToken();
+            $datasend['method'] = "POST";
+            //
+            //Recuperação de lista de grupo de usuário
+            $groups = $this->getSql()->query("SELECT * FROM category");
+            $ftGroups = $groups->fetchAll(\PDO::FETCH_ASSOC);
+            //
+            $Parser = [];
+            $Parser['link_back'] = WWW_PATH.$ModuleName.DS;
+            $Parser['category_options'] ='';
+            //$Parser['user_group_options'] ='';
+            //Atribuição de options do select
+            
+            foreach ($ftGroups as $ftGroup) {
+                $Parser['category_options'] .= "<option value='".$ftGroup['ctgid']."'>".$ftGroup['name']."</option>";
+            }
+            $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/newProducts.tpl",$Parser,true);
+            echo $template->showTemplate();
+        }
+        catch (ThrowableAll $exception){
+            echo $exception->getMessage();
+        }
+
+    }
+}
