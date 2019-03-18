@@ -30,16 +30,16 @@ class GetData
             System::message('error',_tr('get_data'),_tr('access_token_receive_is_wrong'));
         }
         else{
-            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM category WHERE ctgid=?");
+            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM ".__CATEGORY." WHERE ctgid=?");
             $recoverGroupName->bindValue(1,$ctgid);
             $recoverGroupName->execute();
             $fetchData = $recoverGroupName->fetch(\PDO::FETCH_ASSOC);
             
             $sendData = [];
             $sendData['title'] = _tr('remove_category');
-          //  $sendData['msg'] = $message;
-            //echo getModuleName(); die();
-            $sendData['url'] = _system.DS.'Category'.DS.'remove'.DS.$ctgid.DS.System::getAccessToken();
+            $sendData['msg'] = sprintf(_tr("are_you_sure_remove_category"),$fetchData['name']);
+           
+            $sendData['url'] = _system.DS.$this->getModuleName().DS.'remove'.DS.$ctgid.DS.System::getAccessToken();
             $sendData['method'] = 'GET';
             $sendData['type'] = 'confirm';
 

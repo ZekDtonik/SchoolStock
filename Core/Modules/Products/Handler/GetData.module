@@ -30,16 +30,14 @@ class GetData
             System::message('error',_tr('get_data'),_tr('access_token_receive_is_wrong'));
         }
         else{
-            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM products WHERE prdid=?");
+            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM ".__PRODUCT." WHERE prdid=?");
             $recoverGroupName->bindValue(1,$prdid);
             $recoverGroupName->execute();
             $fetchData = $recoverGroupName->fetch(\PDO::FETCH_ASSOC);
             
             $sendData = [];
-            $sendData['title'] = _tr("Remover produto");
-            $sendData['msg'] = "Tem certeza que deseja apagar?";
-          //  $sendData['msg'] = $message;
-            //echo getModuleName(); die();
+            $sendData['title'] = _tr("remove_product");
+            $sendData['msg'] = sprintf(_tr("are_you_sure_remove_product"),$fetchData['name']);
             $sendData['url'] = _system.DS.'Products'.DS.'remove'.DS.$prdid.DS.System::getAccessToken();
             $sendData['method'] = 'GET';
             $sendData['type'] = 'confirm';

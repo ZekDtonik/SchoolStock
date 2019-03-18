@@ -17,7 +17,10 @@ define("__SYSTEM","system");
 define("__INTIME","users_online");
 define("__USERS","users");
 define("__CREDENTIALS","credentials");
-
+define("__PRODUCT", "products");
+define("__STOCK", "stock");
+define("__TRANSACTIONS", "transactions");
+define("__CATEGORY", "category");
 
 define("_system_index","system");
 define("_system","/system");

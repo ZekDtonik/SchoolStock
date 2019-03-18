@@ -1,0 +1,89 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Stock;
+
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Add
+{
+    private $sql;
+    private $accessToken;
+
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        //Verifica se tem campos vazios
+        if($_POST['productName'] == 'none' || empty($_POST['productQuantity']) || empty($_POST['productQuantityMin']) == 'none'){
+            System::message('error',_tr('stock'),_tr('all_stock_fields_need_to_be_filled'));
+        }
+
+        //Se não verifica se tem acesso
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr('stock'),_tr('access_token_receive_is_wrong').$this->getAccessToken());
+        }
+
+        //Se não verifica duplicidade
+        else{
+            $getData = $this->getSql()->query("SELECT * FROM see_stocks");
+            $fetch = $getData->fetchAll(\PDO::FETCH_ASSOC);
+
+            //Variável de entrada, Combina o authid + guid, gerando um CI, ao qual é comparado verificando ambiguidade
+            $checkComboIn = $_POST['productName'];
+            $alreadyNameExist = false;
+            $cidCopied = null;
+            $alreadyAuthidExist = false;
+            foreach ($fetch as $eachName) {
+                $eaToCheck = $eachName['productName'];
+                if($checkComboIn == $eaToCheck){
+                    $cidCopied =$eaToCheck;
+                    $alreadyNameExist = true;
+                    break;
+                }
+                if($eachName['prdid'] == $_POST['productName']){
+                    $alreadyAuthidExist =true;
+                    break;
+                }
+            }
+            if($alreadyNameExist==true){
+              System::message('warning',_tr('stock'),sprintf(_tr('stock_combo_already_exist'),$cidCopied));
+            } else{
+            //Compara o nome na tabela de produtos para pegar o id
+            $prdid = '';
+            $getData = $this->getSql()->query("SELECT * FROM ".__PRODUCT);
+            $fetch = $getData->fetchAll(\PDO::FETCH_ASSOC);
+            $SelectedName = $_POST['productName'];
+            foreach ($fetch as $eachName) {
+                $eaToCheck = $eachName['name'];
+                if($SelectedName == $eaToCheck){
+                    $prdid = $eachName['prdid'];
+                    break;
+                  }
+              }
+              $addStock = $this->getSql()->prepare("INSERT INTO ".__STOCK." (prdid, quantity, qntMinimum) VALUES (:prdid, :quantity, :qntMinimum)");
+              $addStock->bindValue(":prdid",$prdid);
+              $addStock->bindValue(":quantity",$_POST['productQuantity']);
+              $addStock->bindValue(":qntMinimum",$_POST['productQuantityMin']);
+              $result = $addStock->execute();
+
+              if ($result){
+                  System::message("success",_tr('stock'),_tr('successfully_stock_added'));
+              }
+              else{
+                  System::message("error",_tr('stock'),_tr('error_on_add_stock'));
+              }
+          }
+          }
+        }
+  }

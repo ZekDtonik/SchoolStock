@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <def>
-    <no_book_available>Nenhum livro disponivel</no_book_available>
-    <stock_manager>Gerência de Estoque</stock_manager>
-    <stock>Estoque</stock>
 
+    <stock>Estoque</stock>
+    <no_stock_registered>Nenhum estoque registrado!</no_stock_registered>
+    <none_one_stock_are_defined>Nenhum estoque foi cadastrado, por favor cadastre um novo estoque para consultá-los.</none_one_stock_are_defined>
+    <product_name>Nome do Produto</product_name>
+    <product_quantity>Quantidade</product_quantity>
+    <product_quantity_min>Quantidade Mínima</product_quantity_min>
+    <product_id>ID-PRD</product_id>
+    <stock_register>Cadastrar Estoque</stock_register>
+    <stock_date_basic>Dados de Registro do Estoque</stock_date_basic>
+    <stock_manager>Gerência de Estoque</stock_manager>
+    <stock_on>Estoques Ativos</stock_on>
+    <stock_new>Novo Estoque</stock_new>
+    <stock_edit>Edição de Estoque</stock_edit>
+    <stock_id>EST-ID</stock_id>
+    <stock_qnt>Quantidade</stock_qnt>
+    <stock_qntMin>Quantidade Mínima</stock_qntMin>
+    <all_stock_fields_need_to_be_filled>Todos os campos do cadastro de estoque devem ser preenchidos!</all_stock_fields_need_to_be_filled>
+    <successfully_stock_added>Estoque cadastrado com sucesso!</successfully_stock_added>
+    <error_on_add_stock>Erro ao cadastrar estoque!</error_on_add_stock>
+    <stock_combo_already_exist>O estoque que esta tentando cadastrar já existe  com o CID [b]%s[/b]</stock_combo_already_exist>
+    <stock_successfully_edited>Estoque editado com sucesso!</stock_successfully_edited>
+    <error_on_add_stock>Erro ao editar estoque</error_on_add_stock>
+    <warning_stock_will_be_removed>Atenção! você está prestes a remover um estoque com as seguintes informações.</warning_stock_will_be_removed>
+    <stock_id_needed_not_found>O identificador necessário para a requisição não foi encontrado.</stock_id_needed_not_found>
+    <remove_stock>Remove Estoque</remove_stock>
+    <stock_successfully_removed>Estoque removido com sucesso!</stock_successfully_removed>
+    <impossible_to_remove_stock>Impossível remover estoque!</impossible_to_remove_stock>
 </def>

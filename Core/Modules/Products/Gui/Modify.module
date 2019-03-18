@@ -38,7 +38,7 @@ class Modify
             //Edição de Permissoes
             //-------------
             //Recupera as configurações atuais
-            $cidDefActual = $this->getSql()->prepare("SELECT * FROM products WHERE prdid=?");
+            $cidDefActual = $this->getSql()->prepare("SELECT * FROM ".__PRODUCT." WHERE prdid=?");
             $cidDefActual->bindValue(1,$this->getPrdidToEdit());
             $cidDefActual->execute();
             $ftCidActual = $cidDefActual->fetch(\PDO::FETCH_ASSOC);
@@ -46,7 +46,7 @@ class Modify
            $nomeProduto = $ftCidActual["name"];
             $Parser['prod_name'] = $nomeProduto;
 
-            $groups = $this->getSql()->query("SELECT * FROM category");
+            $groups = $this->getSql()->query("SELECT * FROM ".__CATEGORY);
             $ftGroups = $groups->fetchAll(\PDO::FETCH_ASSOC);
             $Parser['category_options'] ='';
             foreach ($ftGroups as $ftGroup) {

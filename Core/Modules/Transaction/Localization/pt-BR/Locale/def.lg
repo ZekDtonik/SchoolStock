@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def>
+
+    <no_transaction_registered>Nenhuma transação registrada!</no_transaction_registered>
+    <none_one_transaction_are_defined>Nenhuma transação foi registrada no sistema, por favor realize um entrada ou saída do estoque para consultar.</none_one_transaction_are_defined>
+
+    <transaction>Transação</transaction>
+    <transaction_input>Entrada</transaction_input>
+    <transaction_output>Saída</transaction_output>
+    <transaction_date_basic>Dados de Registro da Transação</transaction_date_basic>
+    <transaction_manager>Gerência de Transações</transaction_manager>
+    <transactions_performed>Transações Realizadas</transactions_performed>
+    <transaction_register>Registrar</transaction_register>
+    <successfully_transaction_input_added>Entrada realizada com sucesso!</successfully_transaction_input_added>
+    <successfully_transaction_output_added>Saída realizada com sucesso!</successfully_transaction_output_added>
+    <error_on_input_transaction>Erro ao registrar entrada!</error_on_input_transaction>
+    <error_on_output_transaction>Erro ao registrar saída!</error_on_output_transaction>
+    <all_trasaction_fields_need_to_be_filled>Todos os campos da transação devem ser preenchidos!</all_trasaction_fields_need_to_be_filled>
+
+    <transaction_protocol>Protocolo</transaction_protocol>
+    <transaction_product_id>ID_PRD</transaction_product_id>
+    <transaction_product_name>Produto</transaction_product_name>
+    <transaction_qnt>Quantidade</transaction_qnt>
+    <operation_date>Data</operation_date>
+    <transaction_type>Transação</transaction_type>
+    <transaction_outline>Estorno de Transação!</transaction_outline>
+    <transaction_successfully_removed>A transação foi estornada com sucesso!</transaction_successfully_removed>
+
+
+    <warning_transaction_will_be_removed>Você está prestes a estornar uma transação de estoque!</warning_transaction_will_be_removed>
+    <warning_transaction_will_be_removed2>Ao clicar em confirmar o estoque automaticamente sofrerá alteração,</warning_transaction_will_be_removed2>
+    <warning_transaction_will_be_removed3>de acordo os dados abaixo!</warning_transaction_will_be_removed3>
+    <warning_operation_are_irreversible>Cuidado esta é uma operação inrreversível!</warning_operation_are_irreversible>
+    <outline_transaction>Estornar Transação</outline_transaction>
+
+</def>

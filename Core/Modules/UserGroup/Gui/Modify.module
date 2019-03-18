@@ -117,6 +117,7 @@ class Modify
             $Parser['value_description'] = $fetchAllData['description'];
             //Default patterns
             $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
+            $Parser['button_save'] = _tr('update_group');
             $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
             $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$this->getModuleName().DS."Gui/Views/newGroup.tpl",$Parser,true);
             echo $template->showTemplate();

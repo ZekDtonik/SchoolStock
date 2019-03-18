@@ -1,0 +1,88 @@
+<?php
+/**
+* Created by MarxMedia.
+* Author: Nelson Anjos
+* Date: 13/03/2019
+* Grh : DelGroup.module
+*/
+
+namespace Modules\Transaction;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+
+class OutLine
+{
+    private $sql;
+    private $moduleName;
+
+    public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+
+    public function getModuleName() { return $this->moduleName; }
+    public function getSql(): \PDO { return $this->sql; }
+    public function __construct() {
+        $this->sql= CNN::getSql();
+    }
+    public function remove($auhtidToOutline, $accessToken ){
+        try{
+            if(null == $auhtidToOutline){
+               System::message('error',_tr('outline_transaction'),_tr('authid_not_found'));
+            }
+            else if(System::getAccessToken() != $accessToken){
+                System::message('error',_tr('remove_stock'),_tr('access_token_receive_is_wrong'));
+            }
+            else{
+                 !defined("_AUTHID") ? define("_AUTHID",$_SESSION['authid']) : null;
+                 $getCover = $this->getSql()->prepare("SELECT * FROM ".__TRANSACTIONS." WHERE auhtid=?");
+                 $getCover->bindValue(1,$auhtidToOutline);
+                 $getCover->execute();
+                 if($getCover->rowCount() == 0){
+                     System::message('error',_tr('remove_user'),_tr('authid_not_registered'));
+                 }
+                 else if($auhtidToOutline == _AUTHID){
+                     System::message('error',_tr('remove_user'),_tr('you_cannot_remove_yourself'));
+                 }
+                 else{
+                      //Recebe os dados da transação
+                      $selecTransaction= $this->getSql()->prepare("SELECT * FROM ".__TRANSACTIONS." WHERE auhtid = ?");
+                      $selecTransaction->bindValue(1, $auhtidToOutline);
+                      $selecTransaction->execute();
+                      $fetchAllData = $selecTransaction->fetch(\PDO::FETCH_ASSOC);
+
+                      $operationType = $fetchAllData['typeAction'];
+                      $quantity = $fetchAllData['quantity'];
+                      $prdid = $fetchAllData['prdid'];
+
+                      //Reverte a transação no estoque
+                      $reverseAction;
+                      if ($operationType == 1) {
+                          $reverseAction = $this->getSql()->prepare("UPDATE ".__STOCK." SET quantity = quantity - :quantity WHERE prdid = :prdid");
+                      }
+                      else{
+                          $reverseAction = $this->getSql()->prepare("UPDATE ".__STOCK." SET quantity = quantity + :quantity WHERE prdid = :prdid");
+                      }
+                      $reverseAction->bindValue(':quantity',$quantity);
+                      $reverseAction->bindValue(':prdid',$prdid);
+                      $reverseAction->execute();
+
+                      //Remove o log do estorno
+                      $remove = $this->getSql()->prepare("DELETE FROM ".__TRANSACTIONS." WHERE auhtid=?");
+                      $remove->bindValue(1,$auhtidToOutline);
+                      $remove->execute();
+
+                      if($remove){
+                            System::message('success',_tr('Estorno de Transação'),_tr('transaction_successfully_removed'),System::goTo(WWW_PATH.$this->getModuleName(),1));
+                       }
+                       else{
+                           System::message('warning',_tr('Estorno de Transação'),_tr('impossible_to_remove_stock'));
+                       }
+                   }
+              }
+        }
+        catch (ThrowableAll $e){
+            System::message('error',_tr('internal_error'),$e->getMessage());
+        }
+    }
+}

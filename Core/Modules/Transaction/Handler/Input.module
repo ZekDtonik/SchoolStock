@@ -1,0 +1,74 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Transaction;
+
+use Modules\CNN;
+use Modules\System;
+
+class Input
+{
+    private $sql;
+    private $accessToken;
+    private $prdid;
+    
+    public function getprdid() { return $this->prdid; }
+    public function setprdid($prdid) { $this->prdid = $prdid; }
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    private function getAccessToken() { return $this->accessToken; }
+    private function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        //Verifica se tem campos vazios
+        if($_POST['productName'] == 'none' || empty($_POST['productQuantity']) == 'none'){
+            System::message('error',_tr('transaction_input'),_tr('all_trasaction_fields_need_to_be_filled'));
+        }
+
+        //Se não verifica se tem acesso
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr('transaction_input'),_tr('access_token_receive_is_wrong').$this->getAccessToken());
+        }
+        else{
+            //Compara o nome na tabela de produtos para pegar o id
+            //$prdid = '';
+            $getData = $this->getSql()->query("SELECT * FROM `see_stocks` WHERE productName = '".$_POST['productName']."'");
+
+            $fetch = $getData->fetch(\PDO::FETCH_ASSOC);
+            $getData->execute();
+            $prdid = $fetch['prdid'];
+
+              $input = $this->getSql()->prepare("UPDATE stock SET quantity = quantity + :quantity WHERE prdid = :prdid");
+              $input->bindValue(':prdid',$prdid);
+              $input->bindValue(':quantity',$_POST['productQuantity']);
+              $result = $input->execute();
+
+              if ($result){
+                  $input = $this->getSql()->prepare("INSERT INTO ".__TRANSACTIONS." (protocol, prdid, quantity, dateOperation, typeAction) VALUES (?,?,?,?,?)");
+                  $protocol = new System();
+                  $protocol->setAccessToken();
+
+                  $input->bindValue(1,$protocol->getAccessToken());
+                  $input->bindValue(2,$prdid);
+                  $input->bindValue(3,$_POST['productQuantity']);
+                  $input->bindValue(4, date('Y-m-d H:i:s"'));
+                  $input->bindValue(5,1);
+                  $result = $input->execute();
+                  if($result){
+                    System::message("success",_tr('transaction_input'),_tr('successfully_transaction_input_added'));
+                  } else {
+                    System::message("Erro",_tr('Registrar Transação'),_tr('Ocorreu um erro ao registrar a transação!'));
+                  }
+              }
+              else{
+                  System::message("error",_tr('transaction_input'),_tr('error_on_input_transaction'));
+              }
+          }
+          }
+        }

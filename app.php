@@ -59,11 +59,11 @@
                     case 'Home':
                     case '':
                         $title->setTitle(_tr('system_locale/title_home_page'));
-                        //$application->home();
-                        //---------------//
-                        include "install/SqlParser.inc";
-                        //$s = new SqlParser("install/sql/routines.sql", "teste");
-                        //$s->statment();
+                        $map = [];
+                        $map['link_doc']   = "/Docs/Manual_SchoolStock.pdf";
+                        $map['version_doc'] = "1.0.9_r4";
+                        $template = new Modules\Template\Template(ROOT_PATH.DS."Templates/View/home.model",$map,true);
+                        echo $template->showTemplate();
                         break;
                     case 'Profile':
                     case 'profile':

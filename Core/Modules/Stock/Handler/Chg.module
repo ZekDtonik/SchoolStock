@@ -1,0 +1,57 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Stock;
+
+
+use Modules\Auth;
+use Modules\CNN;
+use Modules\System;
+
+class Chg
+{
+    private $sql;
+    private $prdidToEdit;
+    private $accessToken;
+
+    public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+    public function getAccessToken() { return $this->accessToken; }
+    public function getPrdidToEdit() { return $this->prdidToEdit; }
+    public function setPrdidToEdit($prdidToEdit) { $this->prdidToEdit = $prdidToEdit; }
+    public function getSql() { return $this->sql; }
+    public function __construct() {
+        $this->sql = CNN::getSql();
+    }
+    public function init(){
+        $this->setPrdidToEdit($_POST['productName']);
+        if(null == $this->getPrdidToEdit()){
+            System::message('error',_tr('stock'),_tr('prdid_not_found'));
+        }
+        else if($this->getAccessToken() != System::getAccessToken()){
+            System::message('error',_tr('stock'),_tr('access_token_receive_is_wrong'));
+        }
+        else if($_POST['productName'] == 'none' || empty($_POST['productQuantityMin'])  == 'none'){
+            System::message('error',_tr('stock'),_tr('all_credential_fields_need_to_be_filled'));
+        }
+        else{
+            $editStock = $this->getSql()->prepare("UPDATE ".__STOCK."
+            SET qntMinimum = :qntMinimum
+            WHERE prdid = :prdid");
+            $editStock->bindValue(":prdid",$this->getPrdidToEdit());
+            $editStock->bindValue(":qntMinimum",$_POST['productQuantityMin']);
+            $result = $editStock->execute();
+
+            if ($result){
+              System::message("success",_tr('credentials'),_tr('credential_successfully_edited'));
+            }
+            else{
+              System::message("error",_tr('credentials'),_tr('error_on_add_user_group'));
+            }
+        }
+    }
+}

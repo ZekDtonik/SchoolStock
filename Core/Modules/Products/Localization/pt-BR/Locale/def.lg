@@ -3,6 +3,7 @@
     <products>Produtos</products>
     <products_manager>Gerência de Produtos</products_manager>
     <new_products>Novo Produto</new_products>
+    <data_for_save_products>Dados para registro de produtos</data_for_save_products>
     <active_products>Produtos Ativos</active_products>
     <registered_products>Produtos Cadastrados</registered_products>
     <no_products_registered>Nenhum Produto Cadastrado</no_products_registered>
@@ -11,10 +12,12 @@
     <error_on_add_product>Erro ao tentar adicionar o produto requerido.</error_on_add_product>
     <successfully_product_added>Produto adicionado com sucesso!</successfully_product_added>
     <product_id>PRD-ID</product_id>
-    <edit_product>Edição de Produto</edit_product>
+    <are_you_sure_remove_product>Tem certeza que deseja apagar o produto [b]%s[/b]?</are_you_sure_remove_product>
+    <edit_product>Edição de Produtos</edit_product>
+
     <save_product>Salvar Produto</save_product>
     <product_successfully_edited>Produto editado com sucesso!</product_successfully_edited>
-    <remove_product>Remoção de Produto</remove_product>
+    <remove_product>Remover de Produto</remove_product>
     <product_successfully_removed>Produto removido com sucesso!</product_successfully_removed>
     <impossible_to_remove_product>Impossível remover este produto no momento.</impossible_to_remove_product>
     <prid_not_registered>ID do produto informado não existe, ou foi previamente removido.</prid_not_registered>

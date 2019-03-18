@@ -73,7 +73,7 @@ class Home
                 $tableHeadData['data_table'] .= $tempTr->showTemplate();
 
             }
-            $tableHeadData['pagination'] = $pagination->getInterface(['controlArrow'=>true]);
+            $tableHeadData['pagination'] = $pagination->getInterface(['controlArrow'=>false]);
             //Template de cabeçalho e estrutura de tabela
             $TableHeader = new Template(APP_ROOT . DS . MODULES_PATH . DS . $this->getModuleName() . DS . "Gui/Views/Controller/tableUserGroup.tpl", $tableHeadData, true);
             //Composição de Template principal da página

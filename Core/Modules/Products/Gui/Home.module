@@ -22,8 +22,7 @@ class Home
             $DataParser=[];
             $DataParser['link_products'] = WWW_PATH.$ModuleName."/new/";
             $DataParser['data_table'] = '';
-            //
-
+           
             $products = $this->getSql()->query("SELECT p.name as prname, c.name as catname, p.prdid from products p inner join category c on p.ctgid=c.ctgid ");
             if($products->rowCount() > 0){
             	
@@ -32,34 +31,20 @@ class Home
                 $tableHeadData['data_table'] ='';
                 //Recupera o template de TR para inserção na tabela
                 foreach ($products->fetchAll(\PDO::FETCH_ASSOC) as $tableLine) {
-                    //if ($tableLine['userstatus'] != 4) {
-                   //     $userStatus = '';
-                        //1= ativo, 2=bloqueado, 3=inativo, 4=superusuarios
-                       // if ($tableLine['userstatus'] == 1) {
-                            //$userStatus = _tr('actived');
-                      //  } else if ($tableLine['userstatus'] == 2) {
-                           // $userStatus = _tr('blocked');
-                       // } else if ($tableLine['userstatus'] == 3) {
-                           // $userStatus = _tr('inactive');
-                       // }
-
-//var_dump($tableLine); die();
-                        $preLink = WWW_PATH . $ModuleName . DS;
-                        //Data Parser de tratamento
-                        $lineTable = [];
-                        $lineTable['prdid'] = $tableLine['prdid'];
-                        $lineTable['name'] = $tableLine['prname'];
-                        $lineTable['ctgid'] = $tableLine['catname'];
-                        $lineTable['link_edit'] = $preLink . 'edit' . DS . $tableLine['prdid'];
-                        $dataPrompt = [];
-                        $dataPrompt['url'] = _system . DS . $ModuleName . DS . 'get' . DS . $tableLine['prdid'] . DS . System::getAccessToken();
-                        $lineTable['data_prompt'] = base64_encode(json_encode($dataPrompt));
-
-                      //  var_dump($dataPrompt); die();
-
-                        $tempTr = new Template(APP_ROOT . DS . MODULES_PATH . DS . $ModuleName . DS . "Gui/Views/Controller/tableListProducts.tpl", $lineTable, true);
-                        $tableHeadData['data_table'] .= $tempTr->showTemplate();
-                   // }
+                    $preLink = WWW_PATH . $ModuleName . DS;
+                    //Data Parser de tratamento
+                    $lineTable = [];
+                    $lineTable['prdid'] = $tableLine['prdid'];
+                    $lineTable['name'] = $tableLine['prname'];
+                    $lineTable['ctgid'] = $tableLine['catname'];
+                    $lineTable['link_edit'] = $preLink . 'edit' . DS . $tableLine['prdid'];
+                    $dataPrompt = [];
+                    $dataPrompt['url'] = _system . DS . $ModuleName . DS . 'get' . DS . $tableLine['prdid'] . DS . System::getAccessToken();
+                    $lineTable['data_prompt'] = base64_encode(json_encode($dataPrompt));
+                    
+                    $tempTr = new Template(APP_ROOT . DS . MODULES_PATH . DS . $ModuleName . DS . "Gui/Views/Controller/tableListProducts.tpl", $lineTable, true);
+                    $tableHeadData['data_table'] .= $tempTr->showTemplate();
+              
                 }
                 //Template de cabeçalho e estrutura de tabela
                 $TableHeader = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/Controller/tableProducts.tpl",$tableHeadData,true);

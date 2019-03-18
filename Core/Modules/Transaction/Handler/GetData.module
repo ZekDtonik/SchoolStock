@@ -1,0 +1,60 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Transaction;
+
+
+use Modules\CNN;
+use Modules\System;
+
+class GetData
+{
+    private $sql;
+    private $moduleName;
+    public function getSql() { return $this->sql; }
+    public function getModuleName() { return $this->moduleName; }
+    public function __construct($moduleName) {
+        $this->sql = CNN::getSql();
+        $this->moduleName = $moduleName;
+    }
+    public function getData($auhtid, $accessToken){
+          if(empty($auhtid)){
+             System::message('error',_tr('get_data'),_tr('group_id_needed_not_found'));
+         }
+         else if($accessToken != System::getAccessToken()){
+              System::message('error',_tr('get_data'),_tr('access_token_receive_is_wrong'));
+         }
+         else{
+            $recoverGroupName = $this->getSql()->prepare("SELECT * FROM see_transactions WHERE auhtid=?");
+            $recoverGroupName->bindValue(1,$auhtid);
+            $recoverGroupName->execute();
+            $fetchData = $recoverGroupName->fetch(\PDO::FETCH_ASSOC);
+
+            $message = "<div class='txt-center pd-tb-1'>
+                            <h3 class='txt-center'>"._tr('warning_transaction_will_be_removed')."</b></h3>
+                            <h3 class='txt-center'>"._tr('warning_transaction_will_be_removed2')."</b></h3>
+                            <h3 class='txt-center'>"._tr('warning_transaction_will_be_removed3')."</b></h3>
+                            <h4>"._tr('transaction_protocol').": <b>".$fetchData['protocol']."</b></h4>
+                            <h4>"._tr('transaction_product_id').": <b>".$fetchData['prdid']."</b></h4>
+                            <h4>"._tr('transaction_product_name').": <b>".$fetchData['productName']."</b></h4>
+                            <h4>"._tr('operation_date').": <b>".$fetchData['dateOperation']."</b></h4>
+                        </div>
+                        <div class='txt-center'>
+                            <h3 class='txtRed bold'>"._tr('warning_operation_are_irreversible')."</h3>
+                        </div>";
+            $sendData = [];
+            $sendData['title'] = _tr('outline_transaction');
+            $sendData['msg'] = $message;
+            $sendData['url']=_system.DS.$this->getModuleName().DS.'outline'.DS.$auhtid.DS.System::getAccessToken();
+            $sendData['method'] = 'GET';
+            $sendData['type'] = 'confirm';
+
+            echo json_encode($sendData);
+        }
+    }
+}

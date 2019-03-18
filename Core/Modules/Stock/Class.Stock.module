@@ -1,8 +1,8 @@
 <?php
 /**
  * Created by MarxMedia Solutions.
- *         Author: Kevin
- *    Date: 15/03/2016 - 20:53
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
  *
  */
 
@@ -13,11 +13,8 @@ use Abstracts\Component;
 use Interfaces\{
     ActiveSidebar, ModuleInteractions
 };
-use Modules\{Application\Credentials\Manager\Permissions, Kernel\ModuleMenu, Upshot, CNN};
+use Modules\{Application\Credentials\Manager\Permissions, Kernel\ModuleMenu, Upshot};
 
-
-use PDO;
-use PDOException;
 
 class Stock extends Component implements ActiveSidebar,ModuleInteractions
 {
@@ -30,31 +27,24 @@ class Stock extends Component implements ActiveSidebar,ModuleInteractions
     }
     public function init(...$gets) {
         try{
-            /**
-             * @decription Instancia de Permissoes
-             * @doc - Usado para checar o nível de acsso do usuário em questão
-             */
-            $instancePermission = new Permissions();
-            /**
-             * @description - Switch de acesso de área do módulo
-             * @param $gets [] - GETS do navegador que define o padrão de acesso
-             */
-            
             switch (strtolower($gets[0][1])){
-                /**
-                 * @case PAGINA PRINCIPAL DO MODULO
-                 */
-                case strtolower('estoque'):
-                    /**
-                     * SUB ACTION DA PÁGINA !!!!!
-                     */
-                    switch (strtolower($gets[0][1])) {
-                        /**
-                         * @case PAGINAS DESCENDENTES SEGUINDO O FLUXO DE LINKS
-                         */
-                        case 'cadastro':
-                            break;
-                    }
+                case strtolower('new'):
+                    $this->setTitle(_tr('Estoque'));
+                    $this->applyRestriction('view');
+                    new Create(Stock::getName());
+                    break;
+
+                case strtolower('edit'):
+                    $this->setTitle(_tr('Estoque'));
+                    $this->applyRestriction('edit');
+                    $editStk = new Modify(Stock::getName(), $gets[0][2]);
+                    $editStk->init();
+                    break;
+
+                default:
+                    $this->setTitle(_tr('Estoque'));
+                    $this->applyRestriction('view');
+                    new Home(Stock::getName());
                     break;
             }
             //$this->setModuleMenu($this->getMenuInteractive());
@@ -81,13 +71,33 @@ class Stock extends Component implements ActiveSidebar,ModuleInteractions
             /**
              * @description Request Handler para AddItem do Modulo
              */
-            case pg_newitem:
-                _AddItem::init($dataRequest);
+            case 'get':
+                $this->applyRestriction('view',true);
+                $get = new GetData(Stock::getName());
+                $get->getData($dataRequest[1],$dataRequest[2]);
                 break;
-            /**
-             * @description Request Handler para EditBook do Modulo
-             */
-            case lib_editbookSubPage:
+            case 'new':
+                $this->applyRestriction('add',true);
+                $add = new Add();
+                $add->setAccessToken(_level3);
+                $add->init();
+                break;
+
+            case 'edit':
+                $this->applyRestriction('edit',true);
+                $edit = new Chg();
+                $edit->setPrdidToEdit(_level3);
+                $edit->setAccessToken(_level3);
+                $edit->init();
+                break;
+
+            case 'remove':
+                $this->applyRestriction('del',true);
+                $remove = new Del();
+                $remove->setPrdidToRemove(_level3);
+                $remove->setAccessToken(_level4);
+                $remove->setModuleName(Stock::getName());
+                $remove->remove();
                 break;
 
             default:
@@ -154,7 +164,7 @@ class Stock extends Component implements ActiveSidebar,ModuleInteractions
         return "ais-doc";
     }
     static function getDescription() {
-        return _tr('stock_manager');
+        return _tr('stock');
     }
     static function getName() {
         return 'Stock';

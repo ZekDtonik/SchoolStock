@@ -1,0 +1,13 @@
+<table>
+    <thead>
+    <tr>
+        <th>_{:product_id}</th>
+        <th>_{:product_name}</th>
+        <th>_{:stock_qnt}</th>
+        <th>_{:stock_qntMin}</th>
+    </tr>
+    </thead>
+    <tbody>
+    _{data_table}
+    </tbody>
+</table>

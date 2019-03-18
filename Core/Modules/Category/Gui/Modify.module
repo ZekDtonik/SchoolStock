@@ -38,11 +38,11 @@ class Modify
             //Edição de Permissoes
             //-------------
             //Recupera as configurações atuais
-            $cidDefActual = $this->getSql()->prepare("SELECT * FROM category WHERE ctgid=?");
+            $cidDefActual = $this->getSql()->prepare("SELECT * FROM ".__CATEGORY." WHERE ctgid=?");
             $cidDefActual->bindValue(1,$this->getCtgidToEdit());
             $cidDefActual->execute();
             $ftCidActual = $cidDefActual->fetch(\PDO::FETCH_ASSOC);
-          
+            $Parser['value'] = $ftCidActual['name'];
             //Default patterns
             $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
             $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';

@@ -35,7 +35,7 @@ class Add
             else{
                 $name = $_POST['name'];
                 //----
-                $addGroup = $this->getSql()->prepare("INSERT INTO category (name) 
+                $addGroup = $this->getSql()->prepare("INSERT INTO ".__CATEGORY." (name)
                 VALUES (:name)");
                 $addGroup->bindValue(":name",$name);
                 $result = $addGroup->execute();

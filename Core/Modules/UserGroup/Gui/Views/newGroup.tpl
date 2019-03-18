@@ -50,7 +50,7 @@
 
                 <div class="txt-right">
                     <a href="_{link_back}"><button class="bgGray ais-return" type="button">_{:return}</button></a>
-                    <button class="ais-save">_{:register_group}</button>
+                    <button class="ais-save">_{button_save}</button>
                 </div>
             </form>
         </div>

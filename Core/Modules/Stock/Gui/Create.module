@@ -1,0 +1,52 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Stock;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+use Modules\Template\Template;
+
+class Create
+{
+    private $sql;
+
+    public function getSql() { return $this->sql; }
+    public function __construct($ModuleName) {
+        $this->sql = CNN::getSql();
+        try{
+            $datasend =[];
+            $datasend['url'] = _system.DS.$ModuleName.DS."new".DS.System::getAccessToken();
+            $datasend['method'] = "POST";
+            //
+            //Recupera a lista de produtos
+            $products = $this->getSql()->query("SELECT * FROM ".__PRODUCT);
+            $ftProducts = $products->fetchAll(\PDO::FETCH_ASSOC);
+            //
+            $Parser = [];
+            $Parser['link_back'] = WWW_PATH.$ModuleName.DS;
+            $Parser['products_options'] ='';
+            //Atribuição de options do select
+            foreach ($ftProducts as $ftProduct) {
+              $name = $ftProduct['name'];
+              $Parser['products_options'] .= "<option value='".$ftProduct['name']."'>".$name ."</option>";
+
+            }
+            $Parser['datasend'] ='';
+            $Parser['datasend'] = 'data-send="'.base64_encode(json_encode($datasend)).'"';
+            $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/newStock.tpl",$Parser,true);
+            echo $template->showTemplate();
+        }
+        catch (ThrowableAll $exception){
+            echo $exception->getMessage();
+        }
+
+    }
+  }

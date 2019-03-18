@@ -73,6 +73,7 @@ class Create
             }
             //Definição do escopo de troca
             $Parser['permissions'] = $showObject;
+            $Parser['button_save'] = _tr("register_group");
             //----------------------------------------------------------
             //Atribuidor de template principal
             $template = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/newGroup.tpl",$Parser,true);

@@ -3,6 +3,7 @@
     <cat_not_found>CAT-ID não encontrado.</cat_not_found>
     <categories>Categorias</categories>
     <category>Categoria</category>
+    <category_name>Nome da Categoria</category_name>
     <categories_manager>Gerência de Categorias</categories_manager>
     <new_categories>Nova Categoria</new_categories>
     <active_categories>Categorias Ativas</active_categories>
@@ -11,7 +12,9 @@
     <error_on_add_category>Erro ao tentar adicionar a categoria requerida.</error_on_add_category>
     <successfully_category_added>Categoria adicionada com sucesso!</successfully_category_added>
     <category_id>CAT-ID</category_id>
+    <are_you_sure_remove_category>Tem certeza que deseja remover a categoria [b]%s[/b]?</are_you_sure_remove_category>
     <edit_category>Edição de Categoria</edit_category>
+    <all_category_fields_need_to_be_filled>O campo do nome da categoria precisa ser preenchido.</all_category_fields_need_to_be_filled>
     <save_category>Salvar Categoria</save_category>
     <category_successfully_edited>Categoria editada com sucesso!</category_successfully_edited>
     <remove_category>Remoção de Categoria</remove_category>

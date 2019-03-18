@@ -11,6 +11,7 @@
     <permission_access>Permissões de Acesso</permission_access>
     <attestation>Atestado</attestation>
     <medics>Médicos</medics>
+    <update_group>Atualizar Grupo</update_group>
     <user_group>Grupo de Usuários</user_group>
     <enable_user_group>Ativar Grupo de Usuário</enable_user_group>
     <active>Ativar</active>

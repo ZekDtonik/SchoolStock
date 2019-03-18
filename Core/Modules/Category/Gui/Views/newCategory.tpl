@@ -9,8 +9,8 @@
                 <div class="former">
                     <label for="username">Categoria</label>
 
-                    <input type="text" name="name">
-                    <i class="ais ais-profile"></i>
+                    <input type="text" name="name" placeholder="_{:category_name}">
+                    <i class="ais ais-matterName"></i>
                 </div>
                 
 

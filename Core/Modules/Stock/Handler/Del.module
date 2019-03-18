@@ -1,0 +1,77 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Stock;
+
+
+use Interfaces\ThrowableAll;
+use Modules\CNN;
+use Modules\System;
+
+class Del
+{
+  private $accessToken;
+  private $prdidToRemove;
+  private $sql;
+  private $moduleName;
+
+  public function setModuleName($moduleName) { $this->moduleName = $moduleName; }
+
+  public function getModuleName() { return $this->moduleName; }
+  public function setAccessToken($accessToken) { $this->accessToken = $accessToken; }
+  public function setPrdidToRemove($prdidToRemove) { $this->prdidToRemove = $prdidToRemove; }
+  private function getPrdidToRemove() { return $this->prdidToRemove; }
+  private function getAccessToken() { return $this->accessToken; }
+
+  public function getSql(): \PDO { return $this->sql; }
+  public function __construct() {
+      $this->sql= CNN::getSql();
+  }
+  public function remove(){
+      try{
+          if(null == $this->getPrdidToRemove()){
+              System::message('error',_tr('remove_stock'),_tr('authid_not_found'));
+          }
+          else if(System::getAccessToken() != $this->getAccessToken()){
+              System::message('error',_tr('remove_stock'),_tr('access_token_receive_is_wrong'));
+          }
+          else{
+              !defined("_AUTHID") ? define("_AUTHID",$_SESSION['authid']) : null;
+              $getCover = $this->getSql()->prepare("SELECT * FROM ".__STOCK." WHERE prdid=?");
+              $getCover->bindValue(1,$this->getPrdidToRemove());
+              $getCover->execute();
+              if($getCover->rowCount() == 0){
+                  System::message('error',_tr('remove_user'),_tr('authid_not_registered'));
+              }
+              else if($this->getPrdidToRemove() == _AUTHID){
+                  System::message('error',_tr('remove_user'),_tr('you_cannot_remove_yourself'));
+              }
+              else{
+                  $remove = $this->getSql()->prepare("DELETE FROM ".__STOCK." WHERE prdid=?");
+                  $remove->bindValue(1,$this->getPrdidToRemove());
+                  $remove->execute();
+
+                  $remove = $this->getSql()->prepare("DELETE FROM ".__TRANSACTIONS." WHERE prdid=?");
+                  $remove->bindValue(1,$this->getPrdidToRemove());
+                  $remove->execute();
+
+                  if($remove){
+                      System::message('success','Remove Estoque',_tr('stock_successfully_removed'),System::goTo(WWW_PATH.$this->getModuleName(),1));
+                  }
+                  else{
+                      System::message('warning','Remove Estoque',_tr('impossible_to_remove_stock'));
+                  }
+              }
+          }
+      }
+      catch (ThrowableAll $e){
+          System::message('error',_tr('internal_error'),$e->getMessage());
+      }
+  }
+
+}

@@ -1,0 +1,191 @@
+<?php
+/**
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
+ */
+
+namespace Modules\Transaction;
+
+use Abstracts\Component;
+
+use Interfaces\{
+    ActiveSidebar, ModuleInteractions
+};
+use Modules\{Application\Credentials\Manager\Permissions, Kernel\ModuleMenu, Upshot};
+
+
+class Transaction extends Component implements ActiveSidebar,ModuleInteractions
+{
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->loader();//Autoload padrão carregado pelo Component
+        //$this->loader('atl'); Use com o parametro para autoload personalizado
+    }
+    public function init(...$gets) {
+        try{
+            switch (strtolower($gets[0][1])){
+
+                case strtolower('transaction_input'):
+                    $this->setTitle(_tr('Entrada'));
+                    $this->applyRestriction('view');
+                    new inputTransaction(Transaction::getName());
+                    break;
+
+                case strtolower('transaction_output'):
+                    $this->setTitle(_tr('Saída'));
+                    $this->applyRestriction('view');
+                    new outputTransaction(Transaction::getName());
+                    break;
+
+                default:
+                    $this->setTitle(_tr('Transação'));
+                    $this->applyRestriction('view');
+                    new Home(Transaction::getName());
+                    break;
+            }
+            //$this->setModuleMenu($this->getMenuInteractive());
+        }
+        catch (\Exception $exception){
+            Upshot::noData(_tr('internal_error'),$exception->getMessage(),'wrong',null);
+        }
+
+    }
+    public function requests(...$dataRequest) {
+        //var_dump($dataRequest);
+        /**
+         * @switch Este suite recupera o nome da ação do módulo que esta fazendo a
+         * requisição.
+         * @internal-doc O nome da ação esta no primeiro $_GET depois do
+         * nome do módulo.
+         */
+        switch ($dataRequest[0]){
+            /**
+             * --------------------------------------------------
+             * ***                  BIBLIOTECA                ***
+             * --------------------------------------------------
+             */
+            /**
+             * @description Request Handler para AddItem do Modulo
+             */
+             case 'get':
+                $this->applyRestriction('view',true);
+                $get = new GetData(Transaction::getName());
+                $get->getData($dataRequest[1],$dataRequest[2]);
+                break;
+            case 'transaction_input':
+                $this->applyRestriction('add',true);
+                $input = new Input();
+                $input->setAccessToken(_level3); // Verificar nível de alteração
+                $input->setprdid(_level4);
+                $input->init();
+                break;
+            case 'transaction_output':
+                $this->applyRestriction('add',true);
+                $output = new Output();
+                $output->setAccessToken(_level3); // Verificar nível de alteração
+                $output->init();
+                break;
+
+            case 'outline':
+                $this->applyRestriction('del',true);
+                $outline = new OutLine();
+                $outline->setModuleName(Transaction::getName());
+                $outline->remove(_level3, _level4);
+                break;
+
+            default:
+                echo _tr("bad_request");
+                break;
+            /**
+             * --------------------------------------------------
+             * ***               FIM BIBLIOTECA               ***
+             * --------------------------------------------------
+             */
+        }
+    }
+    /** @method Função de autoload Personalizado */
+    final protected function _atl($class){
+
+
+        $includeClass = explode("\\", $class);//
+        $PageName = end($includeClass);
+        /*  Requisitando todas as classes utilizadas pelo APP;
+            Endereçamento de Raiz de Site definido anteriorimente
+
+            *Não Esquecer: O nome do arquivo deve ser o mesmo nome da Classe
+            só assim será feito a inclusão
+         */
+        //var_dump($PageName);
+        /** Extensão do módulo a ser adicionado */
+        $moduleExtension = '.module';
+        $incExtension = '.inc';
+        $classPlace = explode('\\',__CLASS__);
+        $mainClassPlace = end($classPlace);
+        /** Local base de Dominio de Sistema */
+        $domainPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $PageName . $moduleExtension;
+        $InterfacesPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Interfaces".DS. $PageName. $moduleExtension;
+        $AbstractsPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Abstracts".DS. $PageName. $moduleExtension;
+        $ControllerPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Handler".DS. $PageName. $moduleExtension;
+        $ExceptionPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Exceptions".DS. $PageName. $moduleExtension;
+        $GuiPlace = APP_ROOT . DS . "Core". DS ."Modules" . DS . $mainClassPlace . DS. "Gui" . DS . $PageName . $moduleExtension;
+        echo $GuiPlace."<br>";
+        if(file_exists($domainPlace)){
+            if(!in_array($domainPlace,get_included_files()))
+                include ($domainPlace);
+        }
+        else if(file_exists($InterfacesPlace)){
+            if(!in_array($InterfacesPlace,get_included_files()))
+                include ($InterfacesPlace);
+        }
+        else if(file_exists($AbstractsPlace)){
+            if(!in_array($AbstractsPlace,get_included_files()))
+                include ($AbstractsPlace);
+        }
+        else if(file_exists($ControllerPlace)){
+            if(!in_array($ControllerPlace,get_included_files()))
+                include ($ControllerPlace);
+        }
+        else if(file_exists($ExceptionPlace)){
+            if(!in_array($ExceptionPlace,get_included_files()))
+                include ($ExceptionPlace);
+        }
+        else if(file_exists($GuiPlace)){
+            if(!in_array($GuiPlace,get_included_files()))
+                include ($GuiPlace);
+        }
+    }
+    static function getIcon() {
+        return "ais-arrow-up-down";
+    }
+    static function getDescription() {
+        return _tr('transaction');
+    }
+    static function getName() {
+        return 'Transaction';
+    }
+    public function getMenuInteractive() {
+        $menu = new ModuleMenu(PgAC);
+        $menu->createButton('dashboard','dashboard','link/example/pg1','pg1');
+        $menu->createButton('add_item','newBook','link/example/pg2','pg2');
+        $menu->createButton('bookcase','viewBook','link/example/pg3','pg3');
+        $menu->createButton('circulations','circule_book','link/example/pg4','pg4');
+        return $menu->show(true);
+    }
+    /***
+     * @inheritdoc
+     * @since 3.0.0
+     *
+     * @param $widgetName - qual o nome do widget que deseja usar
+     *
+     * @docs = O widget monta a estrutura de apresentação com template
+     * do kernel para uso
+     * @return mixed Vetor ou String HTML5
+     */
+    static function widgets($widgetName) {
+        // TODO: Implement widgets() method.
+    }
+}//fim da classe Library

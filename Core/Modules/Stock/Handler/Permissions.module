@@ -1,17 +1,13 @@
 <?php
 /**
- * Created by MarxMedia.
- * Author: Kevin Marques
- * Date: 23/08/2018 - 08:47
- * Grh : Permitions.module
+ * Created by MarxMedia Solutions.
+ *         Author: Nelson Anjos
+ *    Date: 03/2019
+ *
  */
+namespace Modules\Application\Credentials\Manager;
 
-namespace Modules\Application\Category\Manager;
-
-
-use Abstracts\Component;
 use Exceptions\PermissionException;
-use Modules\Access;
 use Modules\CNN;
 use Modules\System;
 
@@ -100,7 +96,6 @@ class Permissions
                             return true;
                         }
                     }
-
                 }
             }
         }
