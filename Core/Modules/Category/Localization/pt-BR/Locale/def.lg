@@ -21,4 +21,6 @@
     <category_successfully_removed>Categoria removida com sucesso!</category_successfully_removed>
     <impossible_to_remove_category>Impossível remover esta categoria no momento.</impossible_to_remove_category>
     <cat_not_registered>ID da categoria informada não existe, ou foi previamente removida.</cat_not_registered>
+    <none_one_products_registered>Nenhum produto cadastrado, comece clicando em novo produto</none_one_products_registered>
+    <none_one_categories_are_registered>Nenhuma categoria cadastrada!</none_one_categories_are_registered>
 </def>

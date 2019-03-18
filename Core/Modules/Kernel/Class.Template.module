@@ -63,7 +63,7 @@ class Template{
                         throw new \Exception("Address File of Template not is valid.");
                     }
                     else{
-                        throw new \Exception(_tr('wrong_template_url_link'));
+                        throw new \Exception(_tr('wrong_template_url_link').":Url: $dataLoader");
                     }
                 }
             }

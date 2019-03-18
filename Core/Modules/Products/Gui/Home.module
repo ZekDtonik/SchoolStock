@@ -54,7 +54,7 @@ class Home
             else{
                 $tableMessage = [];
                 $tableMessage['title'] = _tr('no_products_registered');
-                $tableMessage['msg'] = _tr('none_one_products_are_defined_to_users').'<br/><br/>'._tr('remember_super_user_not_shows_in_product_table');
+                $tableMessage['msg'] = _tr('none_one_products_registered');
                 $tableMessage['icon'] = 'ais-info';
                 $TableNothing = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/Controller/tableNoContent.tpl",$tableMessage,true);
                 $DataParser['composition'] = $TableNothing->showTemplate();
@@ -65,7 +65,7 @@ class Home
             echo $Template->showTemplate();
         }
         catch (ThrowableAll $exception){
-            Upshot::showData("Excessão",null,$exception->getMessage(),'',null,true);
+            Upshot::showData("Exceção",null,$exception->getMessage(),'',null,true);
         }
 
     }
