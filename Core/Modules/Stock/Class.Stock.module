@@ -38,6 +38,7 @@ class Stock extends Component implements ActiveSidebar,ModuleInteractions
                     $this->setTitle(_tr('Estoque'));
                     $this->applyRestriction('edit');
                     $editStk = new Modify(Stock::getName(), $gets[0][2]);
+                   
                     $editStk->init();
                     break;
 
@@ -87,7 +88,7 @@ class Stock extends Component implements ActiveSidebar,ModuleInteractions
                 $this->applyRestriction('edit',true);
                 $edit = new Chg();
                 $edit->setPrdidToEdit(_level3);
-                $edit->setAccessToken(_level3);
+                $edit->setAccessToken(_level4);
                 $edit->init();
                 break;
 

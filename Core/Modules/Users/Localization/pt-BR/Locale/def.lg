@@ -19,6 +19,10 @@
     <role_successfully_edited>Cargo editado com sucesso!</role_successfully_edited>
     <impossible_to_edit_role_at_moment>Impossível editar o cargo no momento!</impossible_to_edit_role_at_moment>
     <warning_role_will_be_removed>Atenção!! O Cargo será removido, isso pode causar inconsistencia no seu sistema.</warning_role_will_be_removed>
+    <warning_user_will_be_removed>Atenção o usuário [b]%s[/b] será removido do seu sistema!</warning_user_will_be_removed>
+    <remove_user>Remover Usuário</remove_user>
+    <user_authid>AUTH-ID</user_authid>
+    <edit_user>Editar Usuário</edit_user>
     <role_id>ID do Cargo</role_id>
     <role_name>Nome do Cargo</role_name>
     <remove_role>Remoção de Cargo</remove_role>
@@ -34,6 +38,7 @@
     <enable_user>Ativar Usuário</enable_user>
     <access_data>Dados de Acesso</access_data>
     <register_user>Registrar Usuário</register_user>
-    <successfully_user_added>Usuário adicionado com sucesso</successfully_user_added>
+    <successfully_user_added>Usuário adicionado com sucesso.</successfully_user_added>
+    <successfully_user_edited>Usuário editado com sucesso.</successfully_user_edited>
     <login_name_already_exist>Login de Usuário já existe!</login_name_already_exist>
 </def>

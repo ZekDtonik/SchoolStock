@@ -162,7 +162,7 @@ class Application
             }
             else{
                 if(empty($_POST['name']) ||  empty($_POST['lastname']) ||empty($_POST['email'])){
-                    System::message('error',_tr('change_profile'),sprintf(_tr('fields_with_required_icon_need_to_be_filled'),"<div class='ais ais-required'></div>"));
+                    System::message('error',_tr('change_profile'),sprintf(_tr('fields_with_required_icon_need_to_be_filled'),"<div class='demo ais-required'></div>"));
                 }
                 else if(Auth::isEmail($_POST['email']) == false){
                     System::message('error',_tr('change_profile'),_tr('invalid_email'));

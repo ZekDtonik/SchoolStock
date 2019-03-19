@@ -1,0 +1,194 @@
+<?php
+/**
+ * Created by AlbaFox Solutions.
+ *    Author: Kevin Marques
+ *    Date: 04/04/2016 - 17:24
+ *
+ */
+
+namespace Modules;
+
+use DateTime;
+use Exceptions\EngineException;
+use Exceptions\MainApplicationException;
+use MongoDB\Driver\Query;
+
+class Data extends DateTime
+{
+    /**
+     * Data constructor.
+     * @param string $date
+     * @param null $opt
+     * @throws EngineException
+     */
+    function __construct($date = 'now', $opt = null)
+    {
+        try{
+            // Esse construtor é da extensão
+            parent::__construct($date, new \DateTimeZone(Language::getTimeZone()));
+            //echo _tr(timeZone);
+        }
+        catch (\Throwable $e){
+            throw new EngineException($e->getMessage());
+        }
+    }
+
+    public static function getDate($data = null, $withTime = null, $Extense = null)
+    {
+        /*
+         * função útil para a data que e retornada
+         * do banco de dados em formato universal..
+         * sendo impossivel ser formatada ou necessita
+         * muito codigo mysql para converter os dados retornados.
+         */
+        $dataCL = preg_replace("/[^0-9]/", '', $data);
+        if (empty($data) || $dataCL == "00000000" || $dataCL == "000000000000") {
+            return "__/__/____";
+        } else {
+            //cria novo objeto para a data
+            $CreateData = new Data($data);
+
+            switch ($withTime) {
+                /*Caso recupera com time */
+                case true:
+                    return $CreateData->format($CreateData->FormatByAccLanguage($Extense) . " H:i");
+                break;
+                default:
+                    return $CreateData->format($CreateData->FormatByAccLanguage($Extense));
+            }
+        }
+
+    }
+
+    public function FormatByAccLanguage($Extense = null)
+    {
+        /*
+         * Pega o ACC Language vindo do navegador
+         * pela classe Language do App
+         */
+        $Lang = new Language;
+        $AccLanguageDetect = $Lang->getLanguage();
+        /*  Linguagem recuperada  */
+        $detectLanguage = substr($AccLanguageDetect, 0, 2);
+        /*  Define um Switch para determinar o tipo de formato de data baseado
+            em 3 regioes e 1 formato acveitavel internacional, sendo:
+            America Latina, America do Norte, Europa e Formato aceito
+        */
+        switch ($detectLanguage) {
+            case 'pt':
+            case 'es':
+                return $Format = "d/m/Y";
+            break;
+            case 'en':
+                if ($Extense == true) {
+                    return $Format = "M, d/Y";
+                } else {
+                    return $Format = "m/d/Y";
+                }
+            break;
+            default:
+                return $Format = "Y/m/d";
+            break;
+        }
+    }
+
+    public static function dateUNToStamp($strDate, $withTime = false)
+    {
+        /** Este metodo estatico facilita a recepção de horarios
+         * vindo do banco de dados em formato universal 0000-00-00 H:i:s
+         */
+
+        //cria novo objeto data
+        $CreateStamp = new DateTime($strDate);
+        switch ($withTime) {
+            case true:
+                $CreateStamp->format("m/d/Y H:i:s");
+            break;
+            case false:
+                $CreateStamp->format("m/d/Y");
+            break;
+        }
+
+        //converte em timestamp UNIX
+        $convert = $CreateStamp->getTimestamp();
+        //retorna o valor final
+        return $convert;
+    }
+
+    public static function dateToStamp($date, $withtime = false)
+    {
+        /* variaveis de data padrão
+        //estes metodos facilita o retorno de data desejavel para o banco de dados*/
+        $dateStructure = preg_split("([\\\.\-\/]+)", $date);
+        $timeStructure = preg_split("([ ]*)", $date);
+        //structure for dates different locations
+        $mountEUDate = $dateStructure[0] . '/' . $dateStructure[1] . '/' . $dateStructure[2];
+        $mountUSDate = $dateStructure[1] . '/' . $dateStructure[0] . '/' . $dateStructure[2];
+        $mountDate = $dateStructure[2] . '/' . $dateStructure[1] . '/' . $dateStructure[0];
+        //for time
+        $mountTime = $timeStructure[1];
+
+
+        $Srdata = new DateTime();
+        if ($withtime == false) {
+            if (i18nDef == "EU") {
+                $clock = $Srdata->createFromFormat('d/m/Y', $mountEUDate);
+            } elseif (i18nDef == "NA") {
+                $clock = $Srdata->createFromFormat('m/d/Y', $mountUSDate);
+            } else {
+                $clock = $Srdata->createFromFormat('Y/m/d', $mountDate);
+            }
+        } else {
+            if (i18nDef == "EU") {
+                $clock = $Srdata->createFromFormat('d/m/Y', $mountEUDate . " " . $mountTime);
+            } elseif (i18nDef == "NA") {
+                $clock = $Srdata->createFromFormat('m/d/Y', $mountUSDate . " " . $mountTime);
+            } else {
+                $clock = $Srdata->createFromFormat('Y/m/d', $mountDate . " " . $mountTime);
+            }
+        }
+        //return $mountEUDate;
+        return $clock->getTimestamp();
+    }
+
+    public static function getShowTime(){return $TimeOY = date("d-m-Y");}
+    function getTimestamp(){return parent::getTimestamp();}
+    public static function getTime(){return $TimeOY = date("H:i");}
+    public static function setData($withtime = null, $data = null){
+
+        if (!empty($data)) {
+            /* variaveis de data padrão
+            //estes metodos facilita o retorno de data desejavel para o banco de dados*/
+            $dataStruture = preg_split("([\.\-\/]+)", $data);
+
+            $Srdata = new Data();
+
+            if (i18nDef == "EU") {
+                $Srdata->setDate($dataStruture[2], $dataStruture[1], $dataStruture[0]);
+            } elseif (i18nDef == "NA") {
+                $Srdata->setDate($dataStruture[2], $dataStruture[0], $dataStruture[1]);
+            } else {
+                $Srdata->setDate($dataStruture[0], $dataStruture[1], $dataStruture[2]);
+            }
+
+            if ($withtime == false) {
+                return $Srdata->format("Y-m-d");
+            } else {
+                return $Srdata->format("Y-m-d H:i:s");
+            }
+        }
+
+        $Sdata = new Data();
+
+        if ($withtime == false) {
+            return $Sdata->format("Y-m-d");
+        } else {
+            return $Sdata->format("Y-m-d H:i:s");
+        }
+
+
+    }
+
+
+
+}

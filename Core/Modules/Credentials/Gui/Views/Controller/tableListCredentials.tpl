@@ -1,6 +1,5 @@
 <tr>
     <td>_{cid}</td>
-    <td>_{guid}</td>
     <td>_{user_group_name}</td>
     <td>_{name}</td>
 

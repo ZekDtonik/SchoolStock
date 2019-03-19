@@ -74,6 +74,7 @@ class Home
                     $lineTable['checked_active'] = $checkStatus;
                     $dataPrompt = [];
                     $dataPrompt['url'] = _system.DS.$ModuleName.DS.'get'.DS.$tableLine['authid'].DS.System::getAccessToken();
+                    $dataPrompt['method'] = "GET";
                     $lineTable['data_prompt'] =base64_encode(json_encode($dataPrompt));
                     $tempTr = new Template(APP_ROOT.DS.MODULES_PATH.DS.$ModuleName.DS."Gui/Views/Controller/tableListUsers.tpl",$lineTable,true);
                     $tableHeadData['data_table'] .= $tempTr->showTemplate();

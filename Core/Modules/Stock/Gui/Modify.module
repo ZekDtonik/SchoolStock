@@ -36,29 +36,23 @@ class Modify
             $stock = $this->getSql()->prepare("SELECT * FROM ".__STOCK." WHERE prdid=?");
             $stock->bindValue(1,$this->getPrdidToEdit());
             $stock->execute();
-            $fetchAllData = $stock->fetch(\PDO::FETCH_ASSOC);
-
+            
+            
             $datasend =[];
-            $datasend['url'] = _system.DS.$this->getModuleName().DS."edit".DS.System::getAccessToken();
+            $datasend['url'] = _system.DS.$this->getModuleName().DS."edit".DS.$this->getPrdidToEdit().DS.System::getAccessToken();
             $datasend['method'] = "POST";
-            //
-            //Recupera a lista de produtos
-            $products = $this->getSql()->query("SELECT * FROM product");
-            $ftProducts = $products->fetchAll(\PDO::FETCH_ASSOC);
-            //
+            
             $Parser = [];
             $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;
-            $Parser['products_options'] ='';
+            
 
-            $prdidDefActual = $this->getSql()->prepare("SELECT * FROM ".__STOCK." WHERE prdid=?");
+            $prdidDefActual = $this->getSql()->prepare("SELECT * FROM ".__PRODUCT." WHERE prdid=?");
             $prdidDefActual->bindValue(1,$this->getPrdidToEdit());
             $prdidDefActual->execute();
             $ftPrdidActual = $prdidDefActual->fetch(\PDO::FETCH_ASSOC);
             //Atribuição de options do select
-            foreach ($ftProducts as $ftProduct) {
-              $selectedGuid = $ftProduct['prdid'] == $ftPrdidActual['prdid'] ? "selected='selected'" : '';
-              $Parser['products_options'] .= "<option value='".$ftProduct['prdid']."'  ".$selectedGuid.">".$ftProduct['name']."</option>";
-            }
+            $Parser['products_options'] = $ftPrdidActual['name'];
+            
 
             //Default patterns
             $Parser['link_back'] = WWW_PATH.$this->getModuleName().DS;

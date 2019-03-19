@@ -10,6 +10,7 @@ namespace Modules\Transaction;
 
 use Abstracts\Component;
 
+use Exceptions\EngineException;
 use Interfaces\{
     ActiveSidebar, ModuleInteractions
 };
@@ -49,7 +50,7 @@ class Transaction extends Component implements ActiveSidebar,ModuleInteractions
             }
             //$this->setModuleMenu($this->getMenuInteractive());
         }
-        catch (\Exception $exception){
+        catch (EngineException $exception){
             Upshot::noData(_tr('internal_error'),$exception->getMessage(),'wrong',null);
         }
 

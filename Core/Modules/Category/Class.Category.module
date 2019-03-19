@@ -95,7 +95,7 @@ class Category extends Component implements ActiveSidebar,ModuleInteractions {
              */
             case 'get':
                 $this->applyRestriction('view',true);
-                $get = new GetData(Credentials::getName());
+                $get = new GetData(Category::getName());
                 $get->getData($dataRequest[1],$dataRequest[2]);
                 break;
             /**

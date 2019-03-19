@@ -16,7 +16,7 @@ use Modules\System;
 class Del
 {
     private $accessToken;
-    private $cidToRemove;
+    private $ctgidToRemove;
     private $sql;
     private $moduleName;
 
@@ -35,7 +35,7 @@ class Del
     public function remove(){
         try{
             if(null == $this->getCtgidToRemove()){
-                System::message('error',_tr('remove_category'),_tr('cid_not_found'));
+                System::message('error',_tr('remove_category'),_tr('cat_not_found'));
             }
             else if(System::getAccessToken() != $this->getAccessToken()){
                 System::message('error',_tr('remove_category'),_tr('access_token_receive_is_wrong'));
@@ -46,12 +46,18 @@ class Del
                 $getCover->bindValue(1,$this->getCtgidToRemove());
                 $getCover->execute();
                 $fetchCover = $getCover->fetch(\PDO::FETCH_ASSOC);
+                //
+                $getProductBinded = $this->getSql()->prepare("SELECT * FROM ".__PRODUCT." WHERE ctgid=?");
+                $getProductBinded->bindValue(1,$this->getCtgidToRemove());
+                $getProductBinded->execute();
+                //
+                
                 if($getCover->rowCount() == 0){
                     System::message('error',_tr('remove_category'),_tr('cid_not_registered'));
                 }
-              //  else if($fetchCover['authid'] == _AUTHID){
-                //    System::message('error',_tr('remove_credential'),_tr('you_cannot_remove_credential_that_you_are_using'));
-                //}
+                else if($getProductBinded->rowCount() > 0){
+                    System::message('error',_tr('remove_category'),_tr('cannot_remove_category_with_binded_products'));
+                }
                 else{
                     $remove = $this->getSql()->prepare("DELETE FROM category WHERE ctgid=?");
                     $remove->bindValue(1,$this->getCtgidToRemove());

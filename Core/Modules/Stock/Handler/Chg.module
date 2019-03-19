@@ -28,15 +28,15 @@ class Chg
         $this->sql = CNN::getSql();
     }
     public function init(){
-        $this->setPrdidToEdit($_POST['productName']);
+        
         if(null == $this->getPrdidToEdit()){
             System::message('error',_tr('stock'),_tr('prdid_not_found'));
         }
         else if($this->getAccessToken() != System::getAccessToken()){
             System::message('error',_tr('stock'),_tr('access_token_receive_is_wrong'));
         }
-        else if($_POST['productName'] == 'none' || empty($_POST['productQuantityMin'])  == 'none'){
-            System::message('error',_tr('stock'),_tr('all_credential_fields_need_to_be_filled'));
+        else if(empty($_POST['productQuantityMin'])){
+            System::message('error',_tr('stock'),_tr('all_stock_fields_need_to_be_filled'));
         }
         else{
             $editStock = $this->getSql()->prepare("UPDATE ".__STOCK."
@@ -47,10 +47,10 @@ class Chg
             $result = $editStock->execute();
 
             if ($result){
-              System::message("success",_tr('credentials'),_tr('credential_successfully_edited'));
+              System::message("success",_tr('stock'),_tr('stock_successfully_changed'));
             }
             else{
-              System::message("error",_tr('credentials'),_tr('error_on_add_user_group'));
+              System::message("error",_tr('stock'),_tr('error_on_add_stock'));
             }
         }
     }

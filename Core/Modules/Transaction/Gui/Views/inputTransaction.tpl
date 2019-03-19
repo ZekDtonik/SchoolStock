@@ -15,20 +15,17 @@
                     </select>
                     <i class="ais ais-name"></i>
                 </div>
+                <div class="former required">
+                    <label for="productQuantity">_{:transaction_qnt}</label>
+                    <input type="text" name="productQuantity" id="productQuantity" placeholder="_{:transaction_qnt}  " value="" />
+                    <i class="ais ais-name"> </i>
+                </div>
 
-                  <div class="dFlex jc-between">
+                <div class="txt-right">
+                  <a href="_{link_back}"><button class="bgGray ais-return" type="button">_{:return}</button></a>
+                  <button class="ais-save">_{:transaction_register} _{:transaction_input}</button>
+                </div>
 
-                    <div class="former required">
-                      <label for="productQuantity">_{:transaction_qnt}</label>
-                      <input type="text" name="productQuantity" id="productQuantity" placeholder="_{:transaction_qnt}  " value="" />
-                      <i class="ais ais-name"> </i>
-                    </div>
-
-                    <div class="txt-right">
-                      <a href="_{link_back}"><button class="bgGray ais-return" type="button">_{:return}</button></a>
-                      <button class="ais-save">_{:transaction_register} _{:transaction_input}</button>
-                    </div>
-              </div>
             </form>
         </div>
     </div>

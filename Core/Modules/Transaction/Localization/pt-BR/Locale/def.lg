@@ -16,7 +16,7 @@
     <error_on_input_transaction>Erro ao registrar entrada!</error_on_input_transaction>
     <error_on_output_transaction>Erro ao registrar saída!</error_on_output_transaction>
     <all_trasaction_fields_need_to_be_filled>Todos os campos da transação devem ser preenchidos!</all_trasaction_fields_need_to_be_filled>
-
+    <you_cannot_get_out_more_than_have>Você não pode retirar mais do que a quantidade máxima atual. Total atual [b]%s[/b].</you_cannot_get_out_more_than_have>
     <transaction_protocol>Protocolo</transaction_protocol>
     <transaction_product_id>ID_PRD</transaction_product_id>
     <transaction_product_name>Produto</transaction_product_name>

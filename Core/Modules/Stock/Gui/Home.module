@@ -64,6 +64,7 @@ class Home
               $lineTable['link_edit'] = $preLink . 'edit' . DS . $tableLine['prdid'];
               $dataPrompt = [];
               $dataPrompt['url'] = _system . DS . $this->getModuleName() . DS . 'get' . DS . $tableLine['prdid'] . DS . System::getAccessToken();
+              $dataPrompt['method'] = "GET";
               $lineTable['data_prompt'] = base64_encode(json_encode($dataPrompt));
               $tempTr = new Template(APP_ROOT . DS . MODULES_PATH . DS . $this->getModuleName() . DS . "Gui/Views/Controller/tableListStock.tpl", $lineTable, true);
               $tableHeadData['data_table'] .= $tempTr->showTemplate();

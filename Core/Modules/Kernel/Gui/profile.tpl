@@ -26,17 +26,17 @@
                         <div class="separator"></div>
                         <div class="pd-tb-1"></div>
                         <form action="#" method="POST" enctype="multipart/form-data" _{data_send}>
-                            <div class="former">
+                            <div class="former req">
                                 <label for="name">_{:name}</label>
                                 <input type="text" id="name" name="name" value="_{value_name}" placeholder="_{:name}"/>
                                 <i class="ais ais-name"> </i>
                             </div>
-                            <div class="former">
+                            <div class="former req">
                                 <label for="lastname">_{:lastname}</label>
                                 <input type="text" id="lastname" name="lastname" value="_{value_lastname}" placeholder="_{:lastname}"/>
                                 <i class="ais ais-name"> </i>
                             </div>
-                            <div class="former">
+                            <div class="former req">
                                 <label for="email">_{:email}</label>
                                 <input type="text" id="email" name="email" value="_{value_email}" placeholder="_{:email}"/>
                                 <i class="ais ais-mail"> </i>

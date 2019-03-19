@@ -27,5 +27,6 @@
     <stock_id_needed_not_found>O identificador necessário para a requisição não foi encontrado.</stock_id_needed_not_found>
     <remove_stock>Remove Estoque</remove_stock>
     <stock_successfully_removed>Estoque removido com sucesso!</stock_successfully_removed>
+    <stock_successfully_changed>Estoque editado com sucesso!</stock_successfully_changed>
     <impossible_to_remove_stock>Impossível remover estoque!</impossible_to_remove_stock>
 </def>

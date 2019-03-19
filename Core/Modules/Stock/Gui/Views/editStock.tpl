@@ -9,26 +9,19 @@
 
                 <div class="former">
                     <label for="productName">_{:product_name}</label>
-                    <select name="productName" id="productName" >
-                        <option value="none">_{:product_name}</option>
-                        _{products_options}
-                    </select>
+                    <input name="productName" id="productName" value="_{products_options}" disabled>
                     <i class="ais ais-name"></i>
                 </div>
+                <div class="former required wp-30">
+                    <label for="productQuantityMin">_{:product_quantity_min}</label>
+                    <input type="text" name="productQuantityMin" id="productQuantityMin" placeholder="_{:product_quantity_min}  " value="" />
+                    <i class="ais ais-name"></i>
+                </div>
+                <div class="txt-right">
+                    <a href="_{link_back}"><button class="bgGray ais-return" type="button">_{:return}</button></a>
+                    <button class="ais-save">_{:stock_edit}</button>
+                </div>
 
-                  <div class="dFlex jc-between">
-
-                    <div class="former required">
-                      <label for="productQuantityMin">_{:product_quantity_min}</label>
-                      <input type="text" name="productQuantityMin" id="productQuantityMin" placeholder="_{:product_quantity_min}  " value="" />
-                      <i class="ais ais-name"></i>
-                    </div>
-
-                    <div class="txt-right">
-                      <a href="_{link_back}"><button class="bgGray ais-return" type="button">_{:return}</button></a>
-                      <button class="ais-save">_{:stock_edit}</button>
-                    </div>
-              </div>
             </form>
         </div>
     </div>

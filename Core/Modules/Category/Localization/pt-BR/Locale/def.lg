@@ -2,6 +2,7 @@
 <def>
     <cat_not_found>CAT-ID não encontrado.</cat_not_found>
     <categories>Categorias</categories>
+    <cannot_remove_category_with_binded_products>Não é possível remover uma categoria em que existe produtos atrelados, remova os produtos antes de realizar esta operação!</cannot_remove_category_with_binded_products>
     <category>Categoria</category>
     <category_name>Nome da Categoria</category_name>
     <categories_manager>Gerência de Categorias</categories_manager>

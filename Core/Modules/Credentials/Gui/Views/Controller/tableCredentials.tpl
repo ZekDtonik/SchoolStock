@@ -2,7 +2,7 @@
     <thead>
     <tr>
         <th>_{:credential_id}</th>
-        <th>_{:guid}</th>
+
         <th>_{:user_group_name}</th>
         <th>_{:user_name}</th>
         <th>_{:user_status}</th>

@@ -1,7 +1,6 @@
 <table>
     <thead>
     <tr>
-        <th>_{:transaction_protocol}</th>
         <th>_{:transaction_product_id}</th>
         <th>_{:transaction_product_name}</th>
         <th>_{:transaction_qnt}</th>
